@@ -407,7 +407,23 @@
 
     <!-- TEAM HUB: client access -->
     <section class="page" id="page-client-access">
-      <div class="page-head"><div><h2>Client access</h2><p>Map each client's login email to their account. Only PRIMO Team can see this list — clients never see it.</p></div></div>
+      <div class="page-head"><div><h2>Client access</h2><p>Create client accounts and map login emails to them. Only PRIMO Team can see this list — clients never see it.</p></div></div>
+
+      <div class="list-card panel" style="margin-bottom:16px;">
+        <h3>Create a new client</h3>
+        <div class="access-form" style="flex-wrap:wrap;">
+          <input type="text" id="newClientName" placeholder="Client name (e.g. Vintage Ya)" style="flex:2; min-width:200px;" />
+          <select id="newClientCurrency" style="flex:0 0 90px; min-width:80px;">
+            <option value="฿">฿ THB</option>
+            <option value="$">$ USD</option>
+          </select>
+          <input type="text" id="newClientPlanPrice" placeholder="Monthly plan, e.g. 45,000" style="flex:1; min-width:160px;" />
+          <input type="email" id="newClientEmail" placeholder="Login email (optional, can add later)" style="flex:2; min-width:200px;" />
+        </div>
+        <button class="btn" id="createClientBtn" style="margin-top:12px;">Create client</button>
+        <p style="font-size:12px;color:var(--text-dimmer);margin-top:10px;">Creates the account with an empty request board, no invoices yet, and a placeholder team — fill those in from the client's own tabs once they're set up, or ask them to submit their first request.</p>
+      </div>
+
       <div class="list-card panel">
         <h3>Assigned emails</h3>
         <div id="accessRows"></div>
@@ -436,7 +452,7 @@
   };
   function icon(name){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+ICONS[name]+'</svg>'; }
 
-  const CLIENTS = {
+  const DEFAULT_CLIENTS = {
     kasema:{ id:'kasema', name:'Kasema Foods', initials:'KF', color:'#ff6a2a', currency:'฿',
       team:{ 'Strategy':'Nan T.', 'Marketing':'Ploy S.', 'Social Media':'Beam K.', 'Data & Analytics':'Field R.', 'Design & Content':'Mint W.' },
       plan:{ name:'Growth Plan', price:'฿85,000 / mo', renews:'1 Oct 2026',
@@ -473,6 +489,47 @@
         spend:[1800,2200,2600,3000,3400,3800], roas:[2.4,2.9,3.3,3.7,4.0,4.3] }
     }
   };
+
+  const CUSTOM_CLIENTS_KEY = 'primo_hub_custom_clients_v1';
+  function loadCustomClients(){
+    try{
+      const raw = localStorage.getItem(CUSTOM_CLIENTS_KEY);
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    return {};
+  }
+  function saveCustomClients(map){ localStorage.setItem(CUSTOM_CLIENTS_KEY, JSON.stringify(map)); }
+  let customClients = loadCustomClients();
+  const CLIENTS = Object.assign({}, DEFAULT_CLIENTS, customClients);
+
+  const CLIENT_COLORS = ['#ff6a2a','#3b6bff','#ffb238','#2dd4a7','#e84393','#8b5cf6','#f5a623','#16c5b0'];
+  function slugify(name){
+    let base = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'client';
+    let id = base, n = 1;
+    while(CLIENTS[id]) id = base + '-' + (++n);
+    return id;
+  }
+  function createClient({ name, currency, planPrice, email }){
+    const id = slugify(name);
+    const initials = name.split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase() || 'CL';
+    const color = CLIENT_COLORS[Object.keys(CLIENTS).length % CLIENT_COLORS.length];
+    const priceLabel = planPrice ? `${currency}${planPrice} / mo` : `${currency}0 / mo`;
+    const client = {
+      id, name, initials, color, currency,
+      team:{ 'Strategy':'Unassigned', 'Marketing':'Unassigned', 'Social Media':'Unassigned', 'Data & Analytics':'Unassigned', 'Design & Content':'Unassigned' },
+      plan:{ name:'Standard Plan', price:priceLabel, renews:'—', includes:['Onboarding in progress — plan details to follow'] },
+      invoices:[],
+      social:{ followers:'0', followersGrowth:'0%', engagement:'0%', gmv:currency+'0', spend:[0,0,0,0,0,0], roas:[0,0,0,0,0,0] }
+    };
+    CLIENTS[id] = client;
+    customClients[id] = client;
+    saveCustomClients(customClients);
+    if(email){
+      clientAccess[email.trim().toLowerCase()] = id;
+      saveAccess(clientAccess);
+    }
+    return client;
+  }
 
   const DEPARTMENTS = ['Strategy','Marketing','Social Media','Data & Analytics','Design & Content'];
 
@@ -762,6 +819,20 @@
     const sel = document.getElementById('newAccessClient');
     sel.innerHTML = Object.values(CLIENTS).map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   }
+  document.getElementById('createClientBtn').addEventListener('click', ()=>{
+    const name = document.getElementById('newClientName').value.trim();
+    if(!name){ document.getElementById('newClientName').focus(); return; }
+    const currency = document.getElementById('newClientCurrency').value;
+    const planPrice = document.getElementById('newClientPlanPrice').value.trim();
+    const email = document.getElementById('newClientEmail').value.trim();
+    createClient({ name, currency, planPrice, email });
+    document.getElementById('newClientName').value = '';
+    document.getElementById('newClientPlanPrice').value = '';
+    document.getElementById('newClientEmail').value = '';
+    renderAccessList();
+    if(session && session.type==='team') renderTeam();
+  });
+
   document.getElementById('addAccessBtn').addEventListener('click', ()=>{
     const email = document.getElementById('newAccessEmail').value.trim().toLowerCase();
     const cid = document.getElementById('newAccessClient').value;
