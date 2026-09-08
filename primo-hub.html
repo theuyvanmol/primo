@@ -261,7 +261,7 @@
       <p class="login-error" id="teamLoginError">That code isn't right.</p>
     </div>
 
-    <p class="login-note">This is a working prototype of the PRIMO Hub — sign-in is by email, and each client only ever sees their own account, never anyone else's. Team members each have their own access code, so their task board and login are personal to them. For testing: <span class="mono">kasema@kasemafoods.com</span>, <span class="mono">hello@bluewavelogistics.com</span>, or <span class="mono">team@siamorchard.com</span> for a client login, or <span class="mono">THEUY-2026</span> (admin) / <span class="mono">THOAI-2026</span> (team member) for the team side. A production build would sit behind real authentication (magic link or SSO) instead of a hardcoded list.</p>
+    <p class="login-note">This is a working prototype of the PRIMO Hub — sign-in is by email, and each client only ever sees their own account, never anyone else's. Team members each have their own access code, so their task board and login are personal to them. For testing: <span class="mono">kasema@kasemafoods.com</span>, <span class="mono">hello@bluewavelogistics.com</span>, <span class="mono">team@siamorchard.com</span>, or <span class="mono">hello@kongtattoocare.com</span> for a client login, or <span class="mono">THEUY-2026</span> (admin) / <span class="mono">THOAI-2026</span> (team member) for the team side. A production build would sit behind real authentication (magic link or SSO) instead of a hardcoded list.</p>
   </div>
 </div>
 
@@ -323,16 +323,30 @@
 
     <!-- SALES DASHBOARD -->
     <section class="page" id="page-sales">
-      <div class="page-head"><div><h2>Sales dashboard</h2><p>Invoices, revenue, and collection status for your account.</p></div></div>
-      <div class="dash-kpis" id="salesKpis"></div>
-      <div class="two-col">
-        <div class="list-card panel">
-          <h3>Revenue by month</h3>
-          <div id="salesTrendChart"></div>
+      <div class="page-head"><div><h2>Sales dashboard</h2><p id="salesSubhead">Invoices, revenue, and collection status for your account.</p></div></div>
+
+      <div id="salesEmbedView" class="hidden">
+        <div class="embed-card panel">
+          <div class="embed-bar">
+            <span class="src">Your own sales &amp; inventory system</span>
+            <a id="salesEmbedOpenLink" href="#" target="_blank" rel="noopener">Open in new tab ↗</a>
+          </div>
+          <iframe id="salesEmbedFrame" loading="lazy" title="Sales dashboard"></iframe>
+          <div class="embed-note">This is your live system — changes you make here (invoices, stock, expenses) are the same as opening it directly.</div>
         </div>
-        <div class="list-card panel">
-          <h3>Paid vs outstanding</h3>
-          <div id="salesStatusChart"></div>
+      </div>
+
+      <div id="salesGenericView">
+        <div class="dash-kpis" id="salesKpis"></div>
+        <div class="two-col">
+          <div class="list-card panel">
+            <h3>Revenue by month</h3>
+            <div id="salesTrendChart"></div>
+          </div>
+          <div class="list-card panel">
+            <h3>Paid vs outstanding</h3>
+            <div id="salesStatusChart"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -524,6 +538,15 @@
       ],
       social:{ followers:'12.7K', followersGrowth:'+15%', engagement:'5.4%', gmv:'฿265,000',
         spend:[1800,2200,2600,3000,3400,3800], roas:[2.4,2.9,3.3,3.7,4.0,4.3] }
+    },
+    kong:{ id:'kong', name:'Kong Tattoo Care', initials:'KT', color:'#3fe8c0', currency:'฿', status:'active',
+      team:{ 'Strategy':'Nan T.', 'Marketing':'Ana R.', 'Social Media':'Beam K.', 'Data & Analytics':'Field R.', 'Design & Content':'Mint W.' },
+      plan:{ name:'Growth Plan', price:'฿65,000 / mo', renews:'12 Oct 2026',
+        includes:['Studio partner marketing','Content & social management','Performance reporting','Priority requests'] },
+      invoices:[],
+      social:{ followers:'7.8K', followersGrowth:'+9%', engagement:'5.9%', gmv:'฿0',
+        spend:[1200,1500,1800,2100,2400,2700], roas:[1.6,2.0,2.4,2.7,3.0,3.2] },
+      salesApp:'kong-tattoo-care-dashboard.html'
     }
   };
 
@@ -655,7 +678,8 @@
     const seed = {
       'kasema@kasemafoods.com':'kasema',
       'hello@bluewavelogistics.com':'bluewave',
-      'team@siamorchard.com':'siam'
+      'team@siamorchard.com':'siam',
+      'hello@kongtattoocare.com':'kong'
     };
     localStorage.setItem(ACCESS_KEY, JSON.stringify(seed));
     return seed;
@@ -842,6 +866,27 @@
 
   function renderSalesDashboard(){
     const c = CLIENTS[session.clientId];
+    const embedView = document.getElementById('salesEmbedView');
+    const genericView = document.getElementById('salesGenericView');
+    const subhead = document.getElementById('salesSubhead');
+
+    if(c.salesApp){
+      genericView.classList.add('hidden');
+      embedView.classList.remove('hidden');
+      subhead.textContent = 'Your own sales & inventory system, live inside the Hub.';
+      const frame = document.getElementById('salesEmbedFrame');
+      if(frame.dataset.loaded !== c.salesApp){
+        frame.src = c.salesApp;
+        frame.dataset.loaded = c.salesApp;
+      }
+      document.getElementById('salesEmbedOpenLink').href = c.salesApp;
+      return;
+    }
+
+    genericView.classList.remove('hidden');
+    embedView.classList.add('hidden');
+    subhead.textContent = 'Invoices, revenue, and collection status for your account.';
+
     const planVal = parseMoney(c.plan.price);
     const cur = c.currency;
     const paidTotal = c.invoices.filter(i=>i.status==='paid').reduce((s,i)=>s+parseMoney(i.amount),0);
