@@ -84,6 +84,15 @@
 
   .access-row{ display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid var(--border-soft); font-size:13px; }
   .access-row .mono{ font-family:monospace; }
+
+  .sd-select{ padding:9px 14px; border-radius:100px; border:1px solid var(--border); background:var(--surface-2); color:var(--text); font-size:13px; font-family:inherit; }
+  .sd-invoices-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px; }
+  .sd-lineitem{ display:flex; gap:8px; align-items:center; margin-bottom:8px; flex-wrap:wrap; }
+  .sd-lineitem select{ flex:2; min-width:180px; padding:9px 10px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--surface-2); color:var(--text); font-size:13px; font-family:inherit; }
+  .sd-lineitem input{ width:70px; padding:9px 10px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--surface-2); color:var(--text); font-size:13px; font-family:inherit; }
+  .sd-lineitem .sd-linetotal{ width:90px; text-align:right; font-size:13px; color:var(--text-dim); font-family:monospace; }
+  .sd-lineitem .mini-btn{ flex-shrink:0; }
+  .mono{ font-family:monospace; }
   .access-row:last-child{ border-bottom:none; }
   .access-form{ display:flex; gap:8px; margin-top:16px; flex-wrap:wrap; }
   .access-form input, .access-form select{ flex:1; min-width:160px; padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--surface-2); color:var(--text); font-size:13px; font-family:inherit; }
@@ -323,30 +332,69 @@
 
     <!-- SALES DASHBOARD -->
     <section class="page" id="page-sales">
-      <div class="page-head"><div><h2>Sales dashboard</h2><p id="salesSubhead">Invoices, revenue, and collection status for your account.</p></div></div>
+      <div class="page-head">
+        <div><h2>Sales dashboard</h2><p>Your own sales channel — invoice customers, track what's paid, see what's outstanding.</p></div>
+        <select id="salesMonthFilter" class="sd-select"></select>
+      </div>
 
-      <div id="salesEmbedView" class="hidden">
-        <div class="embed-card panel">
-          <div class="embed-bar">
-            <span class="src">Your own sales &amp; inventory system</span>
-            <a id="salesEmbedOpenLink" href="#" target="_blank" rel="noopener">Open in new tab ↗</a>
-          </div>
-          <iframe id="salesEmbedFrame" loading="lazy" title="Sales dashboard"></iframe>
-          <div class="embed-note">This is your live system — changes you make here (invoices, stock, expenses) are the same as opening it directly.</div>
+      <div class="dash-kpis" id="salesKpis"></div>
+
+      <div class="two-col">
+        <div class="list-card panel">
+          <h3>Revenue by month</h3>
+          <div id="salesTrendChart"></div>
+        </div>
+        <div class="list-card panel">
+          <h3>Revenue by customer</h3>
+          <div id="salesCustomerChart"></div>
         </div>
       </div>
 
-      <div id="salesGenericView">
-        <div class="dash-kpis" id="salesKpis"></div>
-        <div class="two-col">
-          <div class="list-card panel">
-            <h3>Revenue by month</h3>
-            <div id="salesTrendChart"></div>
+      <div class="list-card panel" style="margin-top:16px;">
+        <div class="sd-invoices-head">
+          <h3>Invoices</h3>
+          <button class="btn" id="salesAddInvoiceBtn">+ Add invoice</button>
+        </div>
+        <table class="invoices">
+          <thead><tr><th>Invoice</th><th>Customer</th><th>Date</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+          <tbody id="salesInvoiceRows"></tbody>
+        </table>
+        <div id="salesInvoiceEmpty" class="hidden" style="padding:24px 0; text-align:center; font-size:13px; color:var(--text-dimmer);">No invoices yet — add your first one above.</div>
+      </div>
+
+      <!-- add/edit invoice form (inline panel, not a modal, to keep it simple and reliable) -->
+      <div class="list-card panel hidden" id="salesInvoiceForm" style="margin-top:16px;">
+        <h3 id="salesFormTitle">New invoice</h3>
+        <div class="two-col" style="margin-bottom:14px;">
+          <div class="field">
+            <label>Customer</label>
+            <select id="sfCustomer"></select>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <input type="text" id="sfNewCustomerName" placeholder="Or add a new customer" style="flex:1;" />
+              <button class="mini-btn" id="sfAddCustomerBtn" type="button">Add</button>
+            </div>
           </div>
-          <div class="list-card panel">
-            <h3>Paid vs outstanding</h3>
-            <div id="salesStatusChart"></div>
+          <div class="field"><label>Date</label><input type="date" id="sfDate" /></div>
+        </div>
+        <div class="field"><label>Invoice number</label><input type="text" id="sfInvoiceNo" placeholder="e.g. INV-0142" /></div>
+
+        <div id="sfLineItems"></div>
+        <button class="mini-btn" id="sfAddLineBtn" type="button" style="margin:8px 0 16px;">+ Add product line</button>
+
+        <div class="two-col" style="align-items:end;">
+          <div class="field"><label>Discount</label><input type="number" id="sfDiscount" min="0" value="0" /></div>
+          <div style="text-align:right;">
+            <div style="font-size:12.5px;color:var(--text-dim);">Subtotal: <b id="sfSubtotal" class="mono">0</b></div>
+            <div style="font-size:12.5px;color:var(--text-dim);">Discount: <b id="sfDiscountOut" class="mono">0</b></div>
+            <div style="font-size:16px;margin-top:4px;">Total: <b id="sfTotal" class="mono" style="color:var(--accent);">0</b></div>
           </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:18px; flex-wrap:wrap;">
+          <button class="btn" id="sfSaveBtn" type="button">Save invoice</button>
+          <button class="mini-btn" id="sfPrintBtn" type="button">Print / Save as PDF</button>
+          <button class="btn-ghost btn" id="sfCancelBtn" type="button">Cancel</button>
+          <button class="btn-ghost btn" id="sfDeleteBtn" type="button" style="color:var(--red); display:none; margin-left:auto;">Delete invoice</button>
         </div>
       </div>
     </section>
@@ -514,7 +562,17 @@
         {id:'INV-1020',period:'Jun 2026',amount:'฿85,000',status:'due',date:'1 Jun 2026'}
       ],
       social:{ followers:'18.2K', followersGrowth:'+22%', engagement:'6.8%', gmv:'฿410,000',
-        spend:[3000,4200,5000,5800,6500,7200], roas:[2.0,2.6,3.1,3.6,4.0,4.4] }
+        spend:[3000,4200,5000,5800,6500,7200], roas:[2.0,2.6,3.1,3.6,4.0,4.4] },
+      products:[
+        {id:'p1', name:'Frozen sauce packs (case)', price:1200},
+        {id:'p2', name:'Retail spice kit', price:390},
+        {id:'p3', name:'Catering tray (large)', price:2800}
+      ],
+      customers:[
+        {id:'cu1', name:'Central World Food Court'},
+        {id:'cu2', name:'Siam Paragon Grocer'},
+        {id:'cu3', name:'Thonglor Deli'}
+      ]
     },
     bluewave:{ id:'bluewave', name:'Bluewave Logistics', initials:'BL', color:'#3b6bff', currency:'$', status:'active',
       team:{ 'Strategy':'Owen P.', 'Marketing':'Ana R.', 'Social Media':'Theo L.', 'Data & Analytics':'Nadia K.', 'Design & Content':'Sam D.' },
@@ -526,7 +584,17 @@
         {id:'INV-2188',period:'Jun 2026',amount:'$14,500',status:'paid',date:'1 Jun 2026'}
       ],
       social:{ followers:'9.4K', followersGrowth:'+11%', engagement:'4.1%', gmv:'$62,000',
-        spend:[4000,4800,5400,6000,6600,7200], roas:[1.8,2.2,2.6,3.0,3.3,3.6] }
+        spend:[4000,4800,5400,6000,6600,7200], roas:[1.8,2.2,2.6,3.0,3.3,3.6] },
+      products:[
+        {id:'p1', name:'Freight route (per container)', price:2400},
+        {id:'p2', name:'Warehousing (per pallet/mo)', price:180},
+        {id:'p3', name:'Last-mile delivery zone', price:650}
+      ],
+      customers:[
+        {id:'cu1', name:'Nexora Retail Group'},
+        {id:'cu2', name:'Pacific Trading Co.'},
+        {id:'cu3', name:'Delta Manufacturing'}
+      ]
     },
     siam:{ id:'siam', name:'Siam Orchard', initials:'SO', color:'#ffb238', currency:'฿', status:'paused',
       team:{ 'Strategy':'Nan T.', 'Marketing':'Ploy S.', 'Social Media':'Ice C.', 'Data & Analytics':'Field R.', 'Design & Content':'Jo H.' },
@@ -537,7 +605,17 @@
         {id:'INV-0860',period:'Jul 2026',amount:'฿42,000',status:'due',date:'1 Jul 2026'}
       ],
       social:{ followers:'12.7K', followersGrowth:'+15%', engagement:'5.4%', gmv:'฿265,000',
-        spend:[1800,2200,2600,3000,3400,3800], roas:[2.4,2.9,3.3,3.7,4.0,4.3] }
+        spend:[1800,2200,2600,3000,3400,3800], roas:[2.4,2.9,3.3,3.7,4.0,4.3] },
+      products:[
+        {id:'p1', name:'Fresh fruit box (weekly)', price:590},
+        {id:'p2', name:'Orchard tour ticket', price:250},
+        {id:'p3', name:'Wholesale crate', price:1100}
+      ],
+      customers:[
+        {id:'cu1', name:'Rimping Supermarket'},
+        {id:'cu2', name:'Chiang Mai Farmers Market'},
+        {id:'cu3', name:'Doi Saket Resort'}
+      ]
     },
     kong:{ id:'kong', name:'Kong Tattoo Care', initials:'KT', color:'#3fe8c0', currency:'฿', status:'active',
       team:{ 'Strategy':'Nan T.', 'Marketing':'Ana R.', 'Social Media':'Beam K.', 'Data & Analytics':'Field R.', 'Design & Content':'Mint W.' },
@@ -546,7 +624,19 @@
       invoices:[],
       social:{ followers:'7.8K', followersGrowth:'+9%', engagement:'5.9%', gmv:'฿0',
         spend:[1200,1500,1800,2100,2400,2700], roas:[1.6,2.0,2.4,2.7,3.0,3.2] },
-      salesApp:'kong-tattoo-care-dashboard.html'
+      products:[
+        {id:'p1', name:'Aftercare Balm 50g', price:390},
+        {id:'p2', name:'Aftercare Balm 100g', price:650},
+        {id:'p3', name:'Antibacterial Wipes (10pk)', price:220},
+        {id:'p4', name:'Tattoo Wrap Film (roll)', price:480},
+        {id:'p5', name:'Starter Kit (studio display)', price:2400}
+      ],
+      customers:[
+        {id:'cu1', name:'Bangkok Ink Collective'},
+        {id:'cu2', name:'Chiang Mai Tattoo Studio'},
+        {id:'cu3', name:'Phuket Skin Art'},
+        {id:'cu4', name:'Silom Black Ink'}
+      ]
     }
   };
 
@@ -864,54 +954,294 @@
 
   function parseMoney(str){ return parseFloat(String(str).replace(/[^0-9.]/g,'')) || 0; }
 
+  // ---------------- native sales dashboard (invoices, customers, products) ----------------
+  const SALES_SEED = {
+    kong:[
+      {id:'si1', customerId:'cu1', date:'2026-06-04', invoiceNo:'KONG-0231', items:[{productId:'p1',qty:6,price:390},{productId:'p3',qty:10,price:220}], discount:0, status:'paid'},
+      {id:'si2', customerId:'cu2', date:'2026-07-11', invoiceNo:'KONG-0244', items:[{productId:'p2',qty:4,price:650},{productId:'p4',qty:5,price:480}], discount:200, status:'paid'},
+      {id:'si3', customerId:'cu3', date:'2026-08-02', invoiceNo:'KONG-0259', items:[{productId:'p5',qty:1,price:2400}], discount:0, status:'unpaid'},
+      {id:'si4', customerId:'cu4', date:'2026-08-19', invoiceNo:'KONG-0261', items:[{productId:'p1',qty:8,price:390},{productId:'p3',qty:12,price:220}], discount:150, status:'unpaid'}
+    ],
+    kasema:[
+      {id:'si1', customerId:'cu1', date:'2026-07-05', invoiceNo:'KF-0088', items:[{productId:'p1',qty:20,price:1200}], discount:0, status:'paid'},
+      {id:'si2', customerId:'cu2', date:'2026-08-10', invoiceNo:'KF-0091', items:[{productId:'p2',qty:50,price:390},{productId:'p3',qty:6,price:2800}], discount:500, status:'unpaid'}
+    ],
+    bluewave:[
+      {id:'si1', customerId:'cu1', date:'2026-07-14', invoiceNo:'BW-1102', items:[{productId:'p1',qty:12,price:2400}], discount:0, status:'paid'},
+      {id:'si2', customerId:'cu2', date:'2026-08-06', invoiceNo:'BW-1115', items:[{productId:'p2',qty:80,price:180},{productId:'p3',qty:30,price:650}], discount:0, status:'unpaid'}
+    ],
+    siam:[
+      {id:'si1', customerId:'cu1', date:'2026-08-01', invoiceNo:'SO-0044', items:[{productId:'p1',qty:40,price:590}], discount:0, status:'paid'}
+    ]
+  };
+  function salesKey(clientId){ return 'primo_hub_sales_'+clientId; }
+  function loadSalesInvoices(clientId){
+    try{
+      const raw = localStorage.getItem(salesKey(clientId));
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    const seed = SALES_SEED[clientId] || [];
+    localStorage.setItem(salesKey(clientId), JSON.stringify(seed));
+    return seed.slice();
+  }
+  function saveSalesInvoices(clientId, list){
+    localStorage.setItem(salesKey(clientId), JSON.stringify(list));
+  }
+  function persistClientEdit(c){ customClients[c.id] = c; saveCustomClients(customClients); }
+
+  function invoiceSubtotal(inv){ return inv.items.reduce((s,it)=>s+ (it.qty*it.price), 0); }
+  function invoiceTotal(inv){ return Math.max(0, invoiceSubtotal(inv) - (inv.discount||0)); }
+  function monthKey(dateStr){ return (dateStr||'').slice(0,7); }
+  function monthLabel(key){
+    const [y,m] = key.split('-');
+    const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return names[parseInt(m,10)-1] + ' ' + y;
+  }
+
+  let salesInvoices = [];
+  let salesMonthFilter = 'all';
+  let editingInvoiceId = null;
+
   function renderSalesDashboard(){
     const c = CLIENTS[session.clientId];
-    const embedView = document.getElementById('salesEmbedView');
-    const genericView = document.getElementById('salesGenericView');
-    const subhead = document.getElementById('salesSubhead');
-
-    if(c.salesApp){
-      genericView.classList.add('hidden');
-      embedView.classList.remove('hidden');
-      subhead.textContent = 'Your own sales & inventory system, live inside the Hub.';
-      const frame = document.getElementById('salesEmbedFrame');
-      if(frame.dataset.loaded !== c.salesApp){
-        frame.src = c.salesApp;
-        frame.dataset.loaded = c.salesApp;
-      }
-      document.getElementById('salesEmbedOpenLink').href = c.salesApp;
-      return;
-    }
-
-    genericView.classList.remove('hidden');
-    embedView.classList.add('hidden');
-    subhead.textContent = 'Invoices, revenue, and collection status for your account.';
-
-    const planVal = parseMoney(c.plan.price);
     const cur = c.currency;
-    const paidTotal = c.invoices.filter(i=>i.status==='paid').reduce((s,i)=>s+parseMoney(i.amount),0);
-    const dueTotal = c.invoices.filter(i=>i.status==='due').reduce((s,i)=>s+parseMoney(i.amount),0);
+    salesInvoices = loadSalesInvoices(c.id);
+
+    // month filter options
+    const monthSet = Array.from(new Set(salesInvoices.map(i=>monthKey(i.date)))).sort().reverse();
+    const filterEl = document.getElementById('salesMonthFilter');
+    filterEl.innerHTML = '<option value="all">All months</option>' + monthSet.map(mk=>`<option value="${mk}" ${mk===salesMonthFilter?'selected':''}>${monthLabel(mk)}</option>`).join('');
+    filterEl.value = salesMonthFilter;
+
+    const filtered = salesMonthFilter==='all' ? salesInvoices : salesInvoices.filter(i=>monthKey(i.date)===salesMonthFilter);
+
+    const totalAll = filtered.reduce((s,i)=>s+invoiceTotal(i),0);
+    const paidTotal = filtered.filter(i=>i.status==='paid').reduce((s,i)=>s+invoiceTotal(i),0);
+    const dueTotal = filtered.filter(i=>i.status==='unpaid').reduce((s,i)=>s+invoiceTotal(i),0);
+    const units = filtered.reduce((s,i)=>s+i.items.reduce((s2,it)=>s2+Number(it.qty||0),0),0);
+
     document.getElementById('salesKpis').innerHTML = [
-      ['Monthly plan value', cur+planVal.toLocaleString()],
-      ['Paid this period', cur+paidTotal.toLocaleString()],
+      ['Total invoiced', cur+totalAll.toLocaleString()],
+      ['Paid', cur+paidTotal.toLocaleString()],
       ['Outstanding', cur+dueTotal.toLocaleString()],
-      ['Invoices on file', c.invoices.length]
+      ['Units sold', units.toLocaleString()]
     ].map(([l,v])=>`<div class="dash-kpi panel"><div class="k-label">${l}</div><div class="k-val">${v}</div></div>`).join('');
 
-    const months = ['Mar','Apr','May','Jun','Jul','Aug'];
-    const factors = [0.62,0.71,0.8,0.88,0.95,1];
-    const trend = factors.map(f=>Math.round(planVal*f));
-    const maxT = Math.max(...trend);
-    document.getElementById('salesTrendChart').innerHTML = '<div class="combo2">' + months.map((m,i)=>
-      `<div class="combo2-col"><div class="combo2-val">${cur}${(trend[i]/1000).toFixed(1)}k</div><div class="combo2-track"><div class="combo2-fill" style="height:${(trend[i]/maxT*100).toFixed(0)}%"></div></div><div class="combo2-label">${m}</div></div>`
-    ).join('') + '</div>';
+    // trend: last 6 months present, oldest to newest (use all invoices, not just filtered, for context)
+    const allMonths = Array.from(new Set(salesInvoices.map(i=>monthKey(i.date)))).sort();
+    const last6 = allMonths.slice(-6);
+    const trendVals = last6.map(mk => salesInvoices.filter(i=>monthKey(i.date)===mk).reduce((s,i)=>s+invoiceTotal(i),0));
+    const maxT = Math.max(1, ...trendVals);
+    document.getElementById('salesTrendChart').innerHTML = last6.length ? '<div class="combo2">' + last6.map((mk,i)=>
+      `<div class="combo2-col"><div class="combo2-val">${cur}${(trendVals[i]/1000).toFixed(1)}k</div><div class="combo2-track"><div class="combo2-fill" style="height:${(trendVals[i]/maxT*100).toFixed(0)}%"></div></div><div class="combo2-label">${monthLabel(mk).split(' ')[0]}</div></div>`
+    ).join('') + '</div>' : '<p style="font-size:12px;color:var(--text-dimmer)">No invoices yet.</p>';
 
-    const totalForBar = paidTotal+dueTotal || 1;
-    document.getElementById('salesStatusChart').innerHTML = `
-      <div class="hbar2-row"><div class="hbar2-label">Paid</div><div class="hbar2-track"><div class="hbar2-fill" style="width:${(paidTotal/totalForBar*100).toFixed(0)}%"></div></div><div class="hbar2-val">${cur}${paidTotal.toLocaleString()}</div></div>
-      <div class="hbar2-row"><div class="hbar2-label">Outstanding</div><div class="hbar2-track"><div class="hbar2-fill" style="width:${(dueTotal/totalForBar*100).toFixed(0)}%; background:var(--amber);"></div></div><div class="hbar2-val">${cur}${dueTotal.toLocaleString()}</div></div>
-    `;
+    // customer breakdown (top 5 by revenue, within filtered set)
+    const byCustomer = {};
+    filtered.forEach(i=>{ byCustomer[i.customerId] = (byCustomer[i.customerId]||0) + invoiceTotal(i); });
+    const custRows = Object.entries(byCustomer).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    const maxC = Math.max(1, ...custRows.map(r=>r[1]));
+    document.getElementById('salesCustomerChart').innerHTML = custRows.length ? custRows.map(([cid,val])=>{
+      const cust = (c.customers||[]).find(x=>x.id===cid);
+      return `<div class="hbar2-row"><div class="hbar2-label">${cust?cust.name:'Unknown'}</div><div class="hbar2-track"><div class="hbar2-fill" style="width:${(val/maxC*100).toFixed(0)}%"></div></div><div class="hbar2-val">${cur}${val.toLocaleString()}</div></div>`;
+    }).join('') : '<p style="font-size:12px;color:var(--text-dimmer)">No invoices yet.</p>';
+
+    // invoice table
+    const rows = filtered.slice().sort((a,b)=> b.date.localeCompare(a.date));
+    document.getElementById('salesInvoiceEmpty').classList.toggle('hidden', rows.length>0);
+    document.getElementById('salesInvoiceRows').innerHTML = rows.map(inv=>{
+      const cust = (c.customers||[]).find(x=>x.id===inv.customerId);
+      return `<tr>
+        <td>${inv.invoiceNo}</td>
+        <td>${cust?cust.name:'—'}</td>
+        <td>${inv.date}</td>
+        <td>${cur}${invoiceTotal(inv).toLocaleString()}</td>
+        <td><button class="pay-badge ${inv.status==='paid'?'paid':'due'}" style="border:none;cursor:pointer;" onclick="__primoToggleInvoiceStatus('${inv.id}')">${inv.status==='paid'?'Paid':'Unpaid'}</button></td>
+        <td style="white-space:nowrap;"><a class="dl-link" href="#" onclick="__primoEditInvoice('${inv.id}');return false;">Edit</a></td>
+      </tr>`;
+    }).join('');
   }
+
+  document.getElementById('salesMonthFilter').addEventListener('change', (e)=>{
+    salesMonthFilter = e.target.value;
+    renderSalesDashboard();
+  });
+
+  window.__primoToggleInvoiceStatus = function(id){
+    const inv = salesInvoices.find(i=>i.id===id);
+    if(!inv) return;
+    inv.status = inv.status==='paid' ? 'unpaid' : 'paid';
+    saveSalesInvoices(session.clientId, salesInvoices);
+    renderSalesDashboard();
+  };
+
+  // ---- invoice add/edit form ----
+  let sfLineCount = 0;
+  function sfClient(){ return CLIENTS[session.clientId]; }
+
+  function sfOpen(invoice){
+    const c = sfClient();
+    editingInvoiceId = invoice ? invoice.id : null;
+    document.getElementById('salesInvoiceForm').classList.remove('hidden');
+    document.getElementById('salesInvoiceForm').scrollIntoView({behavior:'smooth', block:'nearest'});
+    document.getElementById('salesFormTitle').textContent = invoice ? 'Edit invoice' : 'New invoice';
+    document.getElementById('sfDeleteBtn').style.display = invoice ? 'block' : 'none';
+
+    const custSel = document.getElementById('sfCustomer');
+    custSel.innerHTML = (c.customers||[]).map(cu=>`<option value="${cu.id}">${cu.name}</option>`).join('');
+
+    document.getElementById('sfDate').value = invoice ? invoice.date : new Date().toISOString().slice(0,10);
+    document.getElementById('sfInvoiceNo').value = invoice ? invoice.invoiceNo : ('INV-' + String(Date.now()).slice(-5));
+    document.getElementById('sfDiscount').value = invoice ? (invoice.discount||0) : 0;
+
+    document.getElementById('sfLineItems').innerHTML = '';
+    sfLineCount = 0;
+    if(invoice){
+      custSel.value = invoice.customerId;
+      invoice.items.forEach(it => sfAddLine(it));
+    } else {
+      sfAddLine();
+    }
+    sfRecompute();
+  }
+  function sfClose(){
+    document.getElementById('salesInvoiceForm').classList.add('hidden');
+    editingInvoiceId = null;
+  }
+
+  function sfAddLine(existing){
+    const c = sfClient();
+    const rowId = 'sfl'+(sfLineCount++);
+    const wrap = document.createElement('div');
+    wrap.className = 'sd-lineitem';
+    wrap.id = rowId;
+    const productOptions = (c.products||[]).map(p=>`<option value="${p.id}" data-price="${p.price}">${p.name}</option>`).join('');
+    wrap.innerHTML = `
+      <select class="sfl-product">${productOptions}</select>
+      <input type="number" class="sfl-qty" min="1" value="${existing?existing.qty:1}" placeholder="Qty" />
+      <input type="number" class="sfl-price" min="0" value="${existing?existing.price:(c.products&&c.products[0]?c.products[0].price:0)}" placeholder="Price" />
+      <span class="sd-linetotal">0</span>
+      <button type="button" class="mini-btn" onclick="document.getElementById('${rowId}').remove(); __primoSfRecompute();">Remove</button>
+    `;
+    document.getElementById('sfLineItems').appendChild(wrap);
+    if(existing) wrap.querySelector('.sfl-product').value = existing.productId;
+    wrap.querySelector('.sfl-product').addEventListener('change', (e)=>{
+      const opt = e.target.selectedOptions[0];
+      wrap.querySelector('.sfl-price').value = opt ? opt.dataset.price : 0;
+      sfRecompute();
+    });
+    wrap.querySelector('.sfl-qty').addEventListener('input', sfRecompute);
+    wrap.querySelector('.sfl-price').addEventListener('input', sfRecompute);
+  }
+  window.__primoSfRecompute = function(){ sfRecompute(); };
+
+  function sfLineData(){
+    return Array.from(document.querySelectorAll('#sfLineItems .sd-lineitem')).map(row=>{
+      const productId = row.querySelector('.sfl-product').value;
+      const qty = Number(row.querySelector('.sfl-qty').value) || 0;
+      const price = Number(row.querySelector('.sfl-price').value) || 0;
+      const total = qty*price;
+      row.querySelector('.sd-linetotal').textContent = total.toLocaleString();
+      return { productId, qty, price };
+    });
+  }
+  function sfRecompute(){
+    const cur = sfClient().currency;
+    const items = sfLineData();
+    const subtotal = items.reduce((s,it)=>s+it.qty*it.price, 0);
+    const discount = Number(document.getElementById('sfDiscount').value) || 0;
+    const total = Math.max(0, subtotal - discount);
+    document.getElementById('sfSubtotal').textContent = cur + subtotal.toLocaleString();
+    document.getElementById('sfDiscountOut').textContent = '-' + cur + discount.toLocaleString();
+    document.getElementById('sfTotal').textContent = cur + total.toLocaleString();
+  }
+  document.getElementById('sfDiscount').addEventListener('input', sfRecompute);
+  document.getElementById('sfAddLineBtn').addEventListener('click', ()=>{ sfAddLine(); sfRecompute(); });
+
+  document.getElementById('salesAddInvoiceBtn').addEventListener('click', ()=> sfOpen(null));
+  document.getElementById('sfCancelBtn').addEventListener('click', sfClose);
+
+  document.getElementById('sfAddCustomerBtn').addEventListener('click', ()=>{
+    const name = document.getElementById('sfNewCustomerName').value.trim();
+    if(!name) return;
+    const c = sfClient();
+    c.customers = c.customers || [];
+    const id = 'cu'+Date.now();
+    c.customers.push({id, name});
+    persistClientEdit(c);
+    document.getElementById('sfNewCustomerName').value = '';
+    const custSel = document.getElementById('sfCustomer');
+    custSel.innerHTML = c.customers.map(cu=>`<option value="${cu.id}">${cu.name}</option>`).join('');
+    custSel.value = id;
+  });
+
+  document.getElementById('sfSaveBtn').addEventListener('click', ()=>{
+    const c = sfClient();
+    const customerId = document.getElementById('sfCustomer').value;
+    if(!customerId){ alert('Add or choose a customer first.'); return; }
+    const date = document.getElementById('sfDate').value || new Date().toISOString().slice(0,10);
+    const invoiceNo = document.getElementById('sfInvoiceNo').value.trim() || ('INV-'+String(Date.now()).slice(-5));
+    const items = sfLineData().filter(it=>it.productId && it.qty>0);
+    const discount = Number(document.getElementById('sfDiscount').value) || 0;
+
+    if(editingInvoiceId){
+      const inv = salesInvoices.find(i=>i.id===editingInvoiceId);
+      Object.assign(inv, { customerId, date, invoiceNo, items, discount });
+    } else {
+      salesInvoices.unshift({ id:'si'+Date.now(), customerId, date, invoiceNo, items, discount, status:'unpaid' });
+    }
+    saveSalesInvoices(c.id, salesInvoices);
+    sfClose();
+    renderSalesDashboard();
+  });
+
+  document.getElementById('sfDeleteBtn').addEventListener('click', ()=>{
+    if(!editingInvoiceId) return;
+    salesInvoices = salesInvoices.filter(i=>i.id!==editingInvoiceId);
+    saveSalesInvoices(sfClient().id, salesInvoices);
+    sfClose();
+    renderSalesDashboard();
+  });
+
+  document.getElementById('sfPrintBtn').addEventListener('click', ()=>{
+    const c = sfClient();
+    const cur = c.currency;
+    const custSel = document.getElementById('sfCustomer');
+    const custName = custSel.selectedOptions[0] ? custSel.selectedOptions[0].textContent : '';
+    const items = sfLineData();
+    const subtotal = items.reduce((s,it)=>s+it.qty*it.price,0);
+    const discount = Number(document.getElementById('sfDiscount').value)||0;
+    const total = Math.max(0, subtotal-discount);
+    const invoiceNo = document.getElementById('sfInvoiceNo').value.trim();
+    const date = document.getElementById('sfDate').value;
+    const rowsHtml = items.map(it=>{
+      const p = (c.products||[]).find(pp=>pp.id===it.productId);
+      return `<tr><td style="padding:8px;border-bottom:1px solid #ddd;">${p?p.name:it.productId}</td><td style="padding:8px;border-bottom:1px solid #ddd;text-align:center;">${it.qty}</td><td style="padding:8px;border-bottom:1px solid #ddd;text-align:right;">${cur}${it.price.toLocaleString()}</td><td style="padding:8px;border-bottom:1px solid #ddd;text-align:right;">${cur}${(it.qty*it.price).toLocaleString()}</td></tr>`;
+    }).join('');
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${invoiceNo}</title>
+      <style>body{font-family:Arial,sans-serif;color:#111;padding:40px;max-width:640px;margin:0 auto;}
+      h1{font-size:20px;margin-bottom:2px;} table{width:100%;border-collapse:collapse;margin-top:20px;}
+      th{text-align:left;padding:8px;border-bottom:2px solid #111;font-size:12px;text-transform:uppercase;}
+      .tot{display:flex;justify-content:flex-end;gap:24px;margin-top:16px;font-size:14px;}
+      .tot b{font-size:18px;}</style></head><body>
+      <h1>${c.name}</h1>
+      <p style="color:#555;margin-top:0;">Invoice ${invoiceNo} &middot; ${date}</p>
+      <p><b>Billed to:</b> ${custName}</p>
+      <table><thead><tr><th>Item</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Price</th><th style="text-align:right;">Total</th></tr></thead>
+      <tbody>${rowsHtml}</tbody></table>
+      <div class="tot"><div>Subtotal: ${cur}${subtotal.toLocaleString()}</div><div>Discount: ${cur}${discount.toLocaleString()}</div><div><b>Total: ${cur}${total.toLocaleString()}</b></div></div>
+      </body></html>`;
+    const w = window.open('', '_blank');
+    if(!w){ alert('Please allow pop-ups to print the invoice.'); return; }
+    w.document.write(html);
+    w.document.close();
+    setTimeout(()=> w.print(), 300);
+  });
+
+  window.__primoEditInvoice = function(id){
+    const inv = salesInvoices.find(i=>i.id===id);
+    if(inv) sfOpen(inv);
+  };
 
   function renderSocialDashboard(){
     const c = CLIENTS[session.clientId];
