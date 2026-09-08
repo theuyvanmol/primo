@@ -83,6 +83,7 @@
   .combo2-label{ font-size:10px; color:var(--text-dimmer); margin-top:6px; }
 
   .access-row{ display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid var(--border-soft); font-size:13px; }
+  .access-row .mono{ font-family:monospace; }
   .access-row:last-child{ border-bottom:none; }
   .access-form{ display:flex; gap:8px; margin-top:16px; flex-wrap:wrap; }
   .access-form input, .access-form select{ flex:1; min-width:160px; padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--surface-2); color:var(--text); font-size:13px; font-family:inherit; }
@@ -260,7 +261,7 @@
       <p class="login-error" id="teamLoginError">That code isn't right.</p>
     </div>
 
-    <p class="login-note">This is a working prototype of the PRIMO Hub — sign-in is by email, and each client only ever sees their own account, never anyone else's. For testing: <span class="mono">kasema@kasemafoods.com</span>, <span class="mono">hello@bluewavelogistics.com</span>, or <span class="mono">team@siamorchard.com</span> for a client login, or access code <span class="mono">PRIMO-TEAM-2026</span> for the team side. A production build would sit behind real authentication (magic link or SSO) instead of a hardcoded list.</p>
+    <p class="login-note">This is a working prototype of the PRIMO Hub — sign-in is by email, and each client only ever sees their own account, never anyone else's. Team members each have their own access code, so their task board and login are personal to them. For testing: <span class="mono">kasema@kasemafoods.com</span>, <span class="mono">hello@bluewavelogistics.com</span>, or <span class="mono">team@siamorchard.com</span> for a client login, or <span class="mono">THEUY-2026</span> (admin) / <span class="mono">THOAI-2026</span> (team member) for the team side. A production build would sit behind real authentication (magic link or SSO) instead of a hardcoded list.</p>
   </div>
 </div>
 
@@ -389,6 +390,10 @@
         <h3>Needs attention</h3>
         <div id="teamAttention"></div>
       </div>
+      <div class="list-card panel" style="margin-top:16px;">
+        <h3>By team member</h3>
+        <div id="teamBreakdown"></div>
+      </div>
     </section>
 
     <!-- TEAM HUB: all requests board -->
@@ -400,14 +405,36 @@
 
     <!-- TEAM HUB: my tasks -->
     <section class="page" id="page-my-tasks">
-      <div class="page-head"><div><h2>My tasks</h2><p>Filter by department to see what's assigned there.</p></div></div>
-      <div class="filter-row" id="deptFilterRow"></div>
+      <div class="page-head"><div><h2>My tasks — <span id="myTasksWho"></span></h2><p>Your own board. Move things forward as you work them.</p></div></div>
       <div class="board" id="myTasksBoard"></div>
+      <div class="list-card panel" style="margin-top:20px;">
+        <h3>Unclaimed — pick something up</h3>
+        <div id="unassignedList"></div>
+      </div>
+    </section>
+
+    <!-- TEAM HUB: team members (admin only) -->
+    <section class="page" id="page-team-directory">
+      <div class="page-head"><div><h2>Team members</h2><p>Give each person their own login code so their board and history are personal to them.</p></div></div>
+      <div class="list-card panel" style="margin-bottom:16px;">
+        <h3>Add a team member</h3>
+        <div class="access-form" style="flex-wrap:wrap;">
+          <input type="text" id="newMemberName" placeholder="Name" style="flex:1; min-width:160px;" />
+          <input type="text" id="newMemberRole" placeholder="Role (e.g. Social Media Lead)" style="flex:1; min-width:180px;" />
+          <select id="newMemberDept"></select>
+          <input type="text" id="newMemberCode" placeholder="Login code (e.g. NAME-2026)" style="flex:1; min-width:180px;" />
+        </div>
+        <button class="btn" id="createMemberBtn" style="margin-top:12px;">Add team member</button>
+      </div>
+      <div class="list-card panel">
+        <h3>Everyone with access</h3>
+        <div id="memberRows"></div>
+      </div>
     </section>
 
     <!-- TEAM HUB: client access -->
     <section class="page" id="page-client-access">
-      <div class="page-head"><div><h2>Client access</h2><p>Create client accounts and map login emails to them. Only PRIMO Team can see this list — clients never see it.</p></div></div>
+      <div class="page-head"><div><h2>Clients</h2><p>Create accounts, track Active / Paused / No longer Active, and map login emails. Only PRIMO Team can see this — clients never see each other.</p></div></div>
 
       <div class="list-card panel" style="margin-bottom:16px;">
         <h3>Create a new client</h3>
@@ -418,10 +445,20 @@
             <option value="$">$ USD</option>
           </select>
           <input type="text" id="newClientPlanPrice" placeholder="Monthly plan, e.g. 45,000" style="flex:1; min-width:160px;" />
+          <select id="newClientStatus" style="flex:0 0 140px; min-width:130px;">
+            <option value="active">Active</option>
+            <option value="paused">Paused</option>
+            <option value="inactive">No longer active</option>
+          </select>
           <input type="email" id="newClientEmail" placeholder="Login email (optional, can add later)" style="flex:2; min-width:200px;" />
         </div>
         <button class="btn" id="createClientBtn" style="margin-top:12px;">Create client</button>
         <p style="font-size:12px;color:var(--text-dimmer);margin-top:10px;">Creates the account with an empty request board, no invoices yet, and a placeholder team — fill those in from the client's own tabs once they're set up, or ask them to submit their first request.</p>
+      </div>
+
+      <div class="list-card panel" style="margin-bottom:16px;">
+        <h3>All clients</h3>
+        <div id="clientStatusRows"></div>
       </div>
 
       <div class="list-card panel">
@@ -453,7 +490,7 @@
   function icon(name){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+ICONS[name]+'</svg>'; }
 
   const DEFAULT_CLIENTS = {
-    kasema:{ id:'kasema', name:'Kasema Foods', initials:'KF', color:'#ff6a2a', currency:'฿',
+    kasema:{ id:'kasema', name:'Kasema Foods', initials:'KF', color:'#ff6a2a', currency:'฿', status:'active',
       team:{ 'Strategy':'Nan T.', 'Marketing':'Ploy S.', 'Social Media':'Beam K.', 'Data & Analytics':'Field R.', 'Design & Content':'Mint W.' },
       plan:{ name:'Growth Plan', price:'฿85,000 / mo', renews:'1 Oct 2026',
         includes:['Paid social management','Monthly content calendar','Performance reporting','Quarterly strategy review','SEO maintenance','Priority requests'] },
@@ -465,7 +502,7 @@
       social:{ followers:'18.2K', followersGrowth:'+22%', engagement:'6.8%', gmv:'฿410,000',
         spend:[3000,4200,5000,5800,6500,7200], roas:[2.0,2.6,3.1,3.6,4.0,4.4] }
     },
-    bluewave:{ id:'bluewave', name:'Bluewave Logistics', initials:'BL', color:'#3b6bff', currency:'$',
+    bluewave:{ id:'bluewave', name:'Bluewave Logistics', initials:'BL', color:'#3b6bff', currency:'$', status:'active',
       team:{ 'Strategy':'Owen P.', 'Marketing':'Ana R.', 'Social Media':'Theo L.', 'Data & Analytics':'Nadia K.', 'Design & Content':'Sam D.' },
       plan:{ name:'Enterprise Plan', price:'$14,500 / mo', renews:'15 Oct 2026',
         includes:['Multi-market campaign management','Brand system governance','Dedicated analytics pod','Monthly executive report','Unlimited requests','24h response SLA'] },
@@ -477,7 +514,7 @@
       social:{ followers:'9.4K', followersGrowth:'+11%', engagement:'4.1%', gmv:'$62,000',
         spend:[4000,4800,5400,6000,6600,7200], roas:[1.8,2.2,2.6,3.0,3.3,3.6] }
     },
-    siam:{ id:'siam', name:'Siam Orchard', initials:'SO', color:'#ffb238', currency:'฿',
+    siam:{ id:'siam', name:'Siam Orchard', initials:'SO', color:'#ffb238', currency:'฿', status:'paused',
       team:{ 'Strategy':'Nan T.', 'Marketing':'Ploy S.', 'Social Media':'Ice C.', 'Data & Analytics':'Field R.', 'Design & Content':'Jo H.' },
       plan:{ name:'Essentials Plan', price:'฿42,000 / mo', renews:'20 Oct 2026',
         includes:['SEO & content strategy','Bi-weekly reporting','Social content production','Standard requests'] },
@@ -509,13 +546,13 @@
     while(CLIENTS[id]) id = base + '-' + (++n);
     return id;
   }
-  function createClient({ name, currency, planPrice, email }){
+  function createClient({ name, currency, planPrice, email, status }){
     const id = slugify(name);
     const initials = name.split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase() || 'CL';
     const color = CLIENT_COLORS[Object.keys(CLIENTS).length % CLIENT_COLORS.length];
     const priceLabel = planPrice ? `${currency}${planPrice} / mo` : `${currency}0 / mo`;
     const client = {
-      id, name, initials, color, currency,
+      id, name, initials, color, currency, status: status || 'active',
       team:{ 'Strategy':'Unassigned', 'Marketing':'Unassigned', 'Social Media':'Unassigned', 'Data & Analytics':'Unassigned', 'Design & Content':'Unassigned' },
       plan:{ name:'Standard Plan', price:priceLabel, renews:'—', includes:['Onboarding in progress — plan details to follow'] },
       invoices:[],
@@ -531,17 +568,62 @@
     return client;
   }
 
+  const CLIENT_STATUSES = {
+    active:{ label:'Active', color:'#2dd4a7' },
+    paused:{ label:'Paused', color:'#ffb037' },
+    inactive:{ label:'No longer active', color:'#ff6a6a' }
+  };
+  function clientStatusBadge(clientId){
+    const c = CLIENTS[clientId];
+    const s = CLIENT_STATUSES[(c && c.status) || 'active'];
+    return `<span class="badge" style="color:${s.color}; border-color:${s.color}55;"><span class="dot" style="background:${s.color};"></span>${s.label}</span>`;
+  }
+
+  // ---------------- team members (each person gets their own login code) ----------------
+  const DEFAULT_TEAM_MEMBERS = {
+    theuy:{ id:'theuy', name:'Theuy', code:'THEUY-2026', role:'Founder', dept:'Strategy', isAdmin:true },
+    thoai:{ id:'thoai', name:'Thoai', code:'THOAI-2026', role:'Designer', dept:'Design & Content', isAdmin:false }
+  };
+  const TEAM_MEMBERS_KEY = 'primo_hub_team_members_v1';
+  function loadCustomTeamMembers(){
+    try{
+      const raw = localStorage.getItem(TEAM_MEMBERS_KEY);
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    return {};
+  }
+  function saveCustomTeamMembers(map){ localStorage.setItem(TEAM_MEMBERS_KEY, JSON.stringify(map)); }
+  let customTeamMembers = loadCustomTeamMembers();
+  const TEAM_MEMBERS = Object.assign({}, DEFAULT_TEAM_MEMBERS, customTeamMembers);
+
+  function slugifyMember(name){
+    let base = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'member';
+    let id = base, n = 1;
+    while(TEAM_MEMBERS[id]) id = base + '-' + (++n);
+    return id;
+  }
+  function createTeamMember({ name, code, role, dept }){
+    const id = slugifyMember(name);
+    const member = { id, name, code, role: role || 'Team member', dept: dept || DEPARTMENTS[0], isAdmin:false };
+    TEAM_MEMBERS[id] = member;
+    customTeamMembers[id] = member;
+    saveCustomTeamMembers(customTeamMembers);
+    return member;
+  }
+  function currentMember(){ return session && session.type==='team' ? TEAM_MEMBERS[session.memberId] : null; }
+  function isCurrentAdmin(){ const m = currentMember(); return !!(m && m.isAdmin); }
+
   const DEPARTMENTS = ['Strategy','Marketing','Social Media','Data & Analytics','Design & Content'];
 
   const SEED_REQUESTS = [
-    {id:'r1', client:'kasema', title:'Ramadan campaign key visual set', category:'Design', desc:'Set of 6 key visuals for the seasonal push across IG and Line.', status:'Done', dept:'Design & Content', updated:'2 days ago'},
-    {id:'r2', client:'kasema', title:'30-second product video for new SKU', category:'Video', desc:'Short vertical video for TikTok and Reels launch.', status:'In Progress', dept:'Design & Content', updated:'today'},
-    {id:'r3', client:'kasema', title:'Q3 performance deep-dive', category:'Other', desc:'Full breakdown of Q3 channel performance for the board update.', status:'Requested', dept:'Data & Analytics', updated:'1 hour ago'},
-    {id:'r4', client:'bluewave', title:'Rebrand rollout — Vietnam market', category:'Design', desc:'Localise the new brand system for the Vietnam site launch.', status:'In Progress', dept:'Design & Content', updated:'today'},
-    {id:'r5', client:'bluewave', title:'LinkedIn thought-leadership series', category:'Copy / content', desc:'6-part series on supply chain resilience for exec LinkedIn.', status:'Requested', dept:'Marketing', updated:'3 hours ago'},
-    {id:'r6', client:'bluewave', title:'Q2 multi-market ad recap', category:'Other', desc:'Recap deck across all 9 active markets.', status:'Done', dept:'Data & Analytics', updated:'5 days ago'},
-    {id:'r7', client:'siam', title:'New landing page for harvest sale', category:'Website / dev', desc:'Seasonal landing page tied to the SEO content push.', status:'Requested', dept:'Design & Content', updated:'yesterday'},
-    {id:'r8', client:'siam', title:'Influencer seeding list', category:'Social post', desc:'Shortlist of 10 micro-influencers for the new product line.', status:'In Progress', dept:'Social Media', updated:'today'}
+    {id:'r1', client:'kasema', title:'Ramadan campaign key visual set', category:'Design', desc:'Set of 6 key visuals for the seasonal push across IG and Line.', status:'Done', dept:'Design & Content', assignee:'thoai', updated:'2 days ago'},
+    {id:'r2', client:'kasema', title:'30-second product video for new SKU', category:'Video', desc:'Short vertical video for TikTok and Reels launch.', status:'In Progress', dept:'Design & Content', assignee:'thoai', updated:'today'},
+    {id:'r3', client:'kasema', title:'Q3 performance deep-dive', category:'Other', desc:'Full breakdown of Q3 channel performance for the board update.', status:'Requested', dept:'Data & Analytics', assignee:'unassigned', updated:'1 hour ago'},
+    {id:'r4', client:'bluewave', title:'Rebrand rollout — Vietnam market', category:'Design', desc:'Localise the new brand system for the Vietnam site launch.', status:'In Progress', dept:'Design & Content', assignee:'thoai', updated:'today'},
+    {id:'r5', client:'bluewave', title:'LinkedIn thought-leadership series', category:'Copy / content', desc:'6-part series on supply chain resilience for exec LinkedIn.', status:'Requested', dept:'Marketing', assignee:'unassigned', updated:'3 hours ago'},
+    {id:'r6', client:'bluewave', title:'Q2 multi-market ad recap', category:'Other', desc:'Recap deck across all 9 active markets.', status:'Done', dept:'Data & Analytics', assignee:'unassigned', updated:'5 days ago'},
+    {id:'r7', client:'siam', title:'New landing page for harvest sale', category:'Website / dev', desc:'Seasonal landing page tied to the SEO content push.', status:'Requested', dept:'Design & Content', assignee:'unassigned', updated:'yesterday'},
+    {id:'r8', client:'siam', title:'Influencer seeding list', category:'Social post', desc:'Shortlist of 10 micro-influencers for the new product line.', status:'In Progress', dept:'Social Media', assignee:'unassigned', updated:'today'}
   ];
 
   function loadRequests(){
@@ -565,7 +647,6 @@
 
   // ---------------- login screen ----------------
   const ACCESS_KEY = 'primo_hub_access_v1';
-  const TEAM_CODE = 'PRIMO-TEAM-2026';
   function loadAccess(){
     try{
       const raw = localStorage.getItem(ACCESS_KEY);
@@ -601,9 +682,10 @@
   document.getElementById('teamLoginBtn').addEventListener('click', ()=>{
     const code = document.getElementById('teamCodeInput').value.trim();
     const errorEl = document.getElementById('teamLoginError');
-    if(code === TEAM_CODE){
+    const member = Object.values(TEAM_MEMBERS).find(m=>m.code===code);
+    if(member){
       errorEl.classList.remove('show');
-      enterHub({type:'team'});
+      enterHub({type:'team', memberId:member.id});
     } else {
       errorEl.classList.add('show');
     }
@@ -630,11 +712,14 @@
     {id:'billing', label:'Plan & Invoices', icon:'card'},
     {id:'request', label:'New Request', icon:'plus'}
   ];
-  const TEAM_NAV = [
+  const TEAM_NAV_BASE = [
     {id:'team-overview', label:'Overview', icon:'home'},
     {id:'team-board', label:'All Requests', icon:'check'},
-    {id:'my-tasks', label:'My Tasks', icon:'users'},
-    {id:'client-access', label:'Client Access', icon:'card'}
+    {id:'my-tasks', label:'My Tasks', icon:'users'}
+  ];
+  const TEAM_NAV_ADMIN_EXTRA = [
+    {id:'team-directory', label:'Team Members', icon:'users'},
+    {id:'client-access', label:'Clients', icon:'card'}
   ];
 
   function enterHub(sess){
@@ -652,7 +737,8 @@
   }
 
   function buildSidebar(){
-    const nav = session.type === 'client' ? CLIENT_NAV : TEAM_NAV;
+    const admin = isCurrentAdmin();
+    const nav = session.type === 'client' ? CLIENT_NAV : TEAM_NAV_BASE.concat(admin ? TEAM_NAV_ADMIN_EXTRA : []);
     const sbNav = document.getElementById('sbNav');
     sbNav.innerHTML = '';
     nav.forEach(item=>{
@@ -671,14 +757,16 @@
       document.getElementById('acctName').textContent = c.name;
       document.getElementById('acctSub').textContent = 'Client account';
     } else {
+      const m = TEAM_MEMBERS[session.memberId];
       document.getElementById('acctAvatar').style.background = '#2dd4a7';
-      document.getElementById('acctAvatar').textContent = 'PT';
-      document.getElementById('acctName').textContent = 'PRIMO Team';
-      document.getElementById('acctSub').textContent = 'Internal account';
+      document.getElementById('acctAvatar').textContent = m.name.slice(0,2).toUpperCase();
+      document.getElementById('acctName').textContent = m.name;
+      document.getElementById('acctSub').textContent = m.role + (m.isAdmin ? ' · Admin' : '');
     }
   }
 
   function showPage(id){
+    if(session.type==='team' && !isCurrentAdmin() && (id==='client-access' || id==='team-directory')) id = 'team-overview';
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     const target = document.getElementById('page-'+id);
     if(target) target.classList.add('active');
@@ -686,7 +774,8 @@
     document.getElementById('sidebar').classList.remove('open');
     if(session.type==='team' && id==='team-board') renderTeamBoard();
     if(session.type==='team' && id==='my-tasks') renderMyTasks();
-    if(session.type==='team' && id==='client-access') renderAccessList();
+    if(session.type==='team' && id==='client-access'){ renderAccessList(); renderClientStatusRows(); }
+    if(session.type==='team' && id==='team-directory') renderTeamDirectory();
   }
 
   document.getElementById('logoutBtn').addEventListener('click', ()=>{
@@ -824,13 +913,64 @@
     if(!name){ document.getElementById('newClientName').focus(); return; }
     const currency = document.getElementById('newClientCurrency').value;
     const planPrice = document.getElementById('newClientPlanPrice').value.trim();
+    const status = document.getElementById('newClientStatus').value;
     const email = document.getElementById('newClientEmail').value.trim();
-    createClient({ name, currency, planPrice, email });
+    createClient({ name, currency, planPrice, status, email });
     document.getElementById('newClientName').value = '';
     document.getElementById('newClientPlanPrice').value = '';
     document.getElementById('newClientEmail').value = '';
     renderAccessList();
     if(session && session.type==='team') renderTeam();
+  });
+
+  function renderClientStatusRows(){
+    const wrap = document.getElementById('clientStatusRows');
+    if(!wrap) return;
+    const clients = Object.values(CLIENTS).sort((a,b)=>a.name.localeCompare(b.name));
+    wrap.innerHTML = clients.map(c=>`
+      <div class="access-row">
+        <span>${c.name}</span>
+        <select class="client-status-select" data-id="${c.id}" style="padding:6px 10px;border-radius:100px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-size:12px;">
+          <option value="active" ${c.status==='active'?'selected':''}>Active</option>
+          <option value="paused" ${c.status==='paused'?'selected':''}>Paused</option>
+          <option value="inactive" ${c.status==='inactive'?'selected':''}>No longer active</option>
+        </select>
+      </div>
+    `).join('');
+    wrap.querySelectorAll('.client-status-select').forEach(sel=>{
+      sel.addEventListener('change', ()=>{
+        const c = CLIENTS[sel.dataset.id];
+        if(!c) return;
+        c.status = sel.value;
+        customClients[c.id] = c;
+        saveCustomClients(customClients);
+        renderTeam();
+      });
+    });
+  }
+
+  function renderTeamDirectory(){
+    const deptSel = document.getElementById('newMemberDept');
+    if(deptSel && !deptSel.options.length){
+      deptSel.innerHTML = DEPARTMENTS.map(d=>`<option value="${d}">${d}</option>`).join('');
+    }
+    const wrap = document.getElementById('memberRows');
+    const members = Object.values(TEAM_MEMBERS).sort((a,b)=>a.name.localeCompare(b.name));
+    wrap.innerHTML = members.map(m=>`
+      <div class="access-row"><span>${m.name} — ${m.role}${m.isAdmin?' · Admin':''}</span><span class="mono" style="color:var(--text-dim);">${m.code}</span></div>
+    `).join('');
+  }
+  document.getElementById('createMemberBtn').addEventListener('click', ()=>{
+    const name = document.getElementById('newMemberName').value.trim();
+    const role = document.getElementById('newMemberRole').value.trim();
+    const dept = document.getElementById('newMemberDept').value;
+    const code = document.getElementById('newMemberCode').value.trim();
+    if(!name || !code){ (name?document.getElementById('newMemberCode'):document.getElementById('newMemberName')).focus(); return; }
+    createTeamMember({ name, role, dept, code });
+    document.getElementById('newMemberName').value = '';
+    document.getElementById('newMemberRole').value = '';
+    document.getElementById('newMemberCode').value = '';
+    renderTeamDirectory();
   });
 
   document.getElementById('addAccessBtn').addEventListener('click', ()=>{
@@ -870,6 +1010,7 @@
     requests.unshift({
       id:'r'+Date.now(), client:c.id, title, category, desc: desc || 'No additional details provided.',
       status:'Requested', dept: category==='Video'||category==='Design'||category==='Social post' ? 'Design & Content' : category==='Copy / content' ? 'Marketing' : category==='Website / dev' ? 'Data & Analytics' : 'Strategy',
+      assignee:'unassigned',
       updated:'just now'
     });
     saveRequests(requests);
@@ -884,11 +1025,12 @@
     const openCount = requests.filter(r=>r.status!=='Done').length;
     const inProgress = requests.filter(r=>r.status==='In Progress').length;
     const doneThisMonth = requests.filter(r=>r.status==='Done').length;
+    const activeClientCount = Object.values(CLIENTS).filter(c=>(c.status||'active')==='active').length;
     document.getElementById('teamStats').innerHTML = [
       ['Open across all clients', openCount],
       ['In progress', inProgress],
       ['Completed', doneThisMonth],
-      ['Active clients', Object.keys(CLIENTS).length]
+      ['Active clients', activeClientCount]
     ].map(([l,n])=>`<div class="stat-card panel"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
 
     const attention = requests.filter(r=>r.status==='Requested');
@@ -896,26 +1038,37 @@
       <div class="mini-row"><span class="t">${CLIENTS[r.client].name} — ${r.title}</span><span class="m">${r.category}</span></div>
     `).join('') || '<p style="font-size:13px;color:var(--text-dimmer)">Nothing waiting on you right now.</p>';
 
+    const breakdownWrap = document.getElementById('teamBreakdown');
+    if(breakdownWrap){
+      if(isCurrentAdmin()){
+        breakdownWrap.closest('.list-card').style.display = 'block';
+        const rows = Object.values(TEAM_MEMBERS).map(m=>{
+          const mine = requests.filter(r=>r.assignee===m.id);
+          const open = mine.filter(r=>r.status!=='Done').length;
+          const inProg = mine.filter(r=>r.status==='In Progress').length;
+          const done = mine.filter(r=>r.status==='Done').length;
+          return `<div class="mini-row"><span class="t">${m.name}<span class="m" style="margin-left:8px;">${m.role}</span></span><span class="m">${open} open · ${inProg} in progress · ${done} done</span></div>`;
+        }).join('');
+        const unassignedCount = requests.filter(r=>!r.assignee || r.assignee==='unassigned').length;
+        breakdownWrap.innerHTML = rows + (unassignedCount>0 ? `<div class="mini-row"><span class="t" style="color:var(--amber);">Unassigned</span><span class="m">${unassignedCount} waiting to be claimed</span></div>` : '');
+      } else {
+        breakdownWrap.closest('.list-card').style.display = 'none';
+      }
+    }
+
     buildClientFilter();
-    buildDeptFilter();
   }
 
   let activeClientFilter = 'all';
   function buildClientFilter(){
     const row = document.getElementById('clientFilterRow');
-    const chips = [{id:'all', name:'All clients'}].concat(Object.values(CLIENTS).map(c=>({id:c.id, name:c.name})));
+    const chips = [{id:'all', name:'All clients'}].concat(Object.values(CLIENTS).map(c=>({
+      id:c.id,
+      name:c.name + ((c.status && c.status!=='active') ? ' ('+CLIENT_STATUSES[c.status].label+')' : '')
+    })));
     row.innerHTML = chips.map(c=>`<button class="filter-chip ${c.id===activeClientFilter?'active':''}" data-c="${c.id}">${c.name}</button>`).join('');
     row.querySelectorAll('.filter-chip').forEach(chip=>{
       chip.addEventListener('click', ()=>{ activeClientFilter = chip.dataset.c; buildClientFilter(); renderTeamBoard(); });
-    });
-  }
-
-  let activeDeptFilter = DEPARTMENTS[0];
-  function buildDeptFilter(){
-    const row = document.getElementById('deptFilterRow');
-    row.innerHTML = DEPARTMENTS.map(d=>`<button class="filter-chip ${d===activeDeptFilter?'active':''}" data-d="${d}">${d}</button>`).join('');
-    row.querySelectorAll('.filter-chip').forEach(chip=>{
-      chip.addEventListener('click', ()=>{ activeDeptFilter = chip.dataset.d; buildDeptFilter(); renderMyTasks(); });
     });
   }
 
@@ -933,44 +1086,70 @@
   }
   window.__primoAdvance = advance;
 
+  function claimTask(id){
+    if(!session || session.type!=='team') return;
+    const r = requests.find(x=>x.id===id);
+    if(!r) return;
+    r.assignee = session.memberId;
+    r.updated = 'just now';
+    saveRequests(requests);
+    renderTeamBoard();
+    renderMyTasks();
+  }
+  window.__primoClaim = claimTask;
+
+  function assigneeName(r){
+    if(!r.assignee || r.assignee==='unassigned') return null;
+    const m = TEAM_MEMBERS[r.assignee];
+    return m ? m.name : null;
+  }
+
+  function taskCardHtml(r, colIdx, opts){
+    opts = opts || {};
+    const name = assigneeName(r);
+    return `<div class="task-card">
+      <div class="cat">${r.category}${opts.showClient ? ' · '+CLIENTS[r.client].initials : ''}</div>
+      ${opts.showClient ? `<div class="who">${CLIENTS[r.client].name}</div>` : ''}
+      <div class="ttl">${r.title}</div>
+      <div class="desc">${r.desc}</div>
+      <div class="cat" style="margin-top:8px;color:${name?'var(--accent)':'var(--amber)'};">${name ? 'Assigned: '+name : 'Unassigned'}</div>
+      <div class="task-actions">
+        ${!name ? `<button class="mini-btn" onclick="__primoClaim('${r.id}')">Assign to me</button>` : ''}
+        ${colIdx>0 ? `<button class="mini-btn" onclick="__primoAdvance('${r.id}',-1)">&larr; Back</button>` : ''}
+        ${colIdx<2 ? `<button class="mini-btn" onclick="__primoAdvance('${r.id}',1)">Move forward &rarr;</button>` : ''}
+      </div>
+    </div>`;
+  }
+
   function renderTeamBoard(){
     const list = requests.filter(r=> activeClientFilter==='all' || r.client===activeClientFilter);
     const board = document.getElementById('teamBoard');
     board.innerHTML = STATUS_ORDER.map((status,colIdx)=>{
       const items = list.filter(r=>r.status===status);
       return `<div class="col"><div class="col-head"><span>${status}</span><span class="cnt">${items.length}</span></div>
-        ${items.map(r=>`<div class="task-card">
-          <div class="cat">${r.category} · ${CLIENTS[r.client].initials}</div>
-          <div class="who">${CLIENTS[r.client].name}</div>
-          <div class="ttl">${r.title}</div>
-          <div class="desc">${r.desc}</div>
-          <div class="task-actions">
-            ${colIdx>0 ? `<button class="mini-btn" onclick="__primoAdvance('${r.id}',-1)">&larr; Back</button>` : ''}
-            ${colIdx<2 ? `<button class="mini-btn" onclick="__primoAdvance('${r.id}',1)">Move forward &rarr;</button>` : ''}
-          </div>
-        </div>`).join('') || '<p style="font-size:12px;color:var(--text-dimmer)">Nothing here.</p>'}
+        ${items.map(r=>taskCardHtml(r,colIdx,{showClient:true})).join('') || '<p style="font-size:12px;color:var(--text-dimmer)">Nothing here.</p>'}
       </div>`;
     }).join('');
   }
 
   function renderMyTasks(){
-    const list = requests.filter(r=> r.dept===activeDeptFilter);
+    const m = currentMember();
+    if(!m) return;
+    document.getElementById('myTasksWho').textContent = m.name;
+    const mine = requests.filter(r=> r.assignee===m.id);
     const board = document.getElementById('myTasksBoard');
     board.innerHTML = STATUS_ORDER.map((status,colIdx)=>{
-      const items = list.filter(r=>r.status===status);
+      const items = mine.filter(r=>r.status===status);
       return `<div class="col"><div class="col-head"><span>${status}</span><span class="cnt">${items.length}</span></div>
-        ${items.map(r=>`<div class="task-card">
-          <div class="cat">${r.category}</div>
-          <div class="who">${CLIENTS[r.client].name}</div>
-          <div class="ttl">${r.title}</div>
-          <div class="desc">${r.desc}</div>
-          <div class="task-actions">
-            ${colIdx>0 ? `<button class="mini-btn" onclick="__primoAdvance('${r.id}',-1)">&larr; Back</button>` : ''}
-            ${colIdx<2 ? `<button class="mini-btn" onclick="__primoAdvance('${r.id}',1)">Move forward &rarr;</button>` : ''}
-          </div>
-        </div>`).join('') || '<p style="font-size:12px;color:var(--text-dimmer)">Nothing here.</p>'}
+        ${items.map(r=>taskCardHtml(r,colIdx,{showClient:true})).join('') || '<p style="font-size:12px;color:var(--text-dimmer)">Nothing here.</p>'}
       </div>`;
     }).join('');
+
+    const unclaimed = requests.filter(r=> !r.assignee || r.assignee==='unassigned');
+    document.getElementById('unassignedList').innerHTML = unclaimed.length ? unclaimed.map(r=>`
+      <div class="mini-row"><span class="t">${CLIENTS[r.client].name} — ${r.title}</span>
+      <button class="mini-btn" onclick="__primoClaim('${r.id}')">Assign to me</button></div>
+    `).join('') : '<p style="font-size:13px;color:var(--text-dimmer)">Nothing unclaimed right now.</p>';
   }
 
   // ---------------- intro ----------------
