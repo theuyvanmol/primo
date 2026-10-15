@@ -214,24 +214,24 @@
   },
   {
     "path": "portal/login/",
-    "title": "Client & Staff Portal Demo | PRIMO Workspace",
-    "description": "Preview the PRIMO workspace with separate client and staff views for projects, approvals, tasks, messages and digital downloads.",
+    "title": "Client & Staff Portal | PRIMO Workspace",
+    "description": "Sign in to the PRIMO workspace to follow projects, review approvals and access files and invoices.",
     "h1": "Your work. Connected.",
     "indexable": false,
     "type": "page"
   },
   {
     "path": "portal/client/",
-    "title": "Client Workspace Demo | PRIMO Group",
-    "description": "Explore the client view of the PRIMO workspace demonstration. No live client data, authentication or payment handling is connected.",
+    "title": "Client Workspace | PRIMO Group",
+    "description": "Private PRIMO client workspace.",
     "h1": "Client workspace.",
     "indexable": false,
     "type": "page"
   },
   {
     "path": "portal/staff/",
-    "title": "Staff Workspace Demo | PRIMO Group",
-    "description": "Explore the staff view of the PRIMO workspace demonstration. No live client data, authentication or payment handling is connected.",
+    "title": "Staff Workspace | PRIMO Group",
+    "description": "Private PRIMO staff workspace.",
     "h1": "Staff workspace.",
     "indexable": false,
     "type": "page"

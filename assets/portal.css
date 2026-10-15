@@ -3,3 +3,45 @@
 @media(max-width:750px){.portal-login-shell{grid-template-columns:1fr}.portal-layout{grid-template-columns:1fr}.portal-sidebar{border-right:0;border-bottom:1px solid #ffffff20;padding:18px}.portal-workspace-brand{padding:0 0 15px;font-size:17px}.portal-sidebar nav{display:flex;overflow:auto;gap:5px}.portal-sidebar nav button{white-space:nowrap;font-size:10px;padding:10px}.portal-sidebar nav button span{display:none}.portal-sidebar-foot{padding:17px 0 0;display:flex;align-items:center;justify-content:space-between;gap:20px}.portal-sidebar-foot a{margin:0}.portal-main{padding:23px 18px}.portal-stats{gap:8px}.portal-stat{padding:16px 12px}.portal-stat>strong{font-size:30px}.portal-stat>small{font-size:7px}.portal-stat>span{font-size:8px}.portal-list-row{display:block;padding:20px}.portal-row-actions{margin-top:20px}.portal-list-row>a,.portal-list-row>button{margin-top:15px}.portal-project-grid{grid-template-columns:1fr}.portal-message{max-width:100%}.portal-message>div{display:block}.portal-message small{display:block;margin-top:7px}.portal-order a{display:block}.portal-order a strong{display:block;margin-top:10px}.portal-workspace-top{display:block}.portal-workspace-top>.portal-demo-pill{margin-top:17px}.portal-board{grid-template-columns:1fr 1fr;gap:8px}.portal-column{padding:8px}.portal-task{padding:10px}.portal-banner{padding-top:115px}.portal-gate{padding:30px}.portal-gate h2{font-size:29px}.portal-login-form{padding:24px}}
 
 .portal-auth-tabs{display:flex;gap:5px;padding:5px;background:#0e140e;border:1px solid #ffffff20;border-radius:8px;margin:24px 0}.portal-auth-tabs button{flex:1;border:0;border-radius:5px;background:transparent;color:#a5ac97;padding:13px 8px;cursor:pointer;font:inherit;font-size:11px}.portal-auth-tabs button[aria-pressed=true]{background:#d4bc8c;color:#171a13}.portal-auth-field{display:grid;gap:10px;margin:19px 0;font-size:11px;color:#c3c7b2}.portal-auth-field[hidden]{display:none}.portal-auth-field input{box-sizing:border-box;width:100%;min-width:0;padding:14px;background:#10170f;color:#eee8d9;border:1px solid #ffffff30;border-radius:5px;font:14px Inter,sans-serif}.portal-password-wrap{display:flex;position:relative}.portal-password-wrap input{padding-right:65px}.portal-password-wrap button{position:absolute;right:8px;top:7px;bottom:7px;background:transparent;border:0;color:#ddc08b;font:11px Inter,sans-serif;cursor:pointer}.portal-auth-hint,.portal-auth-status{font:12px/1.8 Inter,sans-serif;color:#b4bba3}.portal-auth-status{color:#e6c599;min-height:20px}.portal-auth-text{background:none;border:0;color:#d3bd98;text-decoration:underline;padding:14px;cursor:pointer}.portal-role-option:has(input:disabled){opacity:.45}
+
+/* ---- live portal (portal-app.js) ---- */
+.pa-label-text{display:block;font-size:10px;color:#b5a189;margin-bottom:8px}
+.portal-auth-status[data-ok="1"]{color:#c2cf9c}
+.pa-stats-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.pa-stats-4{grid-template-columns:repeat(2,1fr)}}
+.pa-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pa-link{background:none;border:0;color:#d9b582;cursor:pointer;font:inherit;font-size:12px}
+.pa-desc{font-size:12px;line-height:1.7;color:#b9ab98;margin:10px 0 0;white-space:pre-line}
+.pa-meta{font-size:11px;color:#a28d73;margin:8px 0 0;line-height:1.6}
+.pa-comment{font-size:12px;color:#d9c6a6;border-left:2px solid #d9b582;padding-left:12px;margin:12px 0 0}
+.pa-comment small{color:#8f806d;margin-left:6px}
+.pa-me{font-size:12px;margin:0 0 8px;color:#e8dcc8;word-break:break-all}
+.pa-me small{display:block;color:#8f806d;font-size:10px;margin-top:3px}
+.pa-banner{background:#5a2d2d55;border:1px solid #a4505066;color:#f0c8c8;border-radius:7px;padding:12px 16px;font-size:12px;margin-bottom:18px}
+.portal-small.secondary,.portal-row-actions .secondary{background:transparent}
+.portal-task .portal-row-actions{margin-top:10px}
+.portal-list-row .portal-row-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.portal-project .portal-row-actions{margin-top:14px;display:flex;gap:8px}
+select[data-request-status]{padding:8px;background:#11140f;color:#e8dcc8;border:1px solid #ffffff25;border-radius:5px}
+
+.pa-dialog{width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 48px);padding:0;border:1px solid #bca0774d;border-radius:12px;background:#1b1d17;color:#e8dcc8;overflow:auto}
+.pa-dialog::backdrop{background:#000000b3}
+.pa-form{display:grid;gap:16px;padding:26px;margin:0}
+.pa-form-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.pa-form-head h3{margin:0}
+.pa-x{background:none;border:0;color:#b5a189;font-size:26px;line-height:1;cursor:pointer}
+.pa-intro{font-size:12px;line-height:1.7;color:#b9ab98;margin:0}
+.pa-field{display:grid;gap:8px;font-size:11px;color:#b5a189}
+.pa-field em{color:#7d6f5e;font-style:normal}
+.pa-field small{color:#8f806d;font-size:10px}
+.pa-field input,.pa-field select,.pa-field textarea{width:100%;box-sizing:border-box;padding:13px;border:1px solid #ffffff25;background:#11140f;color:#f0e6d4;border-radius:5px;font:13px Inter,sans-serif}
+.pa-field input:focus,.pa-field select:focus,.pa-field textarea:focus{outline:2px solid #d9b582;outline-offset:1px}
+.pa-check{display:flex;gap:10px;align-items:center;font-size:12px;color:#d9c6a6}
+.pa-form-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.pa-danger{background:transparent;border:1px solid #a4505099;color:#f0b8b8;border-radius:99px;padding:11px 18px;font-size:11px;cursor:pointer}
+.pa-error{color:#f0b8b8;font-size:12px;margin:0;min-height:0}
+.pa-error:empty{display:none}
+.pa-toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:#2a2d23;border:1px solid #bca0774d;color:#f0e6d4;padding:12px 18px;border-radius:99px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:9999}
+.pa-toast.is-on{opacity:1;transform:translate(-50%,0)}
+.pa-toast[data-bad="1"]{border-color:#a45050;color:#f5c6c6}
+@media print{body>*:not(dialog){display:none!important}.pa-dialog{border:0;background:#fff;color:#000;position:static}.pa-x,.pa-form-actions{display:none}}

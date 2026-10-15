@@ -1,3 +1,7 @@
+> **Update:** the client/staff portal is no longer a browser-only demo. It now runs on Supabase with real
+> accounts, roles, a shared database and private file storage. See `PORTAL-SETUP.md`. Sections below about
+> the portal describe the earlier demo; the marketplace (cart, demo checkout) is still browser-only.
+
 # PRIMO marketplace and workspace demonstration
 
 ## Included
