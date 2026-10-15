@@ -1,0 +1,190 @@
+{
+  "html_pages": 37,
+  "indexable_pages": 27,
+  "checked_local_references": 1544,
+  "sitemap_urls": 27,
+  "errors": [],
+  "visual_qa": "Browser visual testing unavailable.",
+  "metadata_lengths": [
+    {
+      "page": "index.html",
+      "title": 50,
+      "description": 157
+    },
+    {
+      "page": "marketplace/index.html",
+      "title": 51,
+      "description": 158
+    },
+    {
+      "page": "services/index.html",
+      "title": 58,
+      "description": 153
+    },
+    {
+      "page": "process/index.html",
+      "title": 56,
+      "description": 147
+    },
+    {
+      "page": "hub/index.html",
+      "title": 50,
+      "description": 150
+    },
+    {
+      "page": "technology/index.html",
+      "title": 53,
+      "description": 145
+    },
+    {
+      "page": "work/index.html",
+      "title": 59,
+      "description": 146
+    },
+    {
+      "page": "contact/index.html",
+      "title": 63,
+      "description": 152
+    },
+    {
+      "page": "about/index.html",
+      "title": 55,
+      "description": 163
+    },
+    {
+      "page": "portal/staff/index.html",
+      "title": 34,
+      "description": 130
+    },
+    {
+      "page": "portal/login/index.html",
+      "title": 44,
+      "description": 128
+    },
+    {
+      "page": "portal/client/index.html",
+      "title": 35,
+      "description": 131
+    },
+    {
+      "page": "work/grand-ho-tram/index.html",
+      "title": 62,
+      "description": 167
+    },
+    {
+      "page": "work/british-learning-centre/index.html",
+      "title": 55,
+      "description": 144
+    },
+    {
+      "page": "work/kong-tattoo-care/index.html",
+      "title": 48,
+      "description": 154
+    },
+    {
+      "page": "work/geisha/index.html",
+      "title": 52,
+      "description": 157
+    },
+    {
+      "page": "hub/brand-strategy-before-channels/index.html",
+      "title": 61,
+      "description": 131
+    },
+    {
+      "page": "hub/marketing-reporting-that-leads-to-action/index.html",
+      "title": 49,
+      "description": 140
+    },
+    {
+      "page": "hub/website-conversion-checklist/index.html",
+      "title": 45,
+      "description": 131
+    },
+    {
+      "page": "assets/previews/ink-portfolio/index.html",
+      "title": 26,
+      "description": 0
+    },
+    {
+      "page": "assets/previews/orbit-dashboard/index.html",
+      "title": 28,
+      "description": 0
+    },
+    {
+      "page": "assets/previews/table-restaurant/index.html",
+      "title": 28,
+      "description": 0
+    },
+    {
+      "page": "assets/previews/brand-launch-kit/index.html",
+      "title": 29,
+      "description": 0
+    },
+    {
+      "page": "assets/previews/studio-agency/index.html",
+      "title": 29,
+      "description": 0
+    },
+    {
+      "page": "assets/previews/stay-hospitality/index.html",
+      "title": 27,
+      "description": 0
+    },
+    {
+      "page": "services/website-development/index.html",
+      "title": 57,
+      "description": 155
+    },
+    {
+      "page": "services/paid-advertising/index.html",
+      "title": 52,
+      "description": 156
+    },
+    {
+      "page": "services/digital-marketing/index.html",
+      "title": 54,
+      "description": 141
+    },
+    {
+      "page": "services/seo-content/index.html",
+      "title": 52,
+      "description": 156
+    },
+    {
+      "page": "services/ai-automation/index.html",
+      "title": 54,
+      "description": 154
+    },
+    {
+      "page": "marketplace/ink-portfolio/index.html",
+      "title": 42,
+      "description": 92
+    },
+    {
+      "page": "marketplace/orbit-dashboard/index.html",
+      "title": 48,
+      "description": 111
+    },
+    {
+      "page": "marketplace/table-restaurant/index.html",
+      "title": 46,
+      "description": 116
+    },
+    {
+      "page": "marketplace/brand-launch-kit/index.html",
+      "title": 41,
+      "description": 105
+    },
+    {
+      "page": "marketplace/studio-agency/index.html",
+      "title": 43,
+      "description": 119
+    },
+    {
+      "page": "marketplace/stay-hospitality/index.html",
+      "title": 49,
+      "description": 92
+    }
+  ]
+}

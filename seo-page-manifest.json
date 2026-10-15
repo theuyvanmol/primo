@@ -1,0 +1,239 @@
+[
+  {
+    "path": "",
+    "title": "PRIMO Group | Lifestyle & Digital Marketing Agency",
+    "type": "homepage"
+  },
+  {
+    "path": "services/",
+    "title": "Digital Marketing, Web Design & SEO Services | PRIMO Group",
+    "description": "Explore PRIMO Group services: digital marketing, website development, SEO, Google and Meta advertising, and AI workflow planning in Thailand and Vietnam.",
+    "h1": "Connected services. Clearer growth.",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "services/digital-marketing/",
+    "title": "Digital Marketing Agency in Thailand & Vietnam | PRIMO",
+    "description": "Connect brand strategy, social media, content and campaigns with PRIMO Group, a digital marketing agency working across Thailand and Vietnam.",
+    "h1": "Digital Marketing",
+    "indexable": true,
+    "type": "service"
+  },
+  {
+    "path": "services/website-development/",
+    "title": "Website Design & Development for Lifestyle Brands | PRIMO",
+    "description": "Explore PRIMO website design and development for lifestyle, hospitality and service brands, combining brand expression, clear journeys and SEO foundations.",
+    "h1": "Website Design & Development",
+    "indexable": true,
+    "type": "service"
+  },
+  {
+    "path": "services/seo-content/",
+    "title": "SEO & Content Strategy in Thailand & Vietnam | PRIMO",
+    "description": "Build a clearer search presence with PRIMO SEO and content services: site structure, search intent, useful pages, technical priorities and content planning.",
+    "h1": "SEO & Content",
+    "indexable": true,
+    "type": "service"
+  },
+  {
+    "path": "services/paid-advertising/",
+    "title": "Google & Meta Advertising for Growing Brands | PRIMO",
+    "description": "Plan Google and Meta campaigns with PRIMO, connecting audience targeting, creative, landing pages and measurement to qualified enquiries and business goals.",
+    "h1": "Paid Advertising",
+    "indexable": true,
+    "type": "service"
+  },
+  {
+    "path": "services/ai-automation/",
+    "title": "AI & Marketing Automation for Agency Workflows | PRIMO",
+    "description": "Explore practical AI and marketing automation with PRIMO: workflow mapping, reporting, content support and human review, with Orbit as a platform concept.",
+    "h1": "AI & Marketing Automation",
+    "indexable": true,
+    "type": "service"
+  },
+  {
+    "path": "work/",
+    "title": "Our Work: Education, Hospitality & Lifestyle Brands | PRIMO",
+    "description": "Explore PRIMO client overviews across education, hospitality, tattoo culture and destinations, including British Learning Centre, Geisha and KONG.",
+    "h1": "Different worlds. One creative approach.",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "work/british-learning-centre/",
+    "title": "British Learning Centre — Client Overview | PRIMO Group",
+    "description": "Explore PRIMO’s education marketing perspective for British Learning Centre, connecting brand storytelling, useful content and digital journeys.",
+    "h1": "British Learning Centre",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "work/geisha/",
+    "title": "Geisha Asia & Fusion — Client Overview | PRIMO Group",
+    "description": "Explore PRIMO’s restaurants & hospitality marketing perspective for Geisha Asia & Fusion, connecting brand storytelling, useful content and digital journeys.",
+    "h1": "Geisha Asia & Fusion",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "work/kong-tattoo-care/",
+    "title": "KONG Tattoo Care — Client Overview | PRIMO Group",
+    "description": "Explore PRIMO’s lifestyle & tattoo culture marketing perspective for KONG Tattoo Care, connecting brand storytelling, useful content and digital journeys.",
+    "h1": "KONG Tattoo Care",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "work/grand-ho-tram/",
+    "title": "The Grand Ho Tram & The Bluffs — Client Overview | PRIMO Group",
+    "description": "Explore PRIMO’s resort & golf hospitality marketing perspective for The Grand Ho Tram & The Bluffs, connecting brand storytelling, useful content and digital journeys.",
+    "h1": "The Grand Ho Tram & The Bluffs",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "hub/",
+    "title": "PRIMO Hub: Marketing Strategy, Websites & Insights",
+    "description": "Read practical PRIMO Hub guides on brand strategy, website enquiry journeys and marketing reporting for lifestyle, hospitality and service businesses.",
+    "h1": "Ideas with somewhere to go.",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "hub/brand-strategy-before-channels/",
+    "title": "Brand Strategy Before Channels: A Practical Guide | PRIMO Hub",
+    "description": "A practical guide to defining your audience, offer and message before choosing marketing channels, campaigns or a content schedule.",
+    "h1": "Brand strategy before channels: a practical starting point",
+    "indexable": true,
+    "type": "article"
+  },
+  {
+    "path": "hub/website-conversion-checklist/",
+    "title": "Website Enquiry Journey Checklist | PRIMO Hub",
+    "description": "Review your website journey with practical checks for page purpose, navigation, content, mobile contact and meaningful measurement.",
+    "h1": "A clearer website journey: from first visit to enquiry",
+    "indexable": true,
+    "type": "article"
+  },
+  {
+    "path": "hub/marketing-reporting-that-leads-to-action/",
+    "title": "How to Build Useful Marketing Reports | PRIMO Hub",
+    "description": "A practical guide to connecting marketing reports with business questions, meaningful measures, attribution context and a clear next action.",
+    "h1": "Marketing reporting that leads to a useful next action",
+    "indexable": true,
+    "type": "article"
+  },
+  {
+    "path": "technology/",
+    "title": "Marketing Technology & Orbit AI Concept | PRIMO Group",
+    "description": "Explore PRIMO’s approach to marketing technology, analytics and automation, plus the Orbit AI platform concept and its current demo capabilities.",
+    "h1": "Technology with a human purpose.",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "process/",
+    "title": "Our Process: Discover, Strategise, Create & Grow | PRIMO",
+    "description": "See how PRIMO connects discovery, strategy, creative production and ongoing improvement for marketing, website and digital transformation projects.",
+    "h1": "From insight to impact.",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "about/",
+    "title": "About PRIMO Group: Lifestyle & Digital Marketing Agency",
+    "description": "Meet PRIMO Group, connecting strategy, creativity and technology for lifestyle, hospitality and service brands across Thailand, Vietnam and international projects.",
+    "h1": "Made for culture. Built for growth.",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "contact/",
+    "title": "Contact PRIMO Group | Discuss Your Marketing or Website Project",
+    "description": "Contact PRIMO Group about digital marketing, website development, SEO, advertising and creative projects in Thailand, Vietnam and international markets.",
+    "h1": "Let’s make the next move.",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "marketplace/",
+    "title": "Website Templates & UI Starters | PRIMO Marketplace",
+    "description": "Explore PRIMO’s sample marketplace for website templates, dashboard UI starters and brand design kits. Preview designs and try a demo digital-product journey.",
+    "h1": "Creative assets. New possibilities.",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "marketplace/studio-agency/",
+    "title": "STUDIO — Agency Website | PRIMO Marketplace",
+    "description": "An editorial one-page agency starter with a large typographic hero, service cards, selected work and a contact section.",
+    "h1": "STUDIO — Agency Website",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "marketplace/stay-hospitality/",
+    "title": "STAY — Boutique Hotel Website | PRIMO Marketplace",
+    "description": "A warm hospitality landing-page starter for stays, experiences and destination storytelling.",
+    "h1": "STAY — Boutique Hotel Website",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "marketplace/ink-portfolio/",
+    "title": "INK — Artist Portfolio | PRIMO Marketplace",
+    "description": "A dark portfolio starter for independent artists, tattoo studios and creative practitioners.",
+    "h1": "INK — Artist Portfolio",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "marketplace/orbit-dashboard/",
+    "title": "ORBIT — Dashboard UI Starter | PRIMO Marketplace",
+    "description": "A responsive dashboard interface starter with summary cards, a task list and illustrative reporting components.",
+    "h1": "ORBIT — Dashboard UI Starter",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "marketplace/table-restaurant/",
+    "title": "TABLE — Restaurant Website | PRIMO Marketplace",
+    "description": "A characterful restaurant landing-page starter with a menu preview, occasion-led content and a booking enquiry area.",
+    "h1": "TABLE — Restaurant Website",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "marketplace/brand-launch-kit/",
+    "title": "LAUNCH — Brand UI Kit | PRIMO Marketplace",
+    "description": "A small HTML style-guide starter with colour tokens, typography examples, buttons and content components.",
+    "h1": "LAUNCH — Brand UI Kit",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "portal/login/",
+    "title": "Client & Staff Portal Demo | PRIMO Workspace",
+    "description": "Preview the PRIMO workspace with separate client and staff views for projects, approvals, tasks, messages and digital downloads.",
+    "h1": "Your work. Connected.",
+    "indexable": false,
+    "type": "page"
+  },
+  {
+    "path": "portal/client/",
+    "title": "Client Workspace Demo | PRIMO Group",
+    "description": "Explore the client view of the PRIMO workspace demonstration. No live client data, authentication or payment handling is connected.",
+    "h1": "Client workspace.",
+    "indexable": false,
+    "type": "page"
+  },
+  {
+    "path": "portal/staff/",
+    "title": "Staff Workspace Demo | PRIMO Group",
+    "description": "Explore the staff view of the PRIMO workspace demonstration. No live client data, authentication or payment handling is connected.",
+    "h1": "Staff workspace.",
+    "indexable": false,
+    "type": "page"
+  }
+]

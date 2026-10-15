@@ -1,0 +1,7 @@
+PRIMO DEMO PROJECT BRIEF
+
+Fictional client: Sample Studio
+Project: Website refresh
+Goal: demonstrate a clear project journey, design approvals and handover.
+Scope: discovery, wireframes, design review, build and launch preparation.
+This file is an example only, not a live client brief.
