@@ -1,4 +1,16 @@
 {
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/kongdashboard",
+      "destination": "https://kongdashboard.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/kongdashboard/:path*",
+      "destination": "https://kongdashboard.vercel.app/:path*",
+      "permanent": false
+    }
+  ]
 }
