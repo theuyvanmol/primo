@@ -1,0 +1,182 @@
+{
+  "wire": {
+    "label": "WIRE",
+    "box": [
+      46,
+      194,
+      383,
+      98
+    ],
+    "width": 500,
+    "height": 500,
+    "file": "wire.png"
+  },
+  "icamp": {
+    "label": "iCamp Thailand",
+    "box": [
+      0,
+      0,
+      500,
+      500
+    ],
+    "width": 500,
+    "height": 500,
+    "file": "icamp.png"
+  },
+  "geisha-asia": {
+    "label": "Geisha Asia",
+    "box": [
+      21,
+      181,
+      457,
+      138
+    ],
+    "width": 500,
+    "height": 500,
+    "file": "geisha-asia.png"
+  },
+  "gtds": {
+    "label": "Giles Turnbull Digital Solutions",
+    "box": [
+      72,
+      186,
+      357,
+      133
+    ],
+    "width": 500,
+    "height": 500,
+    "file": "gtds.png"
+  },
+  "kite": {
+    "label": "KITE",
+    "box": [
+      39,
+      565,
+      1413,
+      365
+    ],
+    "width": 1563,
+    "height": 1563,
+    "file": "kite.png"
+  },
+  "kong-mascot": {
+    "label": "KONG Tattoo Care mascot",
+    "box": [
+      0,
+      0,
+      512,
+      613
+    ],
+    "width": 512,
+    "height": 613,
+    "file": "kong-mascot.png"
+  },
+  "blc-lasalle": {
+    "label": "British Learning Centre — Lasalle’s Avenue",
+    "box": [
+      45,
+      130,
+      396,
+      233
+    ],
+    "width": 500,
+    "height": 500,
+    "file": "blc-lasalle.png"
+  },
+  "blc-online": {
+    "label": "British Learning Centre — Online",
+    "box": [
+      105,
+      163,
+      292,
+      172
+    ],
+    "width": 500,
+    "height": 500,
+    "file": "blc-online.png"
+  },
+  "kong-wordmark": {
+    "label": "KONG Tattoo Care",
+    "box": [
+      0,
+      0,
+      512,
+      244
+    ],
+    "width": 512,
+    "height": 244,
+    "file": "kong-wordmark.png"
+  },
+  "grand-ho-tram": {
+    "label": "The Grand Ho Tram",
+    "box": [
+      22,
+      19,
+      2004,
+      1268
+    ],
+    "width": 2048,
+    "height": 1306,
+    "file": "grand-ho-tram.png"
+  },
+  "incruises": {
+    "label": "inCruises Independent Partner",
+    "box": [
+      382,
+      382,
+      1327,
+      384
+    ],
+    "width": 2048,
+    "height": 1148,
+    "file": "incruises.png"
+  },
+  "lakeside-property": {
+    "label": "Lakeside Property",
+    "box": [
+      155,
+      778,
+      1765,
+      441
+    ],
+    "width": 2048,
+    "height": 2048,
+    "file": "lakeside-property.png"
+  },
+  "body-expert": {
+    "label": "Body Expert Systems",
+    "box": [
+      52,
+      45,
+      1082,
+      392
+    ],
+    "width": 1177,
+    "height": 483,
+    "file": "body-expert.png"
+  },
+  "body-expert-symbol": {
+    "label": "Thrive",
+    "box": [
+      74,
+      374,
+      854,
+      379
+    ],
+    "width": 1024,
+    "height": 1024,
+    "file": "body-expert-symbol.png"
+  },
+  "reiner": {
+    "label": "Reiner Air Kompressor",
+    "box": [
+      0,
+      0,
+      555,
+      392
+    ],
+    "width": 555,
+    "height": 393,
+    "file": "reiner.png"
+  }
+}
