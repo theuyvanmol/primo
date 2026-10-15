@@ -8,6 +8,6 @@
  * NEVER paste the "service_role" / secret key here.
  */
 window.PRIMO_PORTAL_CONFIG = {
-  supabaseUrl: '',
-  supabaseAnonKey: ''
+  supabaseUrl: 'https://fqzghlliqpsugsvfzodh.supabase.co',
+  supabaseAnonKey: 'sb_publishable_mggyCRI0bgFh202bwGilLA_Ghn0GuVj'
 };
