@@ -1,0 +1,43 @@
+/* NORTHLINE / aurora entrance, quiet meteors and image light. */
+body.intro-playing{overflow:hidden}
+.intro-playing .hero-main>*,.intro-playing .hero-topline,.intro-playing .hero-foot{animation:none;opacity:0}
+.intro-playing .hero-bg{animation:none;transform:scale(1.035)}
+.aurora-intro{position:fixed;inset:0;z-index:1000;background:#050c16;color:#edf5ff;display:grid;place-items:center;overflow:hidden;isolation:isolate;opacity:1;visibility:visible;transition:opacity .8s cubic-bezier(.65,0,.35,1),visibility .8s;contain:paint}
+.aurora-intro.exiting{opacity:0;visibility:hidden;pointer-events:none}
+.aurora-intro[hidden]{display:none}
+.aurora-sky{position:absolute;inset:0;z-index:-3;background:radial-gradient(ellipse at 50% 100%,#19334955,transparent 65%),linear-gradient(#030812,#081421)}
+.aurora-curtain{position:absolute;inset:-25%;z-index:-2;opacity:0;filter:blur(25px);transform-origin:50% 75%;will-change:transform,opacity;animation:aurora-flow 4.2s cubic-bezier(.22,1,.36,1) both;pointer-events:none;mix-blend-mode:screen}
+.aurora-curtain:before,.aurora-curtain:after{content:'';position:absolute;inset:0;border-radius:47% 53% 61% 39% / 64% 38% 62% 36%;transform:rotate(-18deg)}
+.aurora-curtain:before{background:conic-gradient(from 60deg at 52% 57%,transparent 0deg 140deg,#3dd3b900 162deg,#56dbbd77 173deg,#9fdef5b0 180deg,#529fef66 187deg,transparent 202deg 360deg);transform:scale(1.8,1.2) rotate(-18deg)}
+.aurora-curtain:after{background:radial-gradient(ellipse at 60% 45%,transparent 38%,#64c8e13d 43%,#4397c31a 49%,transparent 55%);transform:scale(1.8,.75) rotate(-24deg)}
+.aurora-curtain.second{inset:-35%;filter:blur(35px);animation-name:aurora-flow-two;animation-delay:.18s;mix-blend-mode:screen}
+.aurora-curtain.second:before{background:conic-gradient(from 80deg at 55% 54%,transparent 0deg 142deg,#6e61cc00 157deg,#7787da55 171deg,#c1c6ff70 179deg,#4a83ce40 190deg,transparent 202deg 360deg);transform:scale(1.65,1.05) rotate(12deg)}
+.aurora-curtain.second:after{opacity:.35;transform:scale(2,.8) rotate(6deg)}
+.intro-vignette{position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 48%,#050c1600 10%,#050c1650 62%,#050c16e8 100%)}
+.intro-brand{display:flex;flex-direction:column;align-items:center;gap:24px;text-align:center;padding:30px;animation:intro-brand-in 1.2s cubic-bezier(.22,1,.36,1) .18s both}
+.intro-mark{height:55px;width:55px;fill:none;stroke:#cbe5ff;stroke-width:1.15;filter:drop-shadow(0 0 10px #76b0e050)}
+.intro-mark path{stroke-dasharray:130;stroke-dashoffset:130;animation:intro-mark-draw 1.6s cubic-bezier(.65,0,.35,1) .1s forwards}
+.intro-name{font-size:clamp(38px,7.2vw,92px);font-weight:600;letter-spacing:.16em;padding-left:.16em;line-height:1.1;background:linear-gradient(105deg,#96aabd 10%,#eef7ff 40%,#b5d8f3 60%,#8fabc5 90%);background-clip:text;-webkit-background-clip:text;color:transparent}
+.intro-tagline{font-size:10px;letter-spacing:.26em;color:#9caebf;line-height:1.7}
+.intro-caption{position:absolute;bottom:35px;left:var(--pad);font-size:10px;letter-spacing:.12em;color:#8298ad}
+.intro-skip{position:absolute;bottom:25px;right:var(--pad);padding:12px 18px;background:#ffffff06;border:1px solid #a5c4df35;border-radius:25px;color:#bed0e0;font-size:12px;transition:.25s}
+.intro-skip:hover{background:#ffffff10;color:white;border-color:#a5c4df80}
+.wordmark{cursor:pointer}
+.meteor-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;opacity:.72;contain:strict}
+.work-image,.studio-image{isolation:isolate;--light-x:50%;--light-y:50%;--image-x:0px;--image-y:0px;clip-path:inset(0);transition:clip-path 1.1s cubic-bezier(.22,1,.36,1)}
+.work-card.reveal:not(.visible) .work-image,.studio-image.reveal:not(.visible){clip-path:inset(0 0 10% 0)}
+.work-image:before,.studio-image:before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(circle at var(--light-x) var(--light-y),#a1d5ff25,transparent 52%);opacity:0;transition:opacity .7s}
+.work-image:after,.studio-image:after{content:'';position:absolute;inset:-50%;z-index:1;pointer-events:none;background:linear-gradient(115deg,transparent 37%,#c2dfff00 43%,#e8f5ff20 49%,#c2dfff00 55%,transparent 63%);transform:translateX(-80%) rotate(-5deg);opacity:0}
+.image-active:before{opacity:1}
+.image-active:after{animation:image-sheen 1.5s cubic-bezier(.22,1,.36,1) both}
+.work-image img,.studio-image img{transition:transform 1.1s cubic-bezier(.22,1,.36,1),filter .7s;backface-visibility:hidden}
+.work-card:hover .work-image img,.image-active img{transform:scale(1.05) translate3d(var(--image-x),var(--image-y),0);filter:contrast(1.035)}
+.studio-image.image-active img{filter:brightness(.93)}
+.image-tag,.project-open{z-index:3}.studio-image>span{z-index:2}
+@keyframes aurora-flow{0%{opacity:0;transform:translate3d(-7%,7%,0) rotate(-7deg) scale(1.08)}30%{opacity:.85}70%{opacity:.95}100%{opacity:.7;transform:translate3d(6%,-5%,0) rotate(7deg) scale(1.02)}}
+@keyframes aurora-flow-two{0%{opacity:0;transform:translate3d(8%,-4%,0) rotate(10deg)}40%{opacity:.75}100%{opacity:.6;transform:translate3d(-5%,4%,0) rotate(-5deg)}}
+@keyframes intro-brand-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes intro-mark-draw{to{stroke-dashoffset:0}}
+@keyframes image-sheen{0%{opacity:0;transform:translateX(-65%) rotate(-5deg)}20%,55%{opacity:.8}100%{opacity:0;transform:translateX(65%) rotate(-5deg)}}
+@media(max-width:760px){.intro-brand{gap:20px}.intro-name{font-size:clamp(28px,7.4vw,48px);letter-spacing:.12em;padding-left:.12em}.intro-mark{height:43px;width:43px}.intro-tagline{font-size:9px;letter-spacing:.16em}.intro-caption{font-size:8px;bottom:39px}.aurora-curtain{filter:blur(18px);inset:-45%}.aurora-curtain.second{filter:blur(22px)}.meteor-canvas{opacity:.5}}
+@media(prefers-reduced-motion:reduce){.aurora-intro,.meteor-canvas{display:none!important}.intro-playing .hero-main>*,.intro-playing .hero-topline,.intro-playing .hero-foot{opacity:1}.work-image,.studio-image{clip-path:none!important}.work-image:before,.work-image:after,.studio-image:before,.studio-image:after{display:none}.image-active img,.work-card:hover .work-image img{transform:none!important}}

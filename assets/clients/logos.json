@@ -57,7 +57,7 @@
     ],
     "width": 1563,
     "height": 1563,
-    "file": "kite.png"
+    "file": "kite.webp"
   },
   "kong-mascot": {
     "label": "KONG Tattoo Care mascot",
@@ -69,7 +69,7 @@
     ],
     "width": 512,
     "height": 613,
-    "file": "kong-mascot.png"
+    "file": "kong-mascot.webp"
   },
   "blc-lasalle": {
     "label": "British Learning Centre — Lasalle’s Avenue",
@@ -81,7 +81,7 @@
     ],
     "width": 500,
     "height": 500,
-    "file": "blc-lasalle.png"
+    "file": "blc-lasalle.webp"
   },
   "blc-online": {
     "label": "British Learning Centre — Online",
@@ -117,7 +117,7 @@
     ],
     "width": 2048,
     "height": 1306,
-    "file": "grand-ho-tram.png"
+    "file": "grand-ho-tram.webp"
   },
   "incruises": {
     "label": "inCruises Independent Partner",
@@ -129,7 +129,7 @@
     ],
     "width": 2048,
     "height": 1148,
-    "file": "incruises.png"
+    "file": "incruises.webp"
   },
   "lakeside-property": {
     "label": "Lakeside Property",
@@ -141,7 +141,7 @@
     ],
     "width": 2048,
     "height": 2048,
-    "file": "lakeside-property.png"
+    "file": "lakeside-property.webp"
   },
   "body-expert": {
     "label": "Body Expert Systems",

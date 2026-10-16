@@ -157,6 +157,54 @@
     "type": "page"
   },
   {
+    "path": "marketplace/atelier/",
+    "title": "ATELIER Luxury E-Commerce Template — ฿1,000 | PRIMO",
+    "description": "Discover ATELIER, an emerald and champagne luxury e-commerce HTML template with animated introduction, wishlist, cart and demo checkout. THB 1,000.",
+    "h1": "ATELIER — Artistic Luxury E-Commerce Website Template",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "marketplace/inkvoid/",
+    "title": "INKVOID | Premium Tattoo Studio Website Template | PRIMO",
+    "description": "Discover INKVOID: a cinematic Next.js tattoo studio template with artist profiles, filterable portfolio, fullscreen lightbox and booking enquiry flow.",
+    "h1": "INKVOID — Premium Artistic Tattoo Studio Website Template",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "marketplace/boostmart/",
+    "title": "BoostMart Marketplace Template — ฿1,000 | PRIMO",
+    "description": "Explore BoostMart: a cream-and-orange HTML marketplace template with business search, filters, favourites and animated cat branding. THB 1,000.",
+    "h1": "BoostMart — Warm Minimal Marketplace Template",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "marketplace/velora/",
+    "title": "VELORA Agency Website Template — ฿1,000 | PRIMO",
+    "description": "Explore VELORA, a dark luxury Next.js agency template with nine pages, gold interactions and cinematic city imagery. Temporary preview price: THB 1,000.",
+    "h1": "VELORA — Dark Luxury Agency Website Template",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "marketplace/northline/",
+    "title": "NORTHLINE Agency Website Template — ฿1,000 | PRIMO",
+    "description": "Explore NORTHLINE, a cinematic HTML agency template with aurora intro, shooting stars, project dialogs and animated buttons. Preview price: THB 1,000.",
+    "h1": "NORTHLINE — Premium Creative Agency Website Template",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "marketplace/auren/",
+    "title": "AUREN Agency Website Template — ฿1,000 | PRIMO",
+    "description": "Explore AUREN, an emerald Next.js agency template with nine pages, magnetic buttons, glass UI and cinematic concept imagery. Temporary preview price: THB 1,000.",
+    "h1": "AUREN — Emerald Creative Agency Website Template",
+    "indexable": true,
+    "type": "page"
+  },
+  {
     "path": "marketplace/",
     "title": "Website Templates & UI Starters | PRIMO Marketplace",
     "description": "Explore PRIMO’s sample marketplace for website templates, dashboard UI starters and brand design kits. Preview designs and try a demo digital-product journey.",
@@ -234,6 +282,22 @@
     "description": "Private PRIMO staff workspace.",
     "h1": "Staff workspace.",
     "indexable": false,
+    "type": "page"
+  },
+  {
+    "path": "off-hours-club/",
+    "title": "OFF HOURS CLUB — Your Time. Your Terms. | PRIMO",
+    "description": "Explore OFF HOURS CLUB clothing concepts on an interactive sliding rail. Pick a tee, explore the designs and build a demo bag. Collection preview only.",
+    "h1": "OFF HOURS CLUB",
+    "indexable": true,
+    "type": "page"
+  },
+  {
+    "path": "off-hours-club/shop/",
+    "title": "OFF HOURS CLUB Shop — Browse the Clothing Rail | PRIMO",
+    "description": "Explore OFF HOURS CLUB clothing concepts on an interactive sliding rail. Pick a tee, explore the designs and build a demo bag. Collection preview only.",
+    "h1": "OFF HOURS CLUB",
+    "indexable": true,
     "type": "page"
   }
 ]

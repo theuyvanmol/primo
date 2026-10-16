@@ -1,0 +1,27 @@
+/* NORTHLINE / light orbit, click bloom and tactile feedback. */
+@property --button-angle{syntax:'<angle>';inherits:false;initial-value:0deg}
+.fx-button{position:relative;isolation:isolate;--fx-x:50%;--fx-y:50%;--fx-tint:145,199,255;transition:scale .2s cubic-bezier(.22,1,.36,1),box-shadow .4s,background .3s,border-color .3s}
+.fx-button:active,.fx-button.fx-pressed{scale:.975}
+.button.fx-button:active{transform:none}
+.fx-button .fx-surface,.fx-button .fx-edge{position:absolute;inset:0;pointer-events:none;border-radius:inherit;margin:0!important;padding:0!important;z-index:2;font-size:0;transform:none!important}
+.fx-button .fx-surface{overflow:hidden;contain:paint}
+.fx-button .fx-surface:before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at var(--fx-x) var(--fx-y),rgba(var(--fx-tint),.19),transparent 65%);opacity:0;transition:opacity .35s}
+.fx-button:hover .fx-surface:before,.fx-button:focus-visible .fx-surface:before{opacity:1}
+.fx-button .fx-edge{inset:-1px;border:1px solid transparent;opacity:0;transition:opacity .35s;--button-angle:0deg;mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);mask-composite:exclude;-webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;background:conic-gradient(from var(--button-angle),transparent 0deg 210deg,rgba(126,187,255,.1) 250deg,rgba(159,211,255,.8) 295deg,#e1f3ff 315deg,rgba(142,198,255,.25) 330deg,transparent 360deg) border-box}
+.fx-button:hover .fx-edge,.fx-button:focus-visible .fx-edge{opacity:.85;animation:button-orbit 1.45s cubic-bezier(.4,0,.2,1) both}
+.fx-button.fx-clicked .fx-edge{opacity:1;animation:button-click-orbit .75s cubic-bezier(.22,1,.36,1) both}
+.fx-button .fx-ripple{position:absolute;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%) scale(.03);opacity:0;background:radial-gradient(circle,rgba(208,235,255,.24) 0%,rgba(125,191,255,.19) 30%,rgba(167,220,255,.05) 58%,transparent 71%);border:1px solid rgba(var(--fx-tint),.17);animation:button-ripple .72s cubic-bezier(.16,1,.3,1) both}
+.button-white.fx-button{--fx-tint:42,110,194}
+.button-white.fx-button .fx-ripple{background:radial-gradient(circle,rgba(72,140,224,.23),rgba(120,179,242,.13) 35%,transparent 70%)}
+.fx-button.fx-clicked{box-shadow:0 0 0 1px rgba(var(--fx-tint),.2),0 0 22px rgba(var(--fx-tint),.16)}
+.text-button.fx-button,.process-tabs .fx-button,.footer .fx-button{--fx-tint:54,126,205}
+.text-button.fx-button{border-radius:3px}
+.process-tabs .fx-button{border-radius:3px 3px 0 0}
+.footer .fx-button{border-radius:4px;padding:3px 5px!important;margin:-3px -5px}
+.fx-button:disabled,.fx-button[aria-disabled=true]{scale:1}
+.fx-button:disabled .fx-edge,.fx-button[aria-disabled=true] .fx-edge{display:none}
+@keyframes button-orbit{from{--button-angle:-100deg}to{--button-angle:260deg}}
+@keyframes button-click-orbit{0%{--button-angle:-110deg;opacity:.4}45%{opacity:1}100%{--button-angle:250deg;opacity:0}}
+@keyframes button-ripple{0%{transform:translate(-50%,-50%) scale(.03);opacity:0}12%{opacity:.9}70%{opacity:.25}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}
+@media(hover:none){.fx-button:hover .fx-surface:before,.fx-button:hover .fx-edge{opacity:0;animation:none}.fx-button.fx-clicked .fx-edge{opacity:1;animation:button-click-orbit .75s cubic-bezier(.22,1,.36,1) both}}
+@media(prefers-reduced-motion:reduce){.fx-button:active,.fx-button.fx-pressed{scale:1}.fx-button .fx-ripple{display:none}.fx-button .fx-edge{animation:none!important}.fx-button.fx-clicked{box-shadow:0 0 0 2px rgba(var(--fx-tint),.38)}}

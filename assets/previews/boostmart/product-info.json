@@ -1,0 +1,16 @@
+{
+  "slug": "boostmart-warm-minimal-marketplace",
+  "name": "BoostMart — Warm Minimal Marketplace",
+  "category": "Website Templates / Marketplace",
+  "description": "Friendly cream-and-orange responsive marketplace frontend with interactive business discovery demo and branded scratch intro.",
+  "price": 1000,
+  "currency": "THB",
+  "price_is_suggested": true,
+  "status": "draft",
+  "technology": ["HTML5", "CSS3", "Vanilla JavaScript"],
+  "features": ["Responsive homepage", "Category filters", "Demo business search", "Favourite stores", "Store detail modal", "Cat scratch opening animation"],
+  "backend_included": false,
+  "payments_included": false,
+  "demo_url": null,
+  "license": "Pending seller terms and asset-rights review"
+}

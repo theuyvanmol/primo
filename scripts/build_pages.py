@@ -3,11 +3,26 @@
 from pathlib import Path
 from datetime import date
 from html import escape as esc
-import argparse,json,re,shutil
+import argparse,json,re,shutil,hashlib
 from urllib.parse import urlparse
 from site_content import SERVICES,PROJECTS,ARTICLES
 ROOT=Path(__file__).resolve().parents[1]
 CONFIG=ROOT/'site-config.json'
+def lazy_images(html):
+ n=[0]
+ def f(m):
+  n[0]+=1;tag=m.group(0)
+  if n[0]<=1 or 'loading=' in tag or 'hero' in tag or '\\"' in tag:return tag
+  return tag[:-1].rstrip('/')+' loading="lazy" decoding="async">'
+ return re.sub(r'<img\b[^>]*>',f,html)
+def stamp_assets(html):
+ html=lazy_images(html)
+ def stamp(m):
+  asset=m.group(2);local=ROOT/asset[asset.index('assets/'):]
+  if not local.is_file():return m.group(0)
+  return m.group(1)+'="'+asset+'?v='+hashlib.sha256(local.read_bytes()).hexdigest()[:10]+'"'
+ return re.sub(r'(href|src)="([^"?]*assets/[^"?]+\.(?:css|js))(?:\?[^" ]*)?"',stamp,html)
+
 parser=argparse.ArgumentParser();parser.add_argument('--base-url');args=parser.parse_args()
 config=json.loads(CONFIG.read_text()) if CONFIG.exists() else {'base_url':'https://primo-group-v11-recovered.vanmol7.chatgpt.site/','name':'PRIMO Group','email':'hello@primo-mc.com'}
 if args.base_url:
@@ -23,7 +38,7 @@ styles='\n'.join(re.findall(r'<style[^>]*>(.*?)</style>',home,re.S));styles=styl
 FAVICONS='<link rel="icon" href="/assets/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png"><link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192.png"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">'
 ANALYTICS='<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script><script defer src="/_vercel/insights/script.js"></script>'
 SUPABASE_CDN='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js'
-NAV=[('services/','Services'),('work/','Our Work'),('hub/','PRIMO HUB'),('marketplace/','Marketplace'),('technology/','Technology'),('process/','Process'),('about/','About'),('contact/','Contact'),('portal/login/','Portal')]
+NAV=[('services/','Services'),('work/','Our Work'),('hub/','PRIMO HUB'),('marketplace/','Marketplace'),('off-hours-club/','OFF HOURS CLUB'),('technology/','Technology'),('process/','Process'),('about/','About'),('contact/','Contact'),('portal/login/','Portal')]
 header=re.search(r'<header\b.*?</header>',home,re.S).group()
 footer=re.search(r'<footer\b.*?</footer>',home,re.S).group()
 member=re.search(r'<dialog class="member-dialog".*?</dialog>',home,re.S).group()
@@ -118,10 +133,12 @@ page('contact/','Contact PRIMO Group | Discuss Your Marketing or Website Project
 
 from commerce_content import register_commerce
 commerce_cart_dialog=register_commerce(globals())
+from off_hours_content import register_off_hours
+register_off_hours(globals())
 
 # Page-specific metadata is written into the HTML rather than injected by JavaScript.
 def metadata(path,title,description,image,extra=None):
- url=BASE+path;extra=extra or {};org={'@type':'Organization','@id':BASE+'#organization','name':'PRIMO Group','alternateName':'PRIMO-MC','url':BASE,'logo':BASE+'assets/brand/black.png','email':config['email'],'areaServed':[{'@type':'Country','name':'Thailand'},{'@type':'Country','name':'Vietnam'}]}
+ url=BASE+path;extra=extra or {};org={'@type':'Organization','@id':BASE+'#organization','name':'PRIMO Group','alternateName':'PRIMO-MC','url':BASE,'logo':BASE+'assets/brand/black.webp','email':config['email'],'areaServed':[{'@type':'Country','name':'Thailand'},{'@type':'Country','name':'Vietnam'}]}
  web={'@type':'WebPage','@id':url+'#webpage','url':url,'name':title,'description':description,'inLanguage':'en','isPartOf':{'@id':BASE+'#website'},'about':{'@id':BASE+'#organization'}}
  graph=[org,{'@type':'WebSite','@id':BASE+'#website','name':'PRIMO Group','url':BASE,'publisher':{'@id':BASE+'#organization'}},web]
  if path:graph.append(breadcrumb(path,extra.get('label',title))[1])
@@ -137,18 +154,20 @@ for v in PAGES:
  hero='<section class="page-hero"><div class="wrap">'+crumb+'<div class="page-hero-layout"><div><p class="page-kicker">'+esc(v['kicker'])+'</p><h1>'+esc(v['h1'])+'</h1><p class="page-intro">'+esc(v['intro'])+'</p>'+(('<div class="page-buttons"><a class="page-cta" href="'+link(prefix,'contact/')+'">Discuss your project ↗</a><a class="page-secondary" href="'+link(prefix,'services/')+'">Explore services</a></div>') if path not in ['contact/','services/'] else '')+'</div><div class="page-hero-image"><img src="'+prefix+'assets/'+v['image']+'" alt="'+{'primo-global-hero-clean.png':'Connected globe above a city skyline','photo-1519389950473-47ba0277781c.jpg':'A team collaborating around a table','photo-1529139574466-a303027c1d8b.jpg':'Editorial fashion and lifestyle photography','photo-1571896349842-33c89424de2d.jpg':'Resort hospitality setting','photo-1497366811353-6870744d04b2.jpg':'A contemporary creative working space','photo-1499951360447-b19be8fe80f5.jpg':'A desk with a laptop and creative materials','photo-1552664730-d307ca884978.jpg':'A group discussing a project','photo-1558655146-9f40138edfeb.jpg':'Creative design materials','photo-1531297484001-80022131f5a1.jpg':'A laptop in a technology workspace'}.get(v['image'],'PRIMO creative and digital experience')+'" width="1000" height="1050" fetchpriority="high"><span class="page-image-caption">PRIMO / STRATEGY · CREATIVE · TECHNOLOGY</span></div></div></div></section>'
  if v['extra'].get('visual'):hero=re.sub(r'<div class="page-hero-image">.*?</div>','<div class="page-hero-image">'+v['extra']['visual']+'</div>',hero,count=1,flags=re.S)
  if v['extra'].get('compact'):hero='<section class="portal-banner"><div class="wrap">'+crumb+'<div class="page-kicker">'+esc(v['kicker'])+'</div><h1>'+esc(v['h1'])+'</h1><p>'+esc(v['intro'])+'</p></div></section>'
+ if v['extra'].get('ohc'):hero=''
  head='<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#11110f">'+FAVICONS+metadata(path,v['title'],v['description'],v['image'],ex)+''.join('<link rel="stylesheet" href="'+prefix+'assets/'+file+'">' for file in ['fonts.css','inter.css','thai.css','site-base.css','member-demo.css','primo-hub.css','immersive.css','pages.css','commerce.css','portal.css','liquid-glass.css'])
+ if v['extra'].get('ohc'):head+='<link rel="stylesheet" href="'+prefix+'assets/off-hours.css">'
  if v['extra'].get('private'):head=head.replace('content="index,follow,max-image-preview:large"','content="noindex,follow"')
  # Generated pages use actual page routes and work without JS for content/navigation.
- doc='<!doctype html><html lang="en-GB"><head>'+head+ANALYTICS+'</head><body class="page-shell"><a class="skip-link" href="#main">Skip to content</a><div id="pageProgress" aria-hidden="true"></div>'+navigation(path)+'<main id="main">'+hero+v['body']+'</main>'+foot(path)
+ doc='<!doctype html><html lang="en-GB"><head>'+head+ANALYTICS+'</head><body class="page-shell'+(' ohc-page' if v['extra'].get('ohc') else '')+'"><a class="skip-link" href="#main">Skip to content</a><div id="pageProgress" aria-hidden="true"></div>'+navigation(path)+'<main id="main">'+hero+v['body']+'</main>'+foot(path)
  if v['extra'].get('contact'):doc+=member.replace('href="assets/','href="'+prefix+'assets/').replace('src="assets/','src="'+prefix+'assets/')+'<script src="'+prefix+'assets/member-demo.js" defer></script>'
  if v['extra'].get('commerce'):doc+=commerce_cart_dialog(prefix)
- if v['extra'].get('portal'):
-  doc+='<script src="'+SUPABASE_CDN+'" defer></script>'+''.join('<script src="'+prefix+'assets/'+f+'" defer></script>' for f in ['portal-config.js','portal-app.js'])
- elif v['extra'].get('commerce'):
-  doc+=''.join('<script src="'+prefix+'assets/'+f+'" defer></script>' for f in ['catalogue.js','workspace-state.js','marketplace.js'])
+ if v['extra'].get('commerce') or v['extra'].get('portal'):
+  if v['extra'].get('portal'):doc+='<script src="'+SUPABASE_CDN+'" defer></script>'+''.join('<script src="'+prefix+'assets/'+f+'" defer></script>' for f in ['portal-config.js','portal-app.js'])
+  else:doc+=''.join('<script src="'+prefix+'assets/'+f+'" defer></script>' for f in ['catalogue.js','workspace-state.js','marketplace.js'])
+ if v['extra'].get('ohc'):doc+='<script src="'+prefix+'assets/off-hours.js" defer></script>'
  doc+='<script src="'+prefix+'assets/pages.js" defer></script><script src="'+prefix+'assets/liquid-glass.js" defer></script></body></html>'
- dest=ROOT/path/'index.html';dest.parent.mkdir(parents=True,exist_ok=True);dest.write_text(doc)
+ dest=ROOT/path/'index.html';dest.parent.mkdir(parents=True,exist_ok=True);dest.write_text(stamp_assets(doc))
  manifest.append({'path':path,'title':v['title'],'description':v['description'],'h1':v['h1'],'indexable':not v['extra'].get('private',False),'type':'article' if v['extra'].get('article') else 'service' if v['extra'].get('service') else 'page'})
 
 # Homepage routing: preserve section anchors for in-page calls to action, but give tabs real pages.
@@ -190,7 +209,9 @@ if 'assets/commerce.css' not in home:home=home.replace('</head>','<link rel="sty
 if 'id="primoDigitalWorld"' not in home:
  strip='<section class="commerce-entry-strip" id="primoDigitalWorld" aria-label="PRIMO digital products and workspace"><div class="wrap"><p><strong>More ways to build with PRIMO.</strong>Explore digital products or step inside the client and staff workspace.</p><div class="commerce-entry-actions"><a href="marketplace/">Explore marketplace ↗</a><a href="portal/login/">Client &amp; staff portal ↗</a></div></div></section>'
  home=home.replace('<section class="primo-split"',strip+'<section class="primo-split"',1)
-(ROOT/'index.html').write_text(home)
+if 'favicon.ico' not in home:home=home.replace('</title>','</title>'+FAVICONS,1) if '</title>' in home else home.replace('<head>','<head>'+FAVICONS,1)
+if '_vercel/insights' not in home:home=home.replace('</head>',ANALYTICS+'</head>',1)
+(ROOT/'index.html').write_text(stamp_assets(home))
 # Static infrastructure.
 urls=[BASE]+[BASE+v['path'] for v in PAGES if not v['extra'].get('private')]
 (ROOT/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+''.join('  <url><loc>'+esc(u)+'</loc><lastmod>'+TODAY+'</lastmod></url>\n' for u in urls)+'</urlset>\n')

@@ -1,0 +1,30 @@
+{
+  "mode": "built-in imagegen",
+  "assets": [
+    {
+      "key": "black",
+      "path": "everyday-black-v2.png",
+      "prompt": "Single premium washed charcoal black heavyweight oversized cotton t-shirt, FRONT facing perfectly straight, tiny ivory spaced sans-serif embroidery 'OFF HOURS CLUB' on left chest only. Clean realistic luxury streetwear product photography. Entire garment from neck to bottom hem, sleeves spread naturally. Invisible mannequin shape with slightly structured drape; no hanger, no person, no tags or props. Truly transparent background and no contact shadow. Centred with 6 percent margin. Rich tactile fabric, ribbed crew neck, soft dimensional studio lighting. Individual e-commerce product asset, not a board, not a screenshot."
+    },
+    {
+      "key": "ivory",
+      "path": "everyday-ivory-v2.png",
+      "prompt": "Single premium warm ivory heavyweight oversized cotton t-shirt, FRONT facing perfectly straight, tiny charcoal spaced sans-serif embroidery 'OFF HOURS CLUB' centred on chest. Clean realistic luxury streetwear product photography. Entire garment from neck to bottom hem, sleeves spread naturally. Invisible mannequin shape with slightly structured drape; no hanger, no person, no tags or props. Truly transparent background and no contact shadow. Centred with 6 percent margin. Rich tactile fabric, ribbed crew neck, soft dimensional studio lighting. Individual e-commerce product asset, not a board, not a screenshot."
+    },
+    {
+      "key": "after",
+      "path": "after-hours-v2.png",
+      "prompt": "Single premium washed charcoal black oversized cotton t-shirt BACK view, straight-on. Large warm cream elegant stacked high-contrast serif text 'OFF' 'HOURS' 'CLUB' on upper back; beneath it a restrained vintage rust and cream setting sun over sea horizon graphic, tiny text 'YOUR TIME. YOUR TERMS.' at base. Match OFF HOURS CLUB first collection reference. Whole garment with sleeves naturally spread, invisible mannequin structure. Truly transparent background, no hanger/person/props/contact shadow. Centred with 6 percent margin. Realistic heavyweight textured cotton, luxury streetwear catalogue photograph. One individual garment, not a composition board."
+    },
+    {
+      "key": "free",
+      "path": "free-time-v2.png",
+      "prompt": "Single premium warm ivory oversized cotton t-shirt BACK view, straight-on. Large deep forest green elegant stacked serif text 'OFF' 'HOURS' 'CLUB' on upper back; beneath it a restrained burnt terracotta sun over flowing green and terracotta sea lines, inspired by supplied OFF HOURS CLUB Free Time shirt. Entire garment with sleeves naturally spread, invisible mannequin structure. Truly transparent background, no hanger/person/props/contact shadow. Centred with 6 percent margin. Realistic heavyweight textured cotton, premium catalogue photograph. Individual garment, not a board."
+    },
+    {
+      "key": "campaign",
+      "path": "campaign-v2.png",
+      "prompt": "Photorealistic high-end independent streetwear brand campaign, wide 3:2 editorial landscape. Two adult friends, candid relaxed posture, on quiet coastal concrete promenade at dusk beside a dark modernist building. One in a washed charcoal oversized t-shirt with tiny cream 'OFF HOURS CLUB' chest logo, one wearing ivory tee, large forest green serif OFF HOURS CLUB sunset print on back, loose neutral trousers. Art-directed but natural fashion editorial photography, subtle film texture, restrained warm muted palette charcoal ivory sage burnt rust, soft late sun and cool sea. Wide composition, figures on right two thirds, left third architecture and moody negative space for webpage typography. Premium lifestyle fashion brand, no shopping UI, no collage, no frames, no additional text or watermarks."
+    }
+  ]
+}

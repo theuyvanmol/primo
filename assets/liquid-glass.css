@@ -14,3 +14,5 @@ header.nav,.nav.nav-scrolled{background:linear-gradient(115deg,#243041c9,#191b22
 @keyframes glassMenuIn{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.liquid-control,.nav .navlinks a{transition:none!important}.liquid-control:hover,.liquid-control:active{transform:none!important}.liquid-ripple{display:none}.navlinks.open{animation:none!important}}
 @media(forced-colors:active){.liquid-control{background:ButtonFace!important;color:ButtonText!important;border:1px solid ButtonText!important;box-shadow:none!important}.liquid-ripple{display:none}}
+
+.nav .navlinks{gap:clamp(6px,.8vw,12px)}.nav .navlinks a{font-size:10px;white-space:nowrap}
