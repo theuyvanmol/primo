@@ -31,7 +31,9 @@ if args.base_url:
  config['base_url']=args.base_url.rstrip('/')+'/'
 CONFIG.write_text(json.dumps(config,indent=2)+'\n')
 BASE=config['base_url'];TODAY=date.today().isoformat();SM={v['slug']:v for v in SERVICES}
-home=(ROOT/'index.html').read_text()
+LEGACY=ROOT/'scripts'/'home_legacy.html'
+V12=(ROOT/'scripts'/'home_v12.py').exists()
+home=(LEGACY if (V12 and LEGACY.exists()) else ROOT/'index.html').read_text()
 # Capture original styles once; URLs are relative to the shared assets directory.
 styles='\n'.join(re.findall(r'<style[^>]*>(.*?)</style>',home,re.S));styles=styles.replace("url('assets/","url('").replace('url("assets/','url("')
 (ROOT/'assets/site-base.css').write_text(styles)
@@ -211,6 +213,10 @@ if 'id="primoDigitalWorld"' not in home:
  home=home.replace('<section class="primo-split"',strip+'<section class="primo-split"',1)
 if 'favicon.ico' not in home:home=home.replace('</title>','</title>'+FAVICONS,1) if '</title>' in home else home.replace('<head>','<head>'+FAVICONS,1)
 if '_vercel/insights' not in home:home=home.replace('</head>',ANALYTICS+'</head>',1)
+if V12:
+ import home_v12
+ seo=re.search(r'<!-- PRIMO SEO START -->.*?<!-- PRIMO SEO END -->',home,re.S).group(0)
+ home=home_v12.build(NAV,SERVICES,PROJECTS,client_art,seo,FAVICONS,ANALYTICS,'')
 (ROOT/'index.html').write_text(stamp_assets(home))
 # Static infrastructure.
 urls=[BASE]+[BASE+v['path'] for v in PAGES if not v['extra'].get('private')]
