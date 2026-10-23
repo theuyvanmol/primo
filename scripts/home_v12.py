@@ -1,85 +1,108 @@
-"""PRIMO homepage (v14): editorial serif, framed motion hero, scroll-opening laptop, sticky geometric section."""
+"""PRIMO homepage (v13, dark): portfolio-card hero, sticky service showcase, scroll blur-in motion."""
 from html import escape as esc
 
-SERVICES_COPY=[
- ('digital-marketing','Digital Marketing','Turn insights into real growth across every digital channel.'),
- ('website-development','Website Development','High-performance websites built for business results.'),
- ('seo-content','SEO & Content','Be found. Be chosen. Be ahead.'),
- ('paid-advertising','Advertising','Smarter ads. Bigger opportunities.'),
- ('ai-automation','AI Solutions','Innovative AI to unlock your next growth.'),
+CARDS=[ # image, title, role, avatar focus
+ ('products/velora/city.webp','Velora','Website template · Marketplace','60% 50%'),
+ ('off-hours/campaign-v2.webp','Off Hours Club','Apparel brand concept','70% 40%'),
+ ('products/auren/architecture.webp','Auren','Website template · Marketplace','55% 40%'),
+ ('products/inkvoid/hero.webp','Ink Void','Portfolio template · Marketplace','50% 25%'),
+ ('previews/northline/assets/hero.webp','Northline','Website template · Marketplace','60% 55%'),
+ ('primo-global-hero-clean.webp','Global brand world','Concept imagery','35% 45%'),
+ ('off-hours/after-hours-v2.webp','After Hours Tee','Off Hours Club · Apparel','50% 40%'),
+ ('previews/northline/assets/vessel.webp','Northline Care','Lifestyle brand concept','45% 45%'),
 ]
-# geometric tile art: (col,row,shape,classes,rot1,rot2)
-TILES=[(1,0,'quarter','a',90,180),(2,0,'circle','a',0,90),(3,0,'bowtie','c',90,0),
- (0,1,'tri','a',90,180),(1,1,'dots','c',0,90),(2,1,'half','b',180,90),(3,1,'sqsq','b',90,0),(4,1,'leaf','a',90,180),
- (0,2,'circle','b',0,0),(1,2,'stairs','a',90,180),(2,2,'circle2','b',0,90),(3,2,'circle','c',0,0),(4,2,'bowtie','a',90,0),
- (1,3,'tri','c',180,90),(2,3,'quarter','b',90,180),(3,3,'tri','a',0,90)]
-def shape(kind,cls):
-    f='class="f%s"'%cls
-    return {
-     'quarter':'<path %s d="M0 72V0A72 72 0 0 1 72 72Z"/>'%f,
-     'circle':'<circle %s cx="36" cy="36" r="27"/>'%f,
-     'circle2':'<circle %s cx="36" cy="36" r="30"/><circle class="fc" cx="36" cy="36" r="4"/>'%f,
-     'bowtie':'<path %s d="M0 0H72L36 36 72 72H0L36 36Z"/>'%f,
-     'tri':'<path %s d="M0 0V72H72Z"/>'%f,
-     'dots':'<g %s><circle cx="20" cy="20" r="9"/><circle cx="52" cy="20" r="9"/><circle cx="20" cy="52" r="9"/><circle cx="52" cy="52" r="9"/></g>'%f,
-     'half':'<path %s d="M0 36A36 36 0 0 1 72 36V72H0Z"/>'%f,
-     'sqsq':'<rect class="fc" x="8" y="8" width="56" height="56"/><rect %s x="20" y="20" width="32" height="32"/>'%f,
-     'leaf':'<path %s d="M0 72Q4 4 72 0Q68 68 0 72Z"/>'%f,
-     'stairs':'<path %s d="M0 72V48H24V24H48V0H72V72Z"/>'%f,
-    }[kind]
-def art(prefix=''):
-    out='<svg class="art" viewBox="0 0 360 288" role="img" aria-label="Abstract geometric artwork">'
-    out+='<rect width="360" height="288" fill="none"/>'
-    for c,r,k,cl,r1,r2 in TILES:
-        out+='<g class="t" style="--x:%dpx;--y:%dpx;--r1:%ddeg;--r2:%ddeg"><rect class="bg" width="72" height="72"/>%s</g>'%(c*72,r*72,r1,r2,shape(k,cl))
-    return out+'</svg>'
+SVC={
+ 'digital-marketing':dict(name='Digital Marketing',line='Turn insights into real growth across every digital channel.',tags=['Strategy','Social','Email','Analytics'],cover='off-hours/campaign-v2.webp',grid=['off-hours/collection.webp','off-hours/essentials.webp','off-hours/after-hours-v2.webp','products/velora/city.webp'],items=[('Campaign strategy','Goals, audience and channel plan'),('Social & content','Creative that fits each platform'),('Reporting','Clear numbers tied to goals')]),
+ 'website-development':dict(name='Website Development',line='High-performance websites built for business results.',tags=['Design','Development','Speed','Conversion'],cover='previews/northline/assets/hero.webp',grid=['products/auren/architecture.webp','previews/northline/assets/form.webp','products/inkvoid/hero.webp','previews/northline/assets/vessel.webp'],items=[('Design & build','Fast, accessible, on-brand'),('E-commerce','Stores that are simple to run'),('Care & growth','Updates, speed and tracking')]),
+ 'seo-content':dict(name='SEO & Content',line='Be found. Be chosen. Be ahead.',tags=['SEO','Content','Search','Authority'],cover='primo-global-hero-clean.webp',grid=['photo-1497366811353-6870744d04b2.jpg','photo-1519389950473-47ba0277781c.jpg','photo-1499951360447-b19be8fe80f5.webp','photo-1552664730-d307ca884978.jpg'],items=[('Search strategy','Keywords that match real intent'),('Content that ranks','Pages and articles worth reading'),('Technical SEO','Structure search engines can trust')]),
+ 'paid-advertising':dict(name='Advertising',line='Smarter ads. Bigger opportunities.',tags=['Paid social','Search ads','Creative','Reporting'],cover='photo-1519608487953-e999c86e7455.webp',grid=['photo-1529139574466-a303027c1d8b.webp','off-hours/essentials.webp','photo-1519608487953-e999c86e7455.webp','off-hours/campaign-v2.webp'],items=[('Paid social','Meta, TikTok and more'),('Search & display','Reach people who are looking'),('Optimisation','Test, learn and scale')]),
+ 'ai-automation':dict(name='AI Solutions',line='Innovative AI to unlock your next growth.',tags=['Automation','AI assistants','Workflows','Insights'],cover='photo-1531297484001-80022131f5a1.jpg',grid=['photo-1531297484001-80022131f5a1.jpg','photo-1558655146-9f40138edfeb.webp','primo-global-hero-clean.webp','photo-1499951360447-b19be8fe80f5.webp'],items=[('Marketing automation','Less manual work, faster follow-up'),('AI assistants','Helpful, on-brand and supervised'),('Insight dashboards','See what is working at a glance')]),
+}
+ORDER=['digital-marketing','website-development','seo-content','paid-advertising','ai-automation']
+BARS=[38,56,44,72,60,88,70,96,64,80,92,100]
+
+def card(i,c,strip=False):
+    img,t,role,f=c
+    return ('<a class="pc" style="--i:%d" href="marketplace/" tabindex="-1" aria-hidden="true"><span class="pc-img"><img src="assets/%s" alt="" loading="%s" decoding="async"></span><span class="pc-av"><img src="assets/%s" alt="" style="object-position:%s"></span><span class="pc-t"><b>%s</b><small>%s</small></span></a>')%(i,img,'lazy' if strip else 'eager',img,f,esc(t),esc(role))
 
 def build(NAV,SERVICES,PROJECTS,client_art,SEO,FAVICONS,ANALYTICS,SCRIPT):
-    L=NAV[:5];R=NAV[5:-1];P=NAV[-1]
-    navL=''.join('<a href="%s">%s</a>'%(r,n) for r,n in L)
-    navR=''.join('<a href="%s">%s</a>'%(r,n) for r,n in R)
-    menu=''.join('<a href="%s">%s</a>'%(r,n) for r,n in NAV)
-    foot=menu
-    cards=''
-    for i,(slug,name,line) in enumerate(SERVICES_COPY):
-        cards+='<a class="sc%s" style="--n:%d" href="services/%s/"><small>0%d</small><b>%s</b><span>%s</span></a>'%(' wide' if i==4 else '',i,slug,i+1,esc(name),esc(line))
-    rows=''
+    nav=''.join('<a href="%s">%s</a>'%(r,n) for r,n in NAV)
+    left=''.join(card(i,c) for i,c in enumerate(CARDS[:4]))
+    right=''.join(card(i+4,c) for i,c in enumerate(CARDS[4:]))
+    strip=''.join(card(i,c,True) for i,c in enumerate(CARDS))*2
+    chips=''.join('<span class="chip">%s%s</span>'%(client_art(p['logo'],''),esc(p['name'])) for p in PROJECTS)*4
+    caps=['Brand strategy','Websites','SEO & content','Paid advertising','AI automation','Social media','Analytics','Creative direction','E-commerce','Marketing technology']
+    capchips=''.join('<span class="chip t">%s</span>'%esc(c) for c in caps)*2
+    names={s['slug']:s for s in SERVICES}
+    side='';panes=''
+    for k,slug in enumerate(ORDER):
+        d=SVC[slug]
+        side+='<button class="sl" data-i="%d" aria-selected="%s">%s</button>'%(k,'true' if k==0 else 'false',esc(d['name']))
+        grid=''.join('<span class="m m%d"><img src="assets/%s" alt="" loading="lazy" decoding="async"></span>'%(j,g) for j,g in enumerate(d['grid']))
+        items=''.join('<div class="si"><span class="si-i">%s</span><span><b>%s</b><small>%s</small></span></div>'%('0%d'%(j+1),esc(a),esc(b)) for j,(a,b) in enumerate(d['items']))
+        tags=''.join('<span>%s</span>'%esc(t) for t in d['tags'])
+        stats=''.join('<div><b>%s</b><small>%s</small></div>'%(a,b) for a,b in [('Bangkok','Studio'),('Pattaya','Studio'),('Ho Chi Minh','Studio'),('EN · TH · VN','Languages')])
+        panes+=('<div class="sp%s" data-i="%d"><div class="sp-top"><div class="sp-id"><span class="sp-av"><img src="assets/favicon-192.png" alt=""><i></i></span><div><h3>%s</h3><p class="handle">@primo.mc · PRIMO Group</p><p class="desc">%s</p><div class="stats4">%s</div></div></div><div class="sp-cover"><img src="assets/%s" alt="" loading="lazy" decoding="async"><div class="sp-tags">%s</div></div></div>'
+                '<div class="sp-tabs"><a class="on" href="#selected-work">Work</a><a href="services/%s/">Services</a><a href="#why">Process</a><a href="about/">About</a></div>'
+                '<div class="sp-body"><div class="masonry">%s</div><div class="sp-list"><div class="sp-lh"><span>What you get</span><a href="services/%s/">View all ↗</a></div>%s</div></div></div>')%(' on' if k==0 else '',k,esc(d['name']),esc(d['line']),stats,d['cover'],tags,slug,grid,slug,items)
+    work=''
     for i,p in enumerate(PROJECTS):
-        rows+='<a class="wr rv" style="--i:%d" href="work/%s/"><span class="wn">0%d</span><span class="wt">%s</span><span class="ws">%s</span><span class="wl">%s</span><span class="wa">↗</span></a>'%(i,p['slug'],i+1,esc(p['name']),esc(p['sector']),client_art(p['logo'],''),)
-    return TEMPLATE.replace('__FAV__',FAVICONS).replace('__SEO__',SEO).replace('__ANALYTICS__',ANALYTICS).replace('__NAVL__',navL).replace('__NAVR__',navR).replace('__PORTAL__','<a class="portal" href="%s">%s</a>'%P).replace('__MENU__',menu).replace('__FOOT__',foot).replace('__CARDS__',cards).replace('__ROWS__',rows).replace('__ART__',art()).replace('__ART2__',art())
+        work+='<a class="wcard rv" style="--i:%d" href="work/%s/"><div class="wcover"><span class="big">%s</span></div><div class="wbody"><small>%s</small><h3>%s</h3><p>%s</p><span class="more">View overview <span>↗</span></span></div></a>'%(i,p['slug'],client_art(p['logo'],''),esc(p['sector']),esc(p['name']),esc(p['intro']))
+    bars=''.join('<span style="--h:%d%%"></span>'%h for h in BARS)
+    avatars=''.join('<span style="--o:%d"><img src="assets/%s" alt=""></span>'%(k,c[0]) for k,c in enumerate([CARDS[0],CARDS[1],CARDS[3],CARDS[4],CARDS[6]]))
+    return TEMPLATE.replace('__FAV__',FAVICONS).replace('__SEO__',SEO).replace('__ANALYTICS__',ANALYTICS).replace('__NAV__',nav).replace('__LEFT__',left).replace('__RIGHT__',right).replace('__STRIP__',strip).replace('__CHIPS__',chips).replace('__CAPS__',capchips).replace('__SIDE__',side).replace('__PANES__',panes).replace('__WORK__',work).replace('__BARS__',bars).replace('__AVATARS__',avatars)
 
-TEMPLATE='''<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f5f5f5">__FAV____SEO__<link rel="stylesheet" href="assets/fonts.css"><link rel="stylesheet" href="assets/inter.css"><link rel="stylesheet" href="assets/lora.css"><link rel="stylesheet" href="assets/thai.css"><link rel="stylesheet" href="assets/home-v12.css">__ANALYTICS__</head>
+TEMPLATE='''<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0d0c0b">__FAV____SEO__<link rel="stylesheet" href="assets/fonts.css"><link rel="stylesheet" href="assets/thai.css"><link rel="stylesheet" href="assets/home-v12.css">__ANALYTICS__</head>
 <body><a class="skip-link" href="#main">Skip to content</a>
-<header class="hdr" id="hdr"><nav class="hl" aria-label="Primary">__NAVL__</nav><a class="logo" href="./" aria-label="PRIMO Group home"><img src="assets/favicon-48.png" alt="" width="28" height="28"><span>PRIMO</span></a><div class="hr"><nav aria-label="Secondary">__NAVR__</nav><label class="lang language-picker"><select id="siteLanguage" aria-label="Language / ภาษา / Ngôn ngữ"><option value="en">EN</option><option value="th">TH</option><option value="vi">VN</option></select></label>__PORTAL__</div><button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menu</button></header>
-<nav class="menu" id="menu" aria-label="Main navigation">__MENU__</nav>
+<header class="hdr" id="hdr"><a class="logo" href="./" aria-label="PRIMO Group home"><img src="assets/favicon-48.png" alt="" width="30" height="30"><span>PRIMO</span></a>
+<div class="hdr-r"><label class="lang language-picker"><select id="siteLanguage" aria-label="Language / ภาษา / Ngôn ngữ"><option value="en">EN</option><option value="th">TH</option><option value="vi">VN</option></select></label><a class="btn sm" href="contact/">Let's Talk ↗</a><button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span></span><span></span><em>Menu</em></button></div></header>
+<nav class="menu" id="menu" aria-label="Main navigation">__NAV__</nav>
 <main id="main">
-<section class="hero" id="home"><div class="frame"><canvas id="silk" aria-hidden="true"></canvas><div class="grid3" aria-hidden="true"></div>
-<div class="hero-t"><span class="eyebrow">International Digital Agency</span><h1>Growth<br>without borders.</h1><p>We combine creativity, technology and data to help ambitious brands grow across the world.</p><div class="hero-cta"><a class="btn" href="contact/">Let's Talk ↗</a><a class="btn ghost" href="work/">Explore Our Work</a></div></div>
-<div class="hero-s"><div><b data-count="10">0</b><small>Years of Experience</small></div><div><b data-count="250">0</b><small>Projects Delivered*</small></div><div><b data-count="50">0</b><small>Global Brands*</small></div><div><b data-count="8" data-plain="1">0</b><small>Countries Served*</small></div></div></div></section>
+<section class="enter" id="enter" aria-label="Enter PRIMO World"><div class="en-stage" id="enStage">
+<div class="en-glow"></div>
+<div class="en-cap" id="enCap"><span class="pill"><i></i>PRIMO Group</span><h2>Enter PRIMO World</h2><p>Scroll to open</p></div>
+<div class="persp"><div class="lap" id="enLap"><div class="deck"><div class="kb"></div><div class="pad"></div></div>
+<div class="lid"><div class="cover"><img src="assets/favicon-192.png" alt="" width="64" height="64"></div>
+<div class="screen"><div class="scr-in"><img src="assets/favicon-192.png" alt="" width="64" height="64"><b>Welcome to PRIMO World</b><small>Growth Without Borders</small><span class="scr-ar">↓</span></div></div></div></div></div>
+<div class="en-shadow"></div></div></section>
+<section class="hero" id="home"><div class="cards cl" aria-hidden="true">__LEFT__</div><div class="cards cr" aria-hidden="true">__RIGHT__</div>
+<div class="hero-c"><span class="pill"><i></i>International Digital Agency</span>
+<h1><span class="l1">Grow your</span><span class="swap"><span class="words"><em>brand</em><em>website</em><em>story</em><em>business</em><em>brand</em></span><svg class="und" viewBox="0 0 220 14" preserveAspectRatio="none" aria-hidden="true"><path d="M3 9c40-8 84-8 120-4s64 3 94-1"/></svg></span><span class="l3">without borders.</span></h1>
+<p class="lead">We combine creativity, technology and data to help ambitious brands grow across the world.</p>
+<div class="tiles"><div><b data-count="10">0</b><small>Years of Experience</small></div><div><b data-count="250">0</b><small>Projects Delivered*</small></div><div><b data-count="50">0</b><small>Global Brands*</small></div><div><b data-count="8" data-plain="1">0</b><small>Countries Served*</small></div></div>
+<a class="btn" href="contact/">Get started</a></div>
+<div class="strip" aria-hidden="true"><div class="strip-t">__STRIP__</div></div>
+<a class="down" href="#people">Scroll down<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 6 6 6 6-6M6 13l6 6 6-6"/></svg></a></section>
 
-<section class="lap-sec" id="services"><div class="lap-stage" id="lapStage"><div class="dots" aria-hidden="true"></div>
-<svg class="orbits" viewBox="0 0 1000 1000" aria-hidden="true"><g class="o1"><circle cx="500" cy="500" r="470"/><circle class="dot" cx="500" cy="30" r="4"/><circle class="ring" cx="170" cy="168" r="14"/></g><g class="o2"><circle cx="500" cy="500" r="360"/><circle class="dot" cx="860" cy="500" r="4"/><rect class="sq" x="132" y="470" width="30" height="30" rx="4"/></g><g class="o3"><circle cx="500" cy="500" r="250"/><circle class="dot" cx="500" cy="750" r="4"/></g></svg>
-<span class="fl f1" aria-hidden="true"></span><span class="fl f2" aria-hidden="true"></span><span class="fl f3" aria-hidden="true"></span>
-<div class="lap-g"><div class="lap-l"><span class="eyebrow">PRIMO Group · Services</span><h2>Digital growth for a borderless world.</h2><p class="lede">Specialising in strategy, websites and AI.</p><div class="scs">__CARDS__</div></div>
-<div class="lap-r"><div class="persp"><div class="shadow"></div><div class="lap" id="lap"><div class="deck"><div class="kb"></div><div class="pad"></div></div><div class="lid"><div class="cover"></div><div class="screen"><div class="scr-art">__ART2__</div><div class="scr-t"><i>PRIMO / SERVICES</i><b>Strategy, creativity and technology in one place.</b><u></u><u></u><u></u></div></div></div></div></div></div></div></div></section>
+<section class="sec center" id="people"><div class="wrap narrow"><h2 class="rv">Growth is built by <span class="stack">__AVATARS__</span> people.</h2><p class="sub rv" style="--i:1">Tools don't build brands. Strategy, taste and trust do. That's why a partner who understands your market matters more than ever.</p></div></section>
 
-<section class="ai" id="orbit"><div class="ai-stage" id="aiStage"><div class="ai-g"><div class="ai-art" data-step="0" id="aiArt">__ART__</div>
-<div class="ai-t"><span class="eyebrow">Our Technology · Orbit</span><h2>Your AI-powered marketing partner.</h2><p>Orbit by PRIMO is our AI marketing concept, designed to help brands work smarter, move faster and achieve measurable growth.</p>
-<div class="steps" id="aiSteps"><button class="st on" data-i="0"><b>Plan smarter</b><span>Turn audience and campaign insights into a clear plan, so every channel works toward the same goal.</span></button><button class="st" data-i="1"><b>Create faster</b><span>Draft, adapt and schedule content with assistants that stay on-brand and under your supervision.</span></button><button class="st" data-i="2"><b>See it all in one place</b><span>Your campaigns and your numbers on one dashboard, so you always know where things stand.</span></button></div>
-<a class="btn light" href="technology/">Discover Orbit ↗</a><small class="note">Concept shown with illustrative data.</small></div></div></div></section>
+<section class="show" id="services"><div class="show-in"><div class="wrap show-g"><div class="side" role="tablist" aria-label="Services">__SIDE__</div><div class="card" id="showCard">__PANES__</div></div></div></section>
 
-<section class="work" id="selected-work"><div class="wrap"><div class="sh rv"><span class="eyebrow">Selected Work</span><h2>Real brands. Different worlds.</h2><p>Explore selected client brands across education, hospitality and lifestyle.</p></div><div class="wl-list">__ROWS__</div><p class="rv" style="margin-top:40px"><a class="btn ghost dk" href="work/">Explore all client overviews ↗</a></p></div></section>
+<p class="marq-label">Trusted by brands across markets</p>
+<div class="marq" aria-label="Featured PRIMO client brands"><div class="marq-track">__CHIPS__</div></div>
 
-<section class="proc" id="process"><div class="wrap"><div class="sh rv"><span class="eyebrow">Our Process</span><h2>From insight to impact.</h2></div><div class="steps4" id="steps4"><div class="line"><i></i></div>
-<div class="s4 rv"><b>01</b><h3>Discover</h3><p>Understand your goals and opportunities.</p></div><div class="s4 rv" style="--i:1"><b>02</b><h3>Strategise</h3><p>Turn insights into a winning plan.</p></div><div class="s4 rv" style="--i:2"><b>03</b><h3>Create</h3><p>Design and develop impactful solutions.</p></div><div class="s4 rv" style="--i:3"><b>04</b><h3>Grow</h3><p>Measure, optimise and scale together.</p></div></div></div></section>
+<section class="sec" id="selected-work"><div class="wrap"><div class="head rv"><div><span class="eyebrow">Selected Work</span><h2>Real brands. Different worlds.</h2></div><p>Explore selected client brands across education, hospitality and lifestyle.</p></div><div class="work">__WORK__</div><p class="rv" style="margin-top:34px;text-align:center"><a class="btn ghost" href="work/">Explore all client overviews ↗</a></p></div></section>
 
-<section class="eco" id="ecosystem"><div class="wrap"><div class="sh rv"><span class="eyebrow">More ways to build with PRIMO.</span><h2>One group. Many doors.</h2></div>
-<a class="er rv" href="hub/"><small>PRIMO / INSIGHTS</small><b>PRIMO HUB</b><span>Ideas, insights and practical thinking for brands ready to grow.</span><i>↗</i></a>
-<a class="er rv" href="marketplace/"><small>Digital products</small><b>Marketplace</b><span>Original website starters, UI ideas and design kits.</span><i>↗</i></a>
-<a class="er rv" href="off-hours-club/"><small>OFF THE CLOCK / BY PRIMO</small><b>OFF HOURS CLUB</b><span>Your time. Your terms. Discover our first clothing collection.</span><i>↗</i></a>
-<a class="er rv" href="portal/login/"><small>Clients &amp; team</small><b>Portal</b><span>Projects, approvals, files and invoices in one secure place.</span><i>↗</i></a></div></section>
+<section class="sec why" id="why"><div class="wrap">
+<h2 class="center-h rv">Agencies keep you waiting.<br><b>We move with you.</b></h2>
+<div class="row rv"><div class="vis cities" id="cities"><svg viewBox="0 0 360 220" aria-hidden="true"><path class="arc" d="M60 150 C 130 40, 230 40, 300 120"/><path class="arc a2" d="M60 150 C 140 190, 240 190, 300 120" /><circle class="n" cx="60" cy="150" r="9"/><circle class="n" cx="180" cy="62" r="9"/><circle class="n" cx="300" cy="120" r="9"/><circle class="p" cx="60" cy="150" r="9"/><circle class="p" cx="180" cy="62" r="9"/><circle class="p" cx="300" cy="120" r="9"/></svg><span class="c1">Bangkok</span><span class="c2">Pattaya</span><span class="c3">Ho Chi Minh City</span></div>
+<div class="txt"><h3>One team, <em>three cities.</em></h3><p>Strategy, creative and technology work side by side from Bangkok, Pattaya and Ho Chi Minh City, with every project in your language.</p><a class="lnk" href="about/">Meet PRIMO ↗</a></div></div>
+<div class="row rv rev"><div class="vis proc" id="proc"><div class="pr"><i></i><b>Discover</b><span>Understand your goals and opportunities.</span></div><div class="pr"><i></i><b>Strategise</b><span>Turn insights into a winning plan.</span></div><div class="pr"><i></i><b>Create</b><span>Design and develop impactful solutions.</span></div><div class="pr"><i></i><b>Grow</b><span>Measure, optimise and scale together.</span></div><div class="bar"><u></u></div></div>
+<div class="txt"><h3>From insight <em>to impact.</em></h3><p>A clear four-step process, so you always know what is happening, what comes next and how we measure success.</p><a class="lnk" href="process/">See our process ↗</a></div></div>
+</div></section>
 
-<section class="cta" id="contact"><div class="wrap"><span class="eyebrow">Let's Work Together</span><h2 class="rv">Ready to grow without borders?</h2><p class="rv" style="--i:1">Tell us about your business and let's create what's next — together.</p><div class="hero-cta rv" style="--i:2"><a class="btn" href="contact/">Get in Touch ↗</a><a class="btn ghost" href="mailto:hello@primo-mc.com">hello@primo-mc.com</a></div></div></section>
+<div class="marq rev" aria-hidden="true"><div class="marq-track">__CAPS__</div></div>
+
+<section class="sec" id="orbit"><div class="wrap"><div class="orbit rv"><div style="position:relative"><span class="eyebrow">Our Technology</span><h2>Orbit: Your AI-Powered Marketing Partner.</h2><p>Orbit by PRIMO is our AI marketing concept, designed to help brands work smarter, move faster and achieve measurable growth.</p><a class="btn" href="technology/">Discover Orbit ↗</a></div>
+<div class="dash" id="dash"><span class="sparkle">+32% ↗</span><div class="dash-top">Campaign Performance · Sample data</div><div class="kpis"><div><b data-count="2.4" data-dec="1" data-suffix="M">0</b><small>Demo Reach</small></div><div><b data-count="86" data-suffix="K">0</b><small>Demo Engagement</small></div><div><b data-count="18" data-prefix="+" data-suffix="%">0</b><small>Demo Conversion</small></div></div><div class="bars" aria-hidden="true">__BARS__</div><small class="note">Illustrative sample figures, not client results.</small></div></div></div></section>
+
+<section class="sec" id="ecosystem"><div class="wrap"><div class="head rv"><div><span class="eyebrow">More ways to build with PRIMO.</span><h2>One group. Many doors.</h2></div><p>Explore digital products or step inside the client and staff workspace.</p></div>
+<div class="eco"><a class="ecard rv" href="hub/"><div><small>PRIMO / INSIGHTS</small><h3>PRIMO HUB</h3><p>Ideas, insights and practical thinking for brands ready to grow.</p></div><span class="go">↗</span></a>
+<a class="ecard rv" style="--i:1" href="marketplace/"><div><small>Digital products</small><h3>Marketplace</h3><p>Original website starters, UI ideas and design kits.</p></div><span class="go">↗</span></a>
+<a class="ecard rv" style="--i:2" href="off-hours-club/"><div><small>OFF THE CLOCK / BY PRIMO</small><h3>OFF HOURS CLUB</h3><p>Your time. Your terms. Discover our first clothing collection.</p></div><span class="go">↗</span></a>
+<a class="ecard rv" style="--i:3" href="portal/login/"><div><small>Clients &amp; team</small><h3>Portal</h3><p>Projects, approvals, files and invoices in one secure place.</p></div><span class="go">↗</span></a></div></div></section>
+
+<section class="sec" id="contact"><div class="wrap"><div class="cta rv"><span class="eyebrow">Let's Work Together</span><h2>Ready to Grow Without Borders?</h2><p>Tell us about your business and let's create what's next — together.</p><div class="cta-row"><a class="btn" href="contact/">Get in Touch ↗</a><a class="btn ghost" href="mailto:hello@primo-mc.com">hello@primo-mc.com</a></div></div></div></section>
 </main>
-<footer class="foot"><div class="wrap"><div class="foot-top"><a class="logo" href="./"><img src="assets/favicon-48.png" alt="" width="28" height="28"><span>PRIMO GROUP</span></a><nav class="foot-links" aria-label="Footer">__FOOT__</nav></div><small>© 2026 PRIMO Group · Interactive concept website. Client names, figures marked * and sample data should be verified before publication.</small></div></footer>
+<footer class="foot"><div class="wrap"><div class="foot-top"><a class="logo" href="./"><img src="assets/favicon-48.png" alt="" width="30" height="30"><span>PRIMO GROUP</span></a><nav class="foot-links" aria-label="Footer">__NAV__</nav></div><small>© 2026 PRIMO Group · Interactive concept website. Client names, figures marked * and sample data should be verified before publication.</small></div></footer>
 <script src="assets/translations.js" defer></script><script src="assets/home-v12.js" defer></script></body></html>'''
