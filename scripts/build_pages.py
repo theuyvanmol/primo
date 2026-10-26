@@ -158,17 +158,18 @@ for v in PAGES:
  if v['extra'].get('compact'):hero='<section class="portal-banner"><div class="wrap">'+crumb+'<div class="page-kicker">'+esc(v['kicker'])+'</div><h1>'+esc(v['h1'])+'</h1><p>'+esc(v['intro'])+'</p></div></section>'
  if v['extra'].get('ohc'):hero=''
  head='<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#11110f">'+FAVICONS+metadata(path,v['title'],v['description'],v['image'],ex)+''.join('<link rel="stylesheet" href="'+prefix+'assets/'+file+'">' for file in ['fonts.css','inter.css','thai.css','site-base.css','member-demo.css','primo-hub.css','immersive.css','pages.css','commerce.css','portal.css','liquid-glass.css'])
+ if not v['extra'].get('ohc') and not path.startswith('portal'):head+='<link rel="stylesheet" href="'+prefix+'assets/inter-display.css"><link rel="stylesheet" href="'+prefix+'assets/curate.css">'
  if v['extra'].get('ohc'):head+='<link rel="stylesheet" href="'+prefix+'assets/off-hours.css">'
  if v['extra'].get('private'):head=head.replace('content="index,follow,max-image-preview:large"','content="noindex,follow"')
  # Generated pages use actual page routes and work without JS for content/navigation.
- doc='<!doctype html><html lang="en-GB"><head>'+head+ANALYTICS+'</head><body class="page-shell'+(' ohc-page' if v['extra'].get('ohc') else '')+'"><a class="skip-link" href="#main">Skip to content</a><div id="pageProgress" aria-hidden="true"></div>'+navigation(path)+'<main id="main">'+hero+v['body']+'</main>'+foot(path)
+ doc='<!doctype html><html lang="en-GB"><head>'+head+ANALYTICS+'</head><body class="page-shell'+(' ohc-page' if v['extra'].get('ohc') else (' curate' if not path.startswith('portal') else ''))+'"><a class="skip-link" href="#main">Skip to content</a><div id="pageProgress" aria-hidden="true"></div>'+navigation(path)+'<main id="main">'+hero+v['body']+'</main>'+foot(path)
  if v['extra'].get('contact'):doc+=member.replace('href="assets/','href="'+prefix+'assets/').replace('src="assets/','src="'+prefix+'assets/')+'<script src="'+prefix+'assets/member-demo.js" defer></script>'
  if v['extra'].get('commerce'):doc+=commerce_cart_dialog(prefix)
  if v['extra'].get('commerce') or v['extra'].get('portal'):
   if v['extra'].get('portal'):doc+='<script src="'+SUPABASE_CDN+'" defer></script>'+''.join('<script src="'+prefix+'assets/'+f+'" defer></script>' for f in ['portal-config.js','portal-app.js'])
   else:doc+=''.join('<script src="'+prefix+'assets/'+f+'" defer></script>' for f in ['catalogue.js','workspace-state.js','marketplace.js'])
  if v['extra'].get('ohc'):doc+='<script src="'+prefix+'assets/off-hours.js" defer></script>'
- doc+='<script src="'+prefix+'assets/pages.js" defer></script><script src="'+prefix+'assets/liquid-glass.js" defer></script></body></html>'
+ doc+='<script src="'+prefix+'assets/pages.js" defer></script><script src="'+prefix+'assets/liquid-glass.js" defer></script>'+('' if v['extra'].get('ohc') or path.startswith('portal') else '<script src="'+prefix+'assets/curate.js" defer></script>')+'</body></html>'
  dest=ROOT/path/'index.html';dest.parent.mkdir(parents=True,exist_ok=True);dest.write_text(stamp_assets(doc))
  manifest.append({'path':path,'title':v['title'],'description':v['description'],'h1':v['h1'],'indexable':not v['extra'].get('private',False),'type':'article' if v['extra'].get('article') else 'service' if v['extra'].get('service') else 'page'})
 

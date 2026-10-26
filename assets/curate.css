@@ -1,0 +1,43 @@
+/* PRIMO shared layer: Curate-style type, pill nav, rounded cards, motion (inner pages) */
+body.curate{--paper:#f4f3f0;--ink:#0b0b0c;--mute:#7b7973;--card:#e9e8e4;--d1:#0b0b0c;--d2:#141416;--dline:#ffffff1a;--cease:cubic-bezier(.2,.7,.2,1);font-family:'Inter Display','Inter','Noto Sans Thai',system-ui,sans-serif;background:var(--d1);color:var(--paper);-webkit-font-smoothing:antialiased}
+body.curate h1,body.curate h2,body.curate h3{font-family:inherit;font-weight:300;letter-spacing:-.045em;line-height:1.04}
+body.curate h1{font-size:clamp(42px,6.4vw,96px);letter-spacing:-.06em;line-height:1}
+body.curate .page-section h2,body.curate .page-bottom-cta h2{font-size:clamp(32px,4.6vw,64px)}
+body.curate .page-prose h2{font-size:clamp(26px,3vw,40px);margin-top:1.6em}
+body.curate .page-hero{background:var(--d1)}
+body.curate .page-kicker,body.curate .page-card-number{font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+body.curate .page-intro,body.curate .page-lead{color:#a09e98;font-weight:400}
+body.curate .page-section.light{background:var(--paper);color:var(--ink)}body.curate .page-section.light p,body.curate .page-section.light li{color:#55534f}body.curate .page-section.light h1,body.curate .page-section.light h2,body.curate .page-section.light h3{color:var(--ink)}
+body.curate .page-section:not(.light){background:var(--d1)}
+/* header: glass pill */
+body.curate .nav,body.curate .nav.nav-scrolled{background:#0b0b0cd9!important;border:1px solid #ffffff1f!important;border-radius:99px!important;box-shadow:0 20px 50px -24px #000!important;height:64px;backdrop-filter:blur(20px) saturate(1.3)}
+body.curate .nav .navlinks a{border-radius:99px;font-size:11px;color:#c9c7c1}body.curate .nav .navlinks a:hover{background:#ffffff14;color:#fff;box-shadow:none}body.curate .nav .navlinks a[aria-current=page]{background:#f4f3f0;color:#0b0b0c;box-shadow:none}
+/* buttons */
+body.curate .btn,body.curate .page-cta{background:var(--paper);color:var(--ink);border:1px solid var(--paper);border-radius:99px;font-weight:500;transition:transform .4s var(--cease),background .3s}
+body.curate .btn:hover,body.curate .page-cta:hover{transform:translateY(-2px);box-shadow:none;background:#fff}
+body.curate .btn:after{display:none}
+body.curate .page-secondary{background:transparent;color:inherit;border:1px solid #ffffff30;border-radius:99px;font-weight:500}body.curate .page-section.light .page-secondary{border-color:#7b79733a}
+body.curate .page-section.light .page-cta{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+/* cards + lists */
+body.curate .page-card{border-radius:30px;background:var(--d2);border:1px solid var(--dline);transition:transform .6s var(--cease),border-color .4s}body.curate .page-card:hover{transform:translateY(-6px);border-color:#ffffff38}
+body.curate .page-section.light .page-card{background:var(--card);border-color:transparent;color:var(--ink)}
+body.curate .page-card img,body.curate .page-hero-image img{border-radius:24px}body.curate .page-hero-image{border-radius:28px;overflow:hidden}
+body.curate .page-list-item{border-top:1px solid #7b797333}body.curate .page-shell .page-list-item{border-color:#ffffff1f}
+body.curate .page-faq details,body.curate details{border-top:1px solid #ffffff1f}
+body.curate .page-bottom-cta{background:var(--d1);text-align:center}
+/* motion: blur-in reveal + hairline draw */
+body.curate.page-motion .page-reveal,body.curate .page-motion .page-reveal{filter:blur(8px)}body.curate .page-motion .page-reveal.visible,body.curate.page-motion .page-reveal.visible{filter:none}
+body.curate .page-reveal{transition:opacity 1s var(--cease),transform 1s var(--cease),filter 1s var(--cease)}
+body.curate .page-hero h1{animation:cIn 1.2s var(--cease) both}body.curate .page-hero .page-intro{animation:cIn 1.2s .12s var(--cease) both}body.curate .page-hero .page-buttons{animation:cIn 1.2s .22s var(--cease) both}
+@keyframes cIn{from{opacity:0;transform:translateY(30px);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+/* floating CTA pill */
+.cfab{position:fixed;left:50%;bottom:20px;z-index:50;display:flex;align-items:center;gap:12px;padding:7px 7px 7px 12px;border-radius:99px;background:#0b0b0cf0;border:1px solid #ffffff26;color:#f4f3f0;font:400 13px 'Inter Display','Inter',sans-serif;box-shadow:0 20px 50px -20px #000;transform:translate(-50%,140%);transition:transform .7s cubic-bezier(.2,.7,.2,1);backdrop-filter:blur(14px)}.cfab.show{transform:translate(-50%,0)}.cfab img{border-radius:50%;background:#f4f3f0;padding:2px}.cfab a{background:#f4f3f0;color:#0b0b0c;padding:9px 16px;border-radius:99px;font-weight:500;font-size:13px;white-space:nowrap}
+@media(max-width:600px){.cfab span{display:none}.cfab{padding:6px}.cfab img{margin-left:6px}}
+@media(prefers-reduced-motion:reduce){body.curate *,body.curate *:before{animation:none!important;transition:none!important}body.curate .page-motion .page-reveal{filter:none}}
+/* specificity guards over earlier sheets */
+body.curate.page-shell h1,body.curate.page-shell h2,body.curate.page-shell h3,body.curate.page-shell .page-prose h2{font-weight:300!important;letter-spacing:-.045em}
+body.curate.page-shell h1{letter-spacing:-.06em}
+body.curate.page-shell .btn,body.curate.page-shell .page-cta,body.curate.page-shell .nav .btn{background:var(--paper)!important;color:var(--ink)!important;border:1px solid var(--paper)!important;box-shadow:none!important;border-radius:99px!important;font-weight:500}
+body.curate.page-shell .page-section.light .page-cta,body.curate.page-shell .page-section.light .btn{background:var(--ink)!important;color:var(--paper)!important;border-color:var(--ink)!important}
+body.curate.page-shell .page-secondary{background:transparent!important;color:inherit!important;border:1px solid #ffffff30!important;box-shadow:none!important;border-radius:99px!important}
+body.curate.page-shell .page-section.light .page-secondary{border-color:#7b79733a!important}
