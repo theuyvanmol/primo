@@ -354,3 +354,11 @@ h1,h2,h3{font-weight:300;letter-spacing:-.045em;line-height:1.02;margin:0}
 @supports (height:100svh){.en-stage,.shw-in{height:100svh}.pain-st{height:100svh}}
 @media(max-width:900px){.fc{filter:none!important}.hero-c{filter:none!important}}
 @media(max-width:900px){.enter .gx i{animation:none;background-position:60% 0}.screen:after{display:none}.en-glow{filter:none}.en-shadow{filter:none;opacity:.6}}
+/* crisp end-state: flat copy of the screen takes over when the zoom completes */
+.scr-flat{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(8px*var(--sc,1));text-align:center;color:var(--ink);opacity:var(--fo,0);pointer-events:none;padding-bottom:calc(1px*0)}
+.scr-flat .gx{--gs:calc(64px*var(--sc,1));filter:drop-shadow(0 0 calc(18px*var(--sc,1)) #e58a5c55)}
+.scr-flat b{font:300 calc(30px*var(--sc,1))/1.1 'DM Sans','Inter Display',sans-serif;letter-spacing:-.04em}
+.scr-flat small{color:var(--muted);font-size:calc(11px*var(--sc,1));letter-spacing:.2em;text-transform:uppercase}
+.scr-flat .scr-ar{margin-top:calc(10px*var(--sc,1));color:var(--accent);font-size:calc(18px*var(--sc,1));animation:enb 1.6s ease-in-out infinite}
+.enter .scr-in{opacity:calc(1 - var(--fo,0))}
+@media(max-width:900px){.scr-flat .gx i{animation:none}}
