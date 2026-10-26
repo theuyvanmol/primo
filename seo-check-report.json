@@ -1,9 +1,49 @@
 {
-  "html_pages": 37,
-  "indexable_pages": 27,
-  "checked_local_references": 1544,
-  "sitemap_urls": 27,
-  "errors": [],
+  "html_pages": 48,
+  "indexable_pages": 35,
+  "checked_local_references": 2431,
+  "sitemap_urls": 35,
+  "errors": [
+    "404.html: missing /_vercel/insights/script.js",
+    "index.html: missing /_vercel/insights/script.js",
+    "marketplace/index.html: missing /_vercel/insights/script.js",
+    "services/index.html: missing /_vercel/insights/script.js",
+    "process/index.html: missing /_vercel/insights/script.js",
+    "hub/index.html: missing /_vercel/insights/script.js",
+    "technology/index.html: missing /_vercel/insights/script.js",
+    "work/index.html: missing /_vercel/insights/script.js",
+    "off-hours-club/index.html: missing /_vercel/insights/script.js",
+    "contact/index.html: missing /_vercel/insights/script.js",
+    "about/index.html: missing /_vercel/insights/script.js",
+    "portal/staff/index.html: missing /_vercel/insights/script.js",
+    "portal/login/index.html: missing /_vercel/insights/script.js",
+    "portal/client/index.html: missing /_vercel/insights/script.js",
+    "off-hours-club/shop/index.html: missing /_vercel/insights/script.js",
+    "work/grand-ho-tram/index.html: missing /_vercel/insights/script.js",
+    "work/british-learning-centre/index.html: missing /_vercel/insights/script.js",
+    "work/kong-tattoo-care/index.html: missing /_vercel/insights/script.js",
+    "work/geisha/index.html: missing /_vercel/insights/script.js",
+    "hub/brand-strategy-before-channels/index.html: missing /_vercel/insights/script.js",
+    "hub/marketing-reporting-that-leads-to-action/index.html: missing /_vercel/insights/script.js",
+    "hub/website-conversion-checklist/index.html: missing /_vercel/insights/script.js",
+    "services/website-development/index.html: missing /_vercel/insights/script.js",
+    "services/paid-advertising/index.html: missing /_vercel/insights/script.js",
+    "services/digital-marketing/index.html: missing /_vercel/insights/script.js",
+    "services/seo-content/index.html: missing /_vercel/insights/script.js",
+    "services/ai-automation/index.html: missing /_vercel/insights/script.js",
+    "marketplace/ink-portfolio/index.html: missing /_vercel/insights/script.js",
+    "marketplace/velora/index.html: missing /_vercel/insights/script.js",
+    "marketplace/orbit-dashboard/index.html: missing /_vercel/insights/script.js",
+    "marketplace/northline/index.html: missing /_vercel/insights/script.js",
+    "marketplace/atelier/index.html: missing /_vercel/insights/script.js",
+    "marketplace/inkvoid/index.html: missing /_vercel/insights/script.js",
+    "marketplace/auren/index.html: missing /_vercel/insights/script.js",
+    "marketplace/table-restaurant/index.html: missing /_vercel/insights/script.js",
+    "marketplace/boostmart/index.html: missing /_vercel/insights/script.js",
+    "marketplace/brand-launch-kit/index.html: missing /_vercel/insights/script.js",
+    "marketplace/studio-agency/index.html: missing /_vercel/insights/script.js",
+    "marketplace/stay-hospitality/index.html: missing /_vercel/insights/script.js"
+  ],
   "visual_qa": "Browser visual testing unavailable.",
   "metadata_lengths": [
     {
@@ -42,6 +82,11 @@
       "description": 146
     },
     {
+      "page": "off-hours-club/index.html",
+      "title": 47,
+      "description": 151
+    },
+    {
       "page": "contact/index.html",
       "title": 63,
       "description": 152
@@ -53,18 +98,23 @@
     },
     {
       "page": "portal/staff/index.html",
-      "title": 34,
-      "description": 130
+      "title": 29,
+      "description": 30
     },
     {
       "page": "portal/login/index.html",
-      "title": 44,
-      "description": 128
+      "title": 39,
+      "description": 98
     },
     {
       "page": "portal/client/index.html",
-      "title": 35,
-      "description": 131
+      "title": 30,
+      "description": 31
+    },
+    {
+      "page": "off-hours-club/shop/index.html",
+      "title": 54,
+      "description": 151
     },
     {
       "page": "work/grand-ho-tram/index.html",
@@ -112,9 +162,24 @@
       "description": 0
     },
     {
+      "page": "assets/previews/northline/index.html",
+      "title": 39,
+      "description": 146
+    },
+    {
+      "page": "assets/previews/atelier/index.html",
+      "title": 25,
+      "description": 0
+    },
+    {
       "page": "assets/previews/table-restaurant/index.html",
       "title": 28,
       "description": 0
+    },
+    {
+      "page": "assets/previews/boostmart/index.html",
+      "title": 33,
+      "description": 57
     },
     {
       "page": "assets/previews/brand-launch-kit/index.html",
@@ -162,14 +227,44 @@
       "description": 92
     },
     {
+      "page": "marketplace/velora/index.html",
+      "title": 47,
+      "description": 152
+    },
+    {
       "page": "marketplace/orbit-dashboard/index.html",
       "title": 48,
       "description": 111
     },
     {
+      "page": "marketplace/northline/index.html",
+      "title": 50,
+      "description": 150
+    },
+    {
+      "page": "marketplace/atelier/index.html",
+      "title": 51,
+      "description": 147
+    },
+    {
+      "page": "marketplace/inkvoid/index.html",
+      "title": 56,
+      "description": 150
+    },
+    {
+      "page": "marketplace/auren/index.html",
+      "title": 46,
+      "description": 160
+    },
+    {
       "page": "marketplace/table-restaurant/index.html",
       "title": 46,
       "description": 116
+    },
+    {
+      "page": "marketplace/boostmart/index.html",
+      "title": 47,
+      "description": 143
     },
     {
       "page": "marketplace/brand-launch-kit/index.html",

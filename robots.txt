@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /portal/
+Disallow: /preview/
 
 Sitemap: https://www.primo-mc.com/sitemap.xml

@@ -43,14 +43,14 @@ function enter(){
  const e3=x=>1-Math.pow(1-x,3),e2=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
  const open=e3(clamp((p-.03)/.34)),z=e2(clamp((p-.42)/.5));
  const vw=innerWidth,vh=innerHeight;
- const s0=Math.min(1.05,vw/(vw<700?900:760)),s1=(vw<vh?vw/582:Math.max(vw/582,vh/362))*1.04,s=s0*Math.pow(s1/s0,z);
+ const s0=Math.min(1.05,vw/(vw<700?900:760))/4,s1=(vw<vh?vw/582:Math.max(vw/582,vh/362))*1.04/4,s=s0*Math.pow(s1/s0,z);
  const th=108*open,zr=-40*(1-z),al=60+12*z,rad=Math.PI/180;
  /* screen centre in laptop space, to bring it to the middle of the view */
- const ly=-190+190*Math.cos(th*rad),lz=190*Math.sin(th*rad)+1;
+ const ly=-760+760*Math.cos(th*rad),lz=760*Math.sin(th*rad)+4;
  const y1=ly*Math.cos(zr*rad),x1=-ly*Math.sin(zr*rad);
  const Y=y1*Math.cos(al*rad)-lz*Math.sin(al*rad),Z=y1*Math.sin(al*rad)+lz*Math.cos(al*rad);
  enLap.style.transform='translate3d('+(-x1*s*z)+'px,'+(-Y*s*z+(1-z)*vh*.08)+'px,'+(-Z*s*z)+'px) scale('+s+') rotateX('+al+'deg) rotateZ('+zr+'deg)';
- enLid.style.transform='translateZ(1px) rotateX('+th+'deg)';
+ enLid.style.transform='translateZ(4px) rotateX('+th+'deg)';
  enSh.style.opacity=1-z;enGl.style.opacity=1-z;enLap.style.setProperty('--f',clamp((z-.7)/.3).toFixed(3));
  enCap.style.opacity=1-clamp((p-.1)/.16);enCap.style.transform='translateY('+(-p*60)+'px)';
 }
