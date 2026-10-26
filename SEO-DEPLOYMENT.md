@@ -31,7 +31,7 @@ When the production site is public, verify domain ownership in Google Search Con
 
 - New detail pages are in English. The existing homepage language switcher remains; no separate Thai/Vietnamese URL set or hreflang claims are added.
 - Client pages are qualitative overviews. No invented testimonials, review ratings, street addresses or numerical results are included.
-- The Contact page prepares an email draft for hello@primo-mc.com. It does not send a server-side message. The administrator email and live form backend still need final setup if direct submission is wanted.
+- The Contact page prepares an email draft for theuy.vanmol@primo-mc.com. It does not send a server-side message. The administrator email and live form backend still need final setup if direct submission is wanted.
 - The sign-up interface remains a demo: Google is not connected, no SMS is sent, no accounts are created. Phone demo code is 123456.
 - Orbit remains a concept using sample data.
 - Monument Extended is configured as the preferred font but awaits licensed font binaries. Inter and Noto Sans Thai are bundled as fallbacks.

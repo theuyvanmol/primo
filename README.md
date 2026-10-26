@@ -38,7 +38,7 @@ python3 scripts/check_site.py
 
 ## Existing limits
 
-The contact form opens an email draft to hello@primo-mc.com; direct submission and the final administrator email remain to be configured. The original signup modal and Orbit remain demos. Monument Extended still awaits licensed font files; Inter and Noto Sans Thai are bundled fallbacks. Detail pages are English; the homepage retains its language selector.
+The contact form opens an email draft to theuy.vanmol@primo-mc.com; direct submission and the final administrator email remain to be configured. The original signup modal and Orbit remain demos. Monument Extended still awaits licensed font files; Inter and Noto Sans Thai are bundled fallbacks. Detail pages are English; the homepage retains its language selector.
 
 Automated code and static checks passed; browser visual testing remains outstanding. The hosted preview remains private. See SEO-DEPLOYMENT.md and MARKETPLACE-PORTAL-NOTES.md before a public or commercial launch.
 
