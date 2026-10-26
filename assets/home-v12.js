@@ -69,18 +69,33 @@ if(ems.length){(document.fonts?document.fonts.ready:Promise.resolve()).then(()=>
  new IntersectionObserver(es=>{wOn=es[0].isIntersecting}).observe(sw);
  if(!reduce)setInterval(()=>{if(!wOn||document.hidden)return;wi++;words.style.transition='';setW(wi);if(wi===ems.length-1)setTimeout(()=>{words.style.transition='none';sw.style.transition='none';wi=0;setW(0);requestAnimationFrame(()=>{words.style.transition='';sw.style.transition=''})},950)},2700);
  $('#siteLanguage')?.addEventListener('change',()=>setTimeout(()=>setW(wi),60));addEventListener('resize',()=>setW(wi))}
-/* dashboard device rises and flattens */
-const dev=$('#device');
-function devT(){if(!dev)return;const r=dev.getBoundingClientRect(),t=clamp((innerHeight-r.top)/(innerHeight*.7));dev.style.setProperty('--t',(1-Math.pow(1-t,2)).toFixed(3))}
 /* patchwork -> one team */
 const stage=$('#stopStage'),tg=$('.toggle'),tb=tg?$$('button',tg):[],thumb=tg&&$('i',tg),nums=$$('.stop-n [data-a]');let touched=false;
 function setMode(m){if(!stage)return;stage.dataset.mode=m;tb.forEach(b=>{const on=b.dataset.mode===m;b.classList.toggle('on',on);b.setAttribute('aria-selected',on)});const b=tb.find(b=>b.dataset.mode===m);thumb.style.setProperty('--x',(b.offsetLeft-4)+'px');thumb.style.setProperty('--w',b.offsetWidth+'px');nums.forEach(n=>{n.textContent=m==='one'?n.dataset.b:n.dataset.a})}
 tb.forEach(b=>b.addEventListener('click',()=>{touched=true;setMode(b.dataset.mode)}));
 if(stage){(document.fonts?document.fonts.ready:Promise.resolve()).then(()=>setMode('patch'));addEventListener('resize',()=>setMode(stage.dataset.mode));
  new IntersectionObserver((es,o)=>{if(es[0].isIntersecting){o.disconnect();setTimeout(()=>{if(!touched)setMode('one')},reduce?0:2600)}},{threshold:.6}).observe(stage)}
+
+/* hero: cards fly outward, text blurs out (Fastwork) */
+const heroC=$('#heroC');
+function flyP(){if(!heroEl||reduce)return;const r=heroEl.getBoundingClientRect(),hp=clamp((-r.top)/(innerHeight*.8));heroEl.style.setProperty('--hp',hp.toFixed(3))}
+/* sticky notes fall in */
+const painS=$('#pain'),notes=$$('.nt'),panel=$('#why');
+function painP(){if(!painS||reduce)return;const r=painS.getBoundingClientRect(),span=painS.offsetHeight-innerHeight,p=clamp(-r.top/span);const e=x=>1-Math.pow(1-x,3);notes.forEach((n,i)=>n.style.setProperty('--k',e(clamp((p-.03-i*.055)/.13)).toFixed(3)))}
+if(reduce)notes.forEach(n=>n.style.setProperty('--k',1));
+if(panel)new IntersectionObserver((es,o)=>{if(es[0].isIntersecting){panel.classList.add('in');o.disconnect()}},{threshold:.2}).observe(panel);
+/* 7 handoffs -> 0 */
+const hand=$('#hand');
+if(hand){const z=$('.zero',hand);new IntersectionObserver((es,o)=>{if(es[0].isIntersecting){o.disconnect();hand.classList.add('in');if(reduce){z.textContent='0';return}const t0=performance.now();(function f(t){const p=clamp((t-t0-500)/1700);z.textContent=Math.round(7*(1-(1-Math.pow(1-p,3))));if(p<1)requestAnimationFrame(f)})(t0)}},{threshold:.5}).observe(hand)}
+/* sticky service showcase */
+const sl=$$('.sl'),sp=$$('.sp'),show=$('#services-show');let cur=0;
+const pick=i=>{if(i===cur&&sp[i].classList.contains('on'))return;cur=i;sl.forEach((b,k)=>b.setAttribute('aria-selected',k===i));sp.forEach((p,k)=>p.classList.toggle('on',k===i))};
+const desk=matchMedia('(min-width:901px)');
+sl.forEach((b,i)=>b.addEventListener('click',()=>{if(desk.matches){const r=show.getBoundingClientRect(),top=scrollY+r.top,span=show.offsetHeight-innerHeight;scrollTo({top:top+span*(i+.5)/sl.length,behavior:'smooth'})}else pick(i)}));
+function showP(){if(!show||!desk.matches)return;const r=show.getBoundingClientRect(),span=show.offsetHeight-innerHeight,p=Math.min(.999,Math.max(0,-r.top/span));pick(Math.floor(p*sl.length))}
 /* process timeline */
 const tl=$('#tl'),lis=tl?$$('li',tl):[];
 function tlp(){if(!tl)return;const r=tl.getBoundingClientRect();tl.style.setProperty('--tp',clamp((innerHeight*.62-r.top)/r.height).toFixed(3));lis.forEach(li=>li.classList.toggle('on',li.getBoundingClientRect().top<innerHeight*.62))}
-let cTick=false;const cOn=()=>{if(!cTick){cTick=true;requestAnimationFrame(()=>{cTick=false;tone();devT();tlp()})}};
+let cTick=false;const cOn=()=>{if(!cTick){cTick=true;requestAnimationFrame(()=>{cTick=false;tone();flyP();painP();tlp();showP()})}};
 addEventListener('scroll',cOn,{passive:true});addEventListener('resize',cOn);cOn();
 })();
