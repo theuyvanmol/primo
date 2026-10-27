@@ -1,7 +1,7 @@
 {
   "html_pages": 48,
   "indexable_pages": 35,
-  "checked_local_references": 2431,
+  "checked_local_references": 2466,
   "sitemap_urls": 35,
   "errors": [
     "404.html: missing /_vercel/insights/script.js",
