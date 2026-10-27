@@ -362,3 +362,18 @@ h1,h2,h3{font-weight:300;letter-spacing:-.045em;line-height:1.02;margin:0}
 .scr-flat .scr-ar{margin-top:calc(10px*var(--sc,1));color:var(--accent);font-size:calc(18px*var(--sc,1));animation:enb 1.6s ease-in-out infinite}
 .enter .scr-in{opacity:calc(1 - var(--fo,0))}
 @media(max-width:900px){.scr-flat .gx i{animation:none}}
+
+/* v17: phone fixes. Stage height bug, intro/laptop lite mode, voice widget vs contact pill */
+@media(max-width:900px){
+.shw-in{height:auto!important;min-height:0!important}
+.in-glow{filter:none}
+.in-logo{filter:none;animation:inLogoM .9s .1s cubic-bezier(.2,.8,.2,1) forwards}
+.in-logo .gx{filter:none}
+.in-word span{filter:none;animation-name:inWM}
+#intro.out .in-logo{animation:inZoomM .7s cubic-bezier(.7,0,.2,1) forwards}
+.gx i{animation:none;background-position:60% 0}
+.has-agent .fab{bottom:calc(108px + env(safe-area-inset-bottom))}
+}
+@keyframes inLogoM{0%{opacity:0;transform:translateY(-6px) scale(.7)}100%{opacity:1;transform:none}}
+@keyframes inWM{to{opacity:1;transform:none}}
+@keyframes inZoomM{from{opacity:1;transform:none}to{opacity:0;transform:scale(2.4)}}

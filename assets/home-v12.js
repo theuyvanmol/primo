@@ -43,8 +43,8 @@ function enter(){
  const e3=x=>1-Math.pow(1-x,3),e2=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
  const open=e3(clamp((p-.03)/.34)),z=e2(clamp((p-.42)/.5));
  const vw=innerWidth,vh=innerHeight;
- const K=2,s0=Math.min(1.05,vw/(vw<700?900:760))/K,s1=(vw<vh?vw/582:Math.max(vw/582,vh/362))*1.04/K,s=s0*Math.pow(s1/s0,z);
- en.style.setProperty('--q',(K/4)+'px');
+ const K=vw<700?1:2,s0=Math.min(1.05,vw/(vw<700?900:760))/K,s1=(vw<vh?vw/582:Math.max(vw/582,vh/362))*1.04/K,s=s0*Math.pow(s1/s0,z);
+ if(en._q!==K){en._q=K;en.style.setProperty('--q',(K/4)+'px')}
  const th=108*open,zr=-40*(1-z),al=60+12*z,rad=Math.PI/180;
  /* screen centre in laptop space, to bring it to the middle of the view */
  const ly=-190*K+190*K*Math.cos(th*rad),lz=190*K*Math.sin(th*rad)+K;
@@ -52,7 +52,7 @@ function enter(){
  const Y=y1*Math.cos(al*rad)-lz*Math.sin(al*rad),Z=y1*Math.sin(al*rad)+lz*Math.cos(al*rad);
  enLap.style.transform='translate3d('+(-x1*s*z)+'px,'+(-Y*s*z+(1-z)*vh*.08)+'px,'+(-Z*s*z)+'px) scale('+s+') rotateX('+al+'deg) rotateZ('+zr+'deg)';
  enLid.style.transform='translateZ('+K+'px) rotateX('+th+'deg)';
- en.style.setProperty('--fo',clamp((z-.82)/.14).toFixed(3));en.style.setProperty('--sc',(s*K).toFixed(3));enSh.style.opacity=1-z;enGl.style.opacity=1-z;enLap.style.setProperty('--f',clamp((z-.7)/.3).toFixed(3));
+ const fo=clamp((z-.82)/.14).toFixed(3),ff=clamp((z-.7)/.3).toFixed(3);if(en._fo!==fo){en._fo=fo;en.style.setProperty('--fo',fo);en.style.setProperty('--sc',(s*K).toFixed(3))}else if(z>.82)en.style.setProperty('--sc',(s*K).toFixed(3));const sh=(1-z).toFixed(3);if(en._sh!==sh){en._sh=sh;enSh.style.opacity=sh;enGl.style.opacity=sh}if(enLap._f!==ff){enLap._f=ff;enLap.style.setProperty('--f',ff)}
  enCap.style.opacity=1-clamp((p-.1)/.16);enCap.style.transform='translateY('+(-p*60)+'px)';
 }
 let enTick=false;const enOn=()=>{if(!enTick){enTick=true;requestAnimationFrame(()=>{enTick=false;enter()})}};addEventListener('scroll',enOn,{passive:true});addEventListener('resize',enOn);addEventListener('load',enOn);addEventListener('orientationchange',enOn);enter();setTimeout(enOn,400);
@@ -109,7 +109,7 @@ let tk=false;addEventListener('scroll',()=>{if(!tk){tk=true;requestAnimationFram
 /* logo intro + mouse-tilt laptop */
 (()=>{const intro=document.getElementById('intro'),root=document.documentElement;
 function done(){if(!intro)return;try{sessionStorage.setItem('pi','1')}catch(e){}root.classList.remove('intro-on');intro.remove()}
-if(intro&&root.classList.contains('intro-on')){let fin=false;const out=()=>{if(fin)return;fin=true;intro.classList.add('out');setTimeout(done,880)};const t=setTimeout(out,3000);['click','keydown','wheel','touchstart'].forEach(e=>addEventListener(e,()=>{clearTimeout(t);out()},{once:true,passive:true}));scrollTo(0,0)}
+if(intro&&root.classList.contains('intro-on')){let fin=false;const out=()=>{if(fin)return;fin=true;intro.classList.add('out');setTimeout(done,880)};const t=setTimeout(out,innerWidth<900?2200:3000);['click','keydown','wheel','touchstart'].forEach(e=>addEventListener(e,()=>{clearTimeout(t);out()},{once:true,passive:true}));scrollTo(0,0)}
 else if(intro)intro.remove();
 const lap=document.getElementById('enLap'),tl=document.getElementById('enTilt'),en=document.getElementById('enter');if(!lap||!tl||!en||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
 let mx=.5,my=.5,cx=.5,cy=.5,last=0;const coarse=matchMedia('(pointer:coarse)').matches;
