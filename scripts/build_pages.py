@@ -38,6 +38,10 @@ home=(LEGACY if (V12 and LEGACY.exists()) else ROOT/'index.html').read_text()
 styles='\n'.join(re.findall(r'<style[^>]*>(.*?)</style>',home,re.S));styles=styles.replace("url('assets/","url('").replace('url("assets/','url("')
 (ROOT/'assets/site-base.css').write_text(styles)
 FAVICONS='<link rel="icon" href="/assets/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png"><link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192.png"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">'
+def AGENT_TAG(prefix,path):
+ if not config.get('elevenlabs_agent_id') or path.startswith('portal'):return ''
+ return '<script src="'+prefix+'assets/agent.js" data-agent="'+esc(config['elevenlabs_agent_id'],quote=True)+'" defer></script>'
+
 ANALYTICS='<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script><script defer src="/_vercel/insights/script.js"></script>'
 SUPABASE_CDN='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js'
 NAV=[('services/','Services'),('work/','Our Work'),('hub/','PRIMO HUB'),('marketplace/','Marketplace'),('off-hours-club/','OFF HOURS CLUB'),('technology/','Technology'),('process/','Process'),('about/','About'),('contact/','Contact'),('portal/login/','Portal')]
@@ -170,7 +174,7 @@ for v in PAGES:
   if v['extra'].get('portal'):doc+='<script src="'+SUPABASE_CDN+'" defer></script>'+''.join('<script src="'+prefix+'assets/'+f+'" defer></script>' for f in ['portal-config.js','portal-app.js'])
   else:doc+=''.join('<script src="'+prefix+'assets/'+f+'" defer></script>' for f in ['catalogue.js','workspace-state.js','marketplace.js'])
  if v['extra'].get('ohc'):doc+='<script src="'+prefix+'assets/off-hours.js" defer></script>'
- doc+='<script src="'+prefix+'assets/pages.js" defer></script><script src="'+prefix+'assets/liquid-glass.js" defer></script>'+('' if v['extra'].get('ohc') or path.startswith('portal') else '<script src="'+prefix+'assets/curate.js" defer></script>')+'</body></html>'
+ doc+='<script src="'+prefix+'assets/pages.js" defer></script><script src="'+prefix+'assets/liquid-glass.js" defer></script>'+('' if v['extra'].get('ohc') or path.startswith('portal') else '<script src="'+prefix+'assets/curate.js" defer></script>')+AGENT_TAG(prefix,path)+'</body></html>'
  dest=ROOT/path/'index.html';dest.parent.mkdir(parents=True,exist_ok=True);dest.write_text(stamp_assets(doc))
  manifest.append({'path':path,'title':v['title'],'description':v['description'],'h1':v['h1'],'indexable':not v['extra'].get('private',False),'type':'article' if v['extra'].get('article') else 'service' if v['extra'].get('service') else 'page'})
 
@@ -219,6 +223,7 @@ if V12:
  import home_v12
  seo=re.search(r'<!-- PRIMO SEO START -->.*?<!-- PRIMO SEO END -->',home,re.S).group(0)
  home=home_v12.build(NAV,SERVICES,PROJECTS,client_art,seo,FAVICONS,ANALYTICS,'')
+ home=home.replace('</body>',AGENT_TAG('','')+'</body>',1)
 (ROOT/'index.html').write_text(stamp_assets(home))
 # Static infrastructure.
 urls=[BASE]+[BASE+v['path'] for v in PAGES if not v['extra'].get('private')]
