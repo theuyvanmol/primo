@@ -36,6 +36,7 @@ if(picker){
 
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
 /* Enter PRIMO World: lid opens, camera zooms into the screen */
+const entW=$('#entW'),entWin=$('#entWin'),entSky=$('#entSky');const sm=(a,b,x)=>{x=clamp((x-a)/(b-a));return x*x*(3-2*x)};
 const enGl=$('.en-glow'),en=$('#enter'),enS=$('#enStage'),enLap=$('#enLap'),enCap=$('#enCap'),enLid=enLap&&$('.lid',enLap),enSh=enS&&$('.en-shadow',enS);
 function enter(){
  if(!en||reduce)return;
@@ -43,8 +44,9 @@ function enter(){
  const e3=x=>1-Math.pow(1-x,3),e2=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
  const open=e3(clamp((p-.03)/.34)),z=e2(clamp((p-.42)/.5));
  const vw=innerWidth,vh=innerHeight;
- const K=vw<700?1:2,s0=Math.min(1.05,vw/(vw<700?900:760))/K,s1=(vw<vh?vw/582:Math.max(vw/582,vh/362))*1.04/K,s=s0*Math.pow(s1/s0,z);
+ const K=vw<700?1:2,s0=Math.min(1.05,vw/(vw<700?1150:760))/K,s1=(vw<vh?vw/582:Math.max(vw/582,vh/362))*1.04/K,s=s0*Math.pow(s1/s0,z);
  if(en._q!==K){en._q=K;en.style.setProperty('--q',(K/4)+'px')}
+ if(entW){const u=clamp(z*1.04),ue=u*u*(3-2*u),h=530*Math.pow(941/530,ue),f=(362*K)/h,cx=946-110*ue,cy=361+109.5*ue,tr='translate3d('+(291*K-cx*f)+'px,'+(181*K-cy*f)+'px,0) scale('+f.toFixed(4)+')';if(entW._t!==tr){entW._t=tr;entW.style.transform=tr}const so=(1-sm(.28,.58,u)).toFixed(3),wo=(1-sm(.62,.92,u)).toFixed(3);if(entSky._o!==so){entSky._o=so;entSky.style.opacity=so;entSky.style.visibility=so==='0.000'?'hidden':'visible'}if(entWin._o!==wo){entWin._o=wo;entWin.style.opacity=wo;entWin.style.visibility=wo==='0.000'?'hidden':'visible'}}
  const th=108*open,zr=-40*(1-z),al=60+12*z,rad=Math.PI/180;
  /* screen centre in laptop space, to bring it to the middle of the view */
  const ly=-190*K+190*K*Math.cos(th*rad),lz=190*K*Math.sin(th*rad)+K;

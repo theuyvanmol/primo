@@ -377,3 +377,13 @@ h1,h2,h3{font-weight:300;letter-spacing:-.045em;line-height:1.02;margin:0}
 @keyframes inLogoM{0%{opacity:0;transform:translateY(-6px) scale(.7)}100%{opacity:1;transform:none}}
 @keyframes inWM{to{opacity:1;transform:none}}
 @keyframes inZoomM{from{opacity:1;transform:none}to{opacity:0;transform:scale(2.4)}}
+
+/* v18: Bangkok skyline > window > office pull-back inside the laptop screen */
+.ent-w{position:absolute;left:0;top:0;width:1672px;height:941px;transform-origin:0 0;will-change:transform;contain:layout paint}
+.ent-w img{position:absolute;left:0;top:0;width:1672px;height:941px;display:block;max-width:none}
+.ent-win{position:absolute;left:290px;top:88px;width:1672px;height:941px;transform:scale(.72);transform-origin:0 0;clip-path:inset(0 4.3% 15.5% 10.9%)}
+.ent-sky{position:absolute;left:394px;top:92px;width:1672px;height:941px;transform:scale(.66);transform-origin:0 0;clip-path:inset(0 2.5% 12.5% 2.5%)}
+.enter .screen{background:#05060a}
+.scr-flat{justify-content:flex-end;padding-bottom:12vh}
+.scr-flat:before{content:"";position:absolute;left:0;right:0;bottom:0;height:60%;background:linear-gradient(transparent,#000000b3);z-index:-1}
+.scr-flat b,.scr-flat small{text-shadow:0 2px 20px #000b}
