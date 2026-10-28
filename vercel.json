@@ -117,10 +117,15 @@
         {
           "key": "X-Robots-Tag",
           "value": "noindex, nofollow, noarchive"
-        },
+        }
+      ]
+    },
+    {
+      "source": "/paddlepod(.*)",
+      "headers": [
         {
-          "key": "Cache-Control",
-          "value": "no-cache"
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow, noarchive"
         }
       ]
     }
