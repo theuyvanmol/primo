@@ -1,0 +1,74 @@
+[
+  {
+    "id": "preowned-rings-1",
+    "name": "14 Carat Gold Diamond Ring",
+    "url": "https://www.northumberlandgoldsmiths.com/product/14-carat-gold-diamond-ring/",
+    "image": "assets/preowned-rings-1.webp",
+    "price": "\u00a3590.00",
+    "category": "Rings",
+    "sourceImage": "https://www.northumberlandgoldsmiths.com/wp-content/uploads/2026/05/ChatGPT-Image-Sep-12-2026-03_49_12-PM-600x600.png"
+  },
+  {
+    "id": "preowned-rings-2",
+    "name": "14 Carat Gold Opal And Diamond Ring",
+    "url": "https://www.northumberlandgoldsmiths.com/product/14-carat-gold-opal-and-diamond-ring/",
+    "image": "assets/preowned-rings-2.webp",
+    "price": "\u00a31,495.00",
+    "category": "Rings",
+    "sourceImage": "https://www.northumberlandgoldsmiths.com/wp-content/uploads/2026/04/ChatGPT-Image-Sep-12-2026-03_43_23-PM-600x600.png"
+  },
+  {
+    "id": "preowned-chains-1",
+    "name": "18 Carat Yellow Gold Curb Chain",
+    "url": "https://www.northumberlandgoldsmiths.com/product/18-carat-yellow-gold-chain/",
+    "image": "assets/preowned-chains-1.webp",
+    "price": "\u00a3850.00",
+    "category": "Chains",
+    "sourceImage": "https://www.northumberlandgoldsmiths.com/wp-content/uploads/2025/11/Untitled-design-34-copy-9-600x600.png"
+  },
+  {
+    "id": "preowned-chains-2",
+    "name": "9 Carat Gold Fancy Chain",
+    "url": "https://www.northumberlandgoldsmiths.com/product/9-carat-yellow-gold-fancy-chain-2/",
+    "image": "assets/preowned-chains-2.webp",
+    "price": "\u00a3398.00",
+    "category": "Chains",
+    "sourceImage": "https://www.northumberlandgoldsmiths.com/wp-content/uploads/2026/05/Untitled-design-63-copy-7-2-600x600.png"
+  },
+  {
+    "id": "preowned-bracelets-1",
+    "name": "9 Carat Dual Gold Fancy Bracelet",
+    "url": "https://www.northumberlandgoldsmiths.com/product/9-carat-dual-gold-fancy-bracelet/",
+    "image": "assets/preowned-bracelets-1.webp",
+    "price": "\u00a3389.00",
+    "category": "Bracelets",
+    "sourceImage": "https://www.northumberlandgoldsmiths.com/wp-content/uploads/2026/05/Untitled-640-x-640-px-600x600.png"
+  },
+  {
+    "id": "preowned-bracelets-2",
+    "name": "9 Carat Gold Diamond Tennis Bracelet",
+    "url": "https://www.northumberlandgoldsmiths.com/product/9-carat-gold-diamond-tennis-bracelet/",
+    "image": "assets/preowned-bracelets-2.webp",
+    "price": "\u00a3649.00",
+    "category": "Bracelets",
+    "sourceImage": "https://www.northumberlandgoldsmiths.com/wp-content/uploads/2024/01/Untitled-design-4-1-600x600.png"
+  },
+  {
+    "id": "preowned-pendants-1",
+    "name": "9 Carat Gold Created Ruby And Diamond Pendant",
+    "url": "https://www.northumberlandgoldsmiths.com/product/9-carat-gold-created-ruby-and-diamond-pendant/",
+    "image": "assets/preowned-pendants-1.webp",
+    "price": "\u00a3195.00",
+    "category": "Pendants",
+    "sourceImage": "https://www.northumberlandgoldsmiths.com/wp-content/uploads/2026/10/09bacf59-0819-4da1-a6d9-0d6910660023-600x600.png"
+  },
+  {
+    "id": "preowned-pendants-2",
+    "name": "9 Carat Gold Green Agate And Cubic Zirconia Pendant",
+    "url": "https://www.northumberlandgoldsmiths.com/product/9ct-gold-green-agate-and-cubic-zirconia-pendant/",
+    "image": "assets/preowned-pendants-2.webp",
+    "price": "\u00a375.00",
+    "category": "Pendants",
+    "sourceImage": "https://www.northumberlandgoldsmiths.com/wp-content/uploads/2026/10/9730b41b-74e9-415d-92ae-f8f2a41dd648-600x600.png"
+  }
+]
