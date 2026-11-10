@@ -196,4 +196,31 @@ header nav>a.btn{padding:14px 20px!important;min-height:0!important}
 @media(max-width:800px){.hero{height:calc(100svh - 76px)!important;min-height:560px!important}.chapter{height:68vh;min-height:420px}.chapter figcaption{bottom:28px}.collection-grid{grid-template-columns:1fr!important;margin:0!important}.collection .visual{height:62vh!important}.project-grid{grid-template-columns:1fr!important}.project-grid article:nth-child(1) .visual{height:52vh!important}.project-grid article:nth-child(2) .visual,.project-grid article:nth-child(3) .visual{height:62vh!important}}
 .project-grid .visual,.project-grid .visual.image-reveal{width:100%!important;max-width:none!important;transform:none!important;margin:0!important;border-radius:0!important}.project-grid .visual img{width:100%!important;height:100%!important;object-fit:cover!important;transform:none!important;opacity:1!important}.project-grid article{width:100%!important;max-width:none!important;margin:0!important;transform:none!important;min-width:0}
 .visual:after,.visual.image-reveal:after{display:none!important}
-</style><script src="/nostalgia/preview-banner.js" defer></script></body></html>
+</style><style id="hs-css">
+.hs{position:absolute;z-index:5;width:48px;height:48px;border-radius:24px;overflow:hidden;color:#fff;
+background:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,.08));
+-webkit-backdrop-filter:blur(14px) saturate(1.7);backdrop-filter:blur(14px) saturate(1.7);
+border:1px solid rgba(255,255,255,.55);box-shadow:inset 0 1px 1px rgba(255,255,255,.7),inset 0 -8px 16px rgba(255,255,255,.08),0 8px 28px rgba(0,0,0,.22);
+transition:width .5s cubic-bezier(.2,.8,.2,1),height .5s cubic-bezier(.2,.8,.2,1),border-radius .5s,background .4s,margin .4s}
+.hs:before{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.55),transparent 45%);pointer-events:none;opacity:.7}
+.hs-btn{position:absolute;left:0;top:0;width:48px;height:48px;border:0;background:none;padding:0;cursor:pointer;z-index:2;display:grid;place-items:center;color:#fff}
+.hs-btn span{position:relative;width:16px;height:16px;transition:transform .45s}
+.hs-btn span:before,.hs-btn span:after{content:'';position:absolute;left:50%;top:50%;width:16px;height:1.5px;background:#fff;transform:translate(-50%,-50%);box-shadow:0 0 6px rgba(0,0,0,.35)}
+.hs-btn span:after{transform:translate(-50%,-50%) rotate(90deg)}
+.hs-btn:focus-visible{outline:2px solid #fff;outline-offset:3px;border-radius:50%}
+.hs:not(.open){animation:hspulse 3.2s ease-in-out infinite}
+@keyframes hspulse{0%,100%{box-shadow:inset 0 1px 1px rgba(255,255,255,.7),0 8px 28px rgba(0,0,0,.22),0 0 0 0 rgba(255,255,255,.45)}50%{box-shadow:inset 0 1px 1px rgba(255,255,255,.7),0 8px 28px rgba(0,0,0,.22),0 0 0 12px rgba(255,255,255,0)}}
+.hs.open{border-radius:22px;background:linear-gradient(135deg,rgba(24,24,22,.58),rgba(24,24,22,.42));animation:none}
+.hs.open .hs-btn{left:auto;right:0}
+.hs.open .hs-btn span{transform:rotate(45deg)}
+.hs-card{padding:20px 22px 20px;opacity:0;transform:translateY(6px);transition:opacity .3s,transform .4s;position:relative;z-index:1;font-family:var(--font,'Manrope',sans-serif)}
+.hs.open .hs-card{opacity:1;transform:none;transition-delay:.18s}
+.hs-card small{display:block;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#e8d3a2;margin-bottom:8px;padding-right:40px}
+.hs-card b{display:block;font-family:'Cormorant Garamond','Playfair Display',Georgia,serif;font-size:26px;font-weight:500;line-height:1.1;margin-bottom:10px;padding-right:34px}
+.hs-card p{margin:0 0 14px;font-size:13px;line-height:1.6;color:#f1efe9!important}
+.hs-card a{font-size:12px;border-bottom:1px solid #e8d3a2;padding-bottom:3px;color:#fff}
+.collection .visual{overflow:hidden}
+@media(max-width:800px){.hs{width:44px;height:44px}.hs-btn{width:44px;height:44px}}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.hs{background:rgba(255,255,255,.4)}.hs.open{background:rgba(24,24,22,.82)}}
+@media(prefers-reduced-motion:reduce){.hs,.hs-card{transition:none}.hs:not(.open){animation:none}}
+</style><script src="/nostalgia/hotspots.js" defer></script><script src="/nostalgia/preview-banner.js" defer></script></body></html>
