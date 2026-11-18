@@ -67,7 +67,7 @@ let inN=false;function block(c,style=''){
 function kpis(list){
   const cl=list.filter(c=>!c.cancelled),b=cl.reduce((a,c)=>a+c.sw.length,0),cap=cl.reduce((a,c)=>a+c.cap,0),fill=cap?Math.round(b/cap*100):0;
   const full=cl.filter(c=>space(c)<=0).length,cov=cl.filter(c=>c.cover).length;
-  return `<div class="ks"><div><b>${cl.length}</b><span>classes${full?` · ${full} full`:''}</span></div><div><b>${b}<small>/${cap}</small></b><span>swimmers booked</span></div><div><b>${cap-b}</b><span>spaces left</span></div><div class="fillk"><b>${fill}%</b><span>full</span><i><u style="width:${fill}%"></u></i></div><div class="${cov?'warn':''}"><b>${cov}</b><span>${cov?'need cover':'cover sorted'}</span></div></div>`;
+  return `<span><b>${cl.length}</b> classes${full?` <em>${full} full</em>`:''}</span><span><b>${b}</b>/${cap} booked</span><span><b>${cap-b}</b> spaces left</span><span class="fl"><i><u style="width:${fill}%"></u></i><b>${fill}%</b> full</span>${cov?`<span class="cv"><b>${cov}</b> need cover</span>`:''}`;
 }
 function dayGrid(){
   const lanes=POOLS.filter(p=>TT.venues[p.v]),all1=classesFor(TT.w).filter(c=>c.d===TT.d),list=visible(all1),PX=2.5,BRK=38;
@@ -95,10 +95,14 @@ function agenda(){
       ${open?`<div class="ag-x">${c.sw.map(w=>`<span class="sc"><i>${ini(w.n)}</i>${esc2(w.n.split(' ')[0])}${w.att==='absent'?' <u>absent</u>':''}</span>`).join('')||'<span class="sub">No swimmers yet</span>'}${c.wl.length?`<span class="sc wl">+${c.wl.length} waiting</span>`:''}<button class="btn navy sm" data-a="ttOpen" data-id="${c.id}">Manage class</button></div>`:''}</article>`});
   return h;
 }
+const SHORT_ST={b1:'Baby',b2:'Baby',t1:'Tod',t2:'Tod',nr:'Red',no:'Orange',ny:'Yellow',ng:'Green',nb:'Blue',pc:'Pre-Comp',sf:'SwimFit',pv:'Private'};
+const shortSt=k=>SHORT_ST[k]||k.toUpperCase();
+function mc(c){const s=ST[c.st],n=c.sw.length,cls=['mc',n>=c.cap?'full':'',c.cancelled?'cancelled':'',c.cover?'cov':'',TT.sel===c.id?'sel':'',TT.q.trim()?(hit(c)?'hit':'dim'):''].join(' ');
+  return `<button class="${cls}" style="--c:${s.c}" data-a="ttOpen" data-id="${c.id}" aria-label="${s.name}, ${hm(c.t)}, ${c.v}, ${n} of ${c.cap} booked"><i>${c.v[0]}</i><span>${hm(c.t)}</span><em>${shortSt(c.st)}</em><b>${n}/${c.cap}</b></button>`}
 function weekGrid(){
-  const list=visible(classesFor(TT.w));
-  return `<div class="wk">${DAYS.map((D,d)=>{const cs=list.filter(c=>c.d===d).sort((a,b)=>a.t-b.t||a.pool.localeCompare(b.pool)),t=TT.w===TODAY.w&&d===TODAY.d;
-    return `<div class="wk-d ${t?'today':''}"><h4>${DAYF[d]}<span>${fmt(dateOf(TT.w,d),{day:'numeric',month:'short'})} · ${cs.length}</span></h4>${cs.map(c=>block(c)).join('')||'<div class="empty2">No classes match</div>'}</div>`}).join('')}</div>`;
+  const base=classesFor(TT.w),list=visible(base),hrs=[...new Set(base.map(c=>Math.floor(c.t/60)))].sort((a,b)=>a-b);
+  return `<div class="wg"><div class="wg-in"><div class="wg-h"></div>${DAYF.map((D,d)=>{const t=TT.w===TODAY.w&&d===TODAY.d,k=list.filter(c=>c.d===d).length;return `<div class="wg-h ${t?'today':''}"><b>${DAYS[d]}</b> ${dateOf(TT.w,d).getDate()}<small>${k} classes</small></div>`}).join('')}
+  ${hrs.map(h=>`<div class="wg-t">${String(h).padStart(2,'0')}:00</div>${DAYS.map((D,d)=>{const cs=list.filter(c=>c.d===d&&Math.floor(c.t/60)===h).sort((a,b)=>a.t-b.t);return `<div class="wg-c ${TT.w===TODAY.w&&d===TODAY.d?'today':''}">${cs.map(mc).join('')}</div>`}).join('')}`).join('')}</div></div>`;
 }
 const rangeList=()=>TT.view==='day'?classesFor(TT.w).filter(c=>c.d===TT.d):classesFor(TT.w);
 function paint(){
@@ -115,20 +119,21 @@ function filterFields(){return `<div class="ff"><label>Stage<div class="chips">$
 function toolbar(){
   const wkS=dateOf(TT.w,0),wkE=dateOf(TT.w,6),n=actF();
   return `<div class="tt-bar">
-  <div class="tt-top"><div class="tt-nav"><button class="ib2" data-a="ttWeek" data-n="-1" aria-label="Previous week">${ico('back',16)}</button>
+  <div class="tt-r1"><h2 class="tt-title">Venue timetable</h2>
+    <div class="tt-nav"><button class="ib2" data-a="ttWeek" data-n="-1" aria-label="Previous week">${ico('back',16)}</button>
     <span class="tt-date">${fmt(wkS,{day:'numeric',month:'short'})} – ${fmt(wkE,{day:'numeric',month:'short'})}</span>
     <button class="ib2" data-a="ttWeek" data-n="1" aria-label="Next week"><span style="display:grid;transform:scaleX(-1)">${ico('back',16)}</span></button></div>
     <button class="btn ghost sm" data-a="ttToday">Today</button><span class="grow"></span>
+    <div class="vchips">${['Killingworth','Shiremoor'].map(v=>`<button class="chip ${TT.venues[v]?'on':''}" data-a="ttVenue" data-v="${v}" aria-pressed="${!!TT.venues[v]}"><span class="bx">${TT.venues[v]?'✓':''}</span>${v}</button>`).join('')}</div>
     <div class="seg dsk"><button class="${TT.view==='day'?'on':''}" data-a="ttView" data-v="day">Day</button><button class="${TT.view==='week'?'on':''}" data-a="ttView" data-v="week">Week</button></div>
-    <button class="btn navy sm dsk" data-a="ttBook">${ico('plus',16)} Book a swimmer</button></div>
-  <div class="tt-row vn"><div class="vchips">${['Killingworth','Shiremoor'].map(v=>`<button class="chip ${TT.venues[v]?'on':''}" data-a="ttVenue" data-v="${v}" aria-pressed="${!!TT.venues[v]}"><span class="bx">${TT.venues[v]?'✓':''}</span>${v}</button>`).join('')}</div>
-    <button class="chip fbtn" data-a="ttFilters">${ico('sliders',16)} Filters${n?`<span class="nb">${n}</span>`:''}</button></div>
+    <button class="chip fbtn" data-a="ttFilters">${ico('sliders',16)} Filters${n?`<span class="nb">${n}</span>`:''}</button>
+    <button class="btn navy sm dsk" data-a="ttBook">${ico("plus",16)} Book</button></div>
   ${TT.view==='day'||isM()?`<div class="tt-days" id="ttDays">${DAYS.map((D,d)=>`<button class="dpill ${d===TT.d?'on':''} ${TT.w===TODAY.w&&d===TODAY.d?'today':''}" data-a="ttDay" data-d="${d}"><span>${D}</span><b>${dateOf(TT.w,d).getDate()}</b><span>${visible(classesFor(TT.w).filter(c=>c.d===d)).length}</span></button>`).join('')}</div>`:''}
   <div class="fpanel" ${TT.fo?'':'hidden'} id="fpanel">${TT.fo?filterFields():''}</div></div>`;
 }
 window.VIEWS_TT=function(){
   return {eb:'Admin · Killingworth and Shiremoor',h:'Venue timetable',sub:'Every class, swimmer and space across both venues. Hover a class to see who is booked, click it to manage it.',
-  body:`${toolbar()}<div id="ttKpi"></div><div id="ttGrid"></div><div class="tt-help">${ico('info',15)} Colour shows the stage. The number is swimmers booked out of places. Amber means one space left, dark means full.</div><button class="fab" data-a="ttBook" aria-label="Book a swimmer">${ico('plus',24)}</button><div id="ttDrawer">${drawer()}</div>`};
+  body:`${toolbar()}<div class="ks" id="ttKpi"></div><div id="ttGrid"></div><div class="tt-help">${ico('info',15)} Colour shows the stage. The number is swimmers booked out of places. Amber means one space left, dark means full.</div><button class="fab" data-a="ttBook" aria-label="Book a swimmer">${ico('plus',24)}</button><div id="ttDrawer">${drawer()}</div>`};
 };
 function drawer(){
   const c=TT.sel&&findC(TT.sel);if(!c)return '';
@@ -142,8 +147,8 @@ function drawer(){
     <div><h4>Teacher ${c.cover?pill('Cover needed','red'):''}</h4><div class="hrow" style="flex-wrap:nowrap"><select data-tt="cover" data-id="${c.id}" style="flex:1" aria-label="Teacher">${TEACH.map(t=>`<option ${t===c.teacher?'selected':''}>${t}</option>`).join('')}</select>${c.cover?`<span class="sub">${esc2(c.teacher)} is off</span>`:''}</div></div>
     <div><h4>Swimmers <span style="text-transform:none;letter-spacing:0;font:500 12.5px var(--body)">${pr} of ${n} marked present</span></h4>
       ${c.sw.map((x,i)=>`<div class="sw-r"><span class="a">${ini(x.n)}</span><span class="nm">${esc2(x.n)} ${x.tag?pill(x.tag,'blue'):''}<small>${x.age}</small></span>
-        <button class="mini ${x.att==='present'?'on-p':''}" data-a="ttAtt" data-i="${i}" data-s="present" aria-pressed="${x.att==='present'}">Present</button><button class="mini ${x.att==='absent'?'on-a':''}" data-a="ttAtt" data-i="${i}" data-s="absent" aria-pressed="${x.att==='absent'}">Absent</button>
-        <button class="mini ic" data-a="ttMove" data-i="${i}" aria-label="Move ${esc2(x.n)} to another class" title="Move">${ico('arrow',14)}</button><button class="mini ic" data-a="ttRemove" data-i="${i}" aria-label="Remove ${esc2(x.n)}" title="Remove">${ico('x',14)}</button></div>`).join('')||'<div class="empty2">No swimmers booked yet.</div>'}
+        <span class="att"><button class="mini ${x.att==='present'?'on-p':''}" data-a="ttAtt" data-i="${i}" data-s="present" aria-pressed="${x.att==='present'}">Present</button><button class="mini ${x.att==='absent'?'on-a':''}" data-a="ttAtt" data-i="${i}" data-s="absent" aria-pressed="${x.att==='absent'}">Absent</button></span><span class="acts">
+        <button class="mini ic" data-a="ttMove" data-i="${i}" aria-label="Move ${esc2(x.n)} to another class" title="Move">${ico('arrow',14)}</button><button class="mini ic" data-a="ttRemove" data-i="${i}" aria-label="Remove ${esc2(x.n)}" title="Remove">${ico('x',14)}</button></span></div>`).join('')||'<div class="empty2">No swimmers booked yet.</div>'}
       <div class="hrow" style="margin-top:12px;flex-wrap:nowrap"><input type="text" id="ttAddN" list="ttNames" placeholder="${sp>0?'Add a swimmer by name':'Add to the waiting list'}" style="flex:1;min-width:0" aria-label="Swimmer name"><datalist id="ttNames">${['Mia Price','Ruby Walsh','Isla Bennett','Zara Khan','Freddie Walsh','Alfie Thompson','Olivia Thompson','Jack Ellis'].map(x=>`<option value="${x}">`).join('')}</datalist><button class="btn sm navy" data-a="ttAdd">${sp>0?'Add':'Join list'}</button></div></div>
     ${c.wl.length?`<div><h4>Waiting list ${pill(c.wl.length,'amber')}</h4>${c.wl.map((x,i)=>`<div class="sw-r"><span class="a">${ini(x)}</span><span class="nm">${esc2(x)}<small>Position ${i+1}</small></span>${sp>0&&i===0?`<button class="btn sm" data-a="ttOffer">Offer space</button>`:''}</div>`).join('')}</div>`:''}
     <div class="dact"><button class="btn ghost sm" data-a="ttMsg">${ico('mail',16)} Message parents</button><button class="btn ghost sm" data-a="ttReg">${ico('check',16)} ${c.done?'Register done':'Complete register'}</button></div>
@@ -206,7 +211,7 @@ function showPop(c,x,y){
   let L=x+18;if(L+w>innerWidth-8)L=x-w-18;pop.style.left=Math.max(8,L)+'px';pop.style.top=Math.max(8,Math.min(innerHeight-h-8,y-20))+'px';
 }
 document.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse'||S.view!=='timetable'||TT.sel){if(!pop.hidden)hidePop();return}
-  const b=e.target.closest&&e.target.closest('.cb');if(!b){hidePop();return}const c=findC(b.dataset.id);if(c)showPop(c,e.clientX,e.clientY)});
+  const b=e.target.closest&&e.target.closest('.cb,.mc');if(!b){hidePop();return}const c=findC(b.dataset.id);if(c)showPop(c,e.clientX,e.clientY)});
 window.addEventListener('scroll',hidePop,{passive:true});document.addEventListener('pointerleave',hidePop,true);
 
 /* shell: nav, dashboard card, staff layout */
@@ -216,7 +221,9 @@ A.timetable=window.VIEWS_TT;
 TABS.admin=['dash','timetable','inbox','cust'];SHORT.timetable='Timetable';
 const _dash=A.dash;
 A.dash=function(){const v=_dash(),now=classesFor(0).filter(c=>c.d===TODAY.d&&c.t+c.dur>=TODAY.m&&!c.cancelled).sort((a,b)=>a.t-b.t).slice(0,4);
-  inN=true;v.body=`<div class="card"><div class="ch"><div><h3>Next classes today</h3><span class="sub">Wednesday 4 November · both venues</span></div><button class="btn sm navy" data-a="go" data-v="timetable">${ico('cal',16)} Open venue timetable</button></div><div class="nxt">${now.map(c=>block(c)).join('')}</div></div>`+v.body;inN=false;return v};
+  const td=classesFor(0).filter(c=>c.d===TODAY.d&&!c.cancelled),tb=td.reduce((a,c)=>a+c.sw.length,0),tc=td.reduce((a,c)=>a+c.cap,0),wk=classesFor(0).filter(c=>!c.cancelled),wsp=wk.reduce((a,c)=>a+space(c),0),cv=wk.filter(c=>c.cover).length;
+  const stats=`<div class="dstats"><button data-a="go" data-v="timetable"><span>Classes today</span><b>${td.length}</b><em>${td.filter(c=>c.t+c.dur<TODAY.m).length} done</em></button><button data-a="go" data-v="timetable"><span>Swimmers today</span><b>${tb}</b><em>of ${tc} places</em></button><button data-a="go" data-v="timetable"><span>Spaces to fill this week</span><b>${wsp}</b><em>across both venues</em></button><button data-a="go" data-v="staff" class="${cv?'warn':''}"><span>Classes needing cover</span><b>${cv}</b><em>${cv?'assign a teacher':'all covered'}</em></button></div>`;
+  inN=true;v.body=stats+`<div class="card"><div class="ch"><div><h3>Next classes today</h3><span class="sub">Wednesday 4 November · both venues</span></div><button class="btn sm navy" data-a="go" data-v="timetable">${ico('cal',16)} Open venue timetable</button></div><div class="nxt">${now.map(c=>block(c)).join('')}</div></div>`+v.body;inN=false;return v};
 const _r=render;
 render=function(sc){_r(sc);
   const staff=S.role!=='parent';document.body.classList.toggle('staff',staff);
@@ -226,6 +233,7 @@ render=function(sc){_r(sc);
     if(m&&b&&!m.querySelector('.ph'))m.insertAdjacentHTML('afterbegin',`<div class="ph"><div>${b.innerHTML.replace(/<svg[\s\S]*?<\/svg>/g,'')}</div></div>`);
     const sd=document.getElementById('side');if(sd&&!sd.querySelector('.sb-logo')){sd.insertAdjacentHTML('afterbegin','<div class="sb-logo">PaddleP<i>o</i>d<small>Staff workspace</small></div>');sd.insertAdjacentHTML('beforeend',`<div class="sb-foot"><b>${ME()}</b><span>${{super:'Super admin',admin:'Admin',teacher:'Teacher'}[S.role]}</span><span>Killingworth · Shiremoor</span></div>`)}
     if(S.view==='timetable')paint();}
+  if(staff){const sd=document.getElementById('side');if(sd&&!sd.querySelector('.sb-g')){const grp={dash:'Today',inbox:'People',tasks:'Run the business',today:'Today'};[...sd.querySelectorAll('button[data-v]')].forEach(bt=>{const g=grp[bt.dataset.v];if(g)bt.insertAdjacentHTML('beforebegin',`<div class="sb-g">${g}</div>`)})}}
 };
 const _fh=window.__h0||'';
 try{if(!_fh||_fh==='#'){S.role='admin';S.view='timetable'}else{const h=_fh.slice(1).split('-');if(VIEWS[h[0]]&&VIEWS[h[0]][h[1]]){S.role=h[0];S.view=h[1]}}}catch(e){}
