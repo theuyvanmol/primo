@@ -48,24 +48,27 @@ function classesFor(w){
 }
 const all=()=>{const a=[];for(let w=-1;w<=3;w++)a.push(...classesFor(w));return a};
 const findC=id=>all().find(c=>c.id===id);
-const TT=window.TT={fo:false,sheet:false,exp:null,w:0,view:'day',d:TODAY.d,venues:{Killingworth:true,Shiremoor:true},stages:{},teacher:'All',spaces:false,q:'',sel:null};
+const TT=window.TT={draft:false,sort:{k:'day',d:1},fo:false,sheet:false,exp:null,w:0,view:'day',d:TODAY.d,venues:{Killingworth:true,Shiremoor:true},stages:{},teacher:'All',spaces:false,q:'',sel:null};
+const isTT=()=>S.view==='timetable'||S.view==='planner';
 const esc2=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const ini=n=>n.split(' ').map(x=>x[0]).join('').slice(0,2);
 const space=c=>c.cap-c.sw.length;
+const dirty=c=>!!(c._o||c._new||c._del);
+const dirtyList=window.dirtyList=()=>all().filter(dirty);
 function visible(arr){
   const sg=Object.keys(TT.stages).filter(k=>TT.stages[k]);
-  return arr.filter(c=>TT.venues[c.v]&&(!sg.length||sg.includes(ST[c.st].fam))&&(TT.teacher==='All'||c.teacher===TT.teacher)&&(!TT.spaces||(space(c)>0&&!c.cancelled)));
+  return arr.filter(c=>(TT.draft||!c._del)&&TT.venues[c.v]&&(!sg.length||sg.includes(ST[c.st].fam))&&(TT.teacher==='All'||c.teacher===TT.teacher)&&(!TT.spaces||(space(c)>0&&!c.cancelled)));
 }
 const hit=c=>{const q=TT.q.trim().toLowerCase();return q&&c.sw.some(s=>s.n.toLowerCase().includes(q))};
-let inN=false;function block(c,style=''){
-  const s=ST[c.st],sp=space(c),n=c.sw.length,cls=['cb',c.cover&&!c.cancelled?'cover':'',c.cancelled?'cancelled':'',TT.sel===c.id?'sel':'',c.done?'done':'',TT.q.trim()?(hit(c)?'hit':'dim'):''].join(' ');
+let GRID=null,inN=false;function block(c,style=''){
+  const s=ST[c.st],sp=space(c),n=c.sw.length,cls=['cb',c.cover&&!c.cancelled?'cover':'',c.cancelled||c._del?'cancelled':'',dirty(c)&&TT.draft?'draft':'',TT.sel===c.id?'sel':'',c.done?'done':'',TT.q.trim()?(hit(c)?'hit':'dim'):''].join(' ');
   const cc=n>=c.cap?'full':(sp<=1&&n>0?'low':'');
   return `<button class="${cls}" style="--c:${s.c};${style}" data-a="ttOpen" data-id="${c.id}" aria-label="${s.name}, ${hm(c.t)}, ${c.v}, ${n} of ${c.cap} booked">
-    <span class="t1"><span>${TT.view==="week"&&!inN?hm(c.t):hm(c.t)+"–"+hm(c.t+c.dur)}</span><span class="cnt2 ${cc}">${n}/${c.cap}</span></span>
+    <span class="t1"><span>${TT.view==="week"&&!inN?hm(c.t):hm(c.t)+"–"+hm(c.t+c.dur)}</span><span class="cnt2 ${cc}">${n}/${c.cap}</span></span>${dirty(c)&&TT.draft?`<span class="dtag">${c._new?"New":c._del?"Removed":"Moved"}</span>`:""}
     <span class="nm">${s.name}</span><span class="tc">${c.v==='Killingworth'?'KW':'SM'} · ${c.pn} · ${esc2(c.teacher)}</span><span class="mp"><i style="width:${Math.round(n/c.cap*100)}%"></i></span></button>`;
 }
 function kpis(list){
-  const cl=list.filter(c=>!c.cancelled),b=cl.reduce((a,c)=>a+c.sw.length,0),cap=cl.reduce((a,c)=>a+c.cap,0),fill=cap?Math.round(b/cap*100):0;
+  const cl=list.filter(c=>!c.cancelled&&!c._del),b=cl.reduce((a,c)=>a+c.sw.length,0),cap=cl.reduce((a,c)=>a+c.cap,0),fill=cap?Math.round(b/cap*100):0;
   const full=cl.filter(c=>space(c)<=0).length,cov=cl.filter(c=>c.cover).length;
   return `<span><b>${cl.length}</b> classes${full?` <em>${full} full</em>`:''}</span><span><b>${b}</b>/${cap} booked</span><span><b>${cap-b}</b> spaces left</span><span class="fl"><i><u style="width:${fill}%"></u></i><b>${fill}%</b> full</span>${cov?`<span class="cv"><b>${cov}</b> need cover</span>`:''}`;
 }
@@ -75,11 +78,11 @@ function dayGrid(){
   const ts=all1.map(c=>[c.t,c.t+c.dur]).sort((x,y)=>x[0]-y[0]),segs=[];
   ts.forEach(([a,b])=>{a=Math.floor((a-20)/30)*30;b=Math.ceil((b+20)/30)*30;const l=segs[segs.length-1];if(l&&a-l[1]<=90)l[1]=Math.max(l[1],b);else segs.push([a,b])});
   let off=0;segs.forEach((g,i)=>{g.push(off);off+=(g[1]-g[0])*PX+(i<segs.length-1?BRK:0)});
-  const H=off,Y=m=>{for(const g of segs)if(m>=g[0]&&m<=g[1])return g[2]+(m-g[0])*PX;return null};
+  GRID={segs,PX};const H=off,Y=m=>{for(const g of segs)if(m>=g[0]&&m<=g[1])return g[2]+(m-g[0])*PX;return null};
   const isT=TT.w===TODAY.w&&TT.d===TODAY.d,ny=isT?Y(TODAY.m):null;
   const lines=[];segs.forEach((g,i)=>{for(let m=g[0];m<=g[1];m+=30)lines.push(m)});
-  const col=p=>`<div class="dg-c" style="height:${H}px">${lines.map(m=>`<div class="hl" style="top:${Y(m)}px"></div>`).join('')}${segs.slice(0,-1).map((g,i)=>`<div class="brk" style="top:${g[2]+(g[1]-g[0])*PX}px;height:${BRK}px"></div>`).join('')}${list.filter(c=>c.pool===p.id).map(c=>block(c,`top:${Y(c.t)+2}px;height:${c.dur*PX-4}px`)).join('')}${ny!==null?`<div class="nowl" style="top:${ny}px"></div>`:''}</div>`;
-  return `<div class="dg" id="dg"><div class="dg-in" style="--n:${lanes.length}"><div class="dg-h corner"></div>${lanes.map(p=>`<div class="dg-h">${p.v}<small>${p.n} · ${list.filter(c=>c.pool===p.id).length} classes</small></div>`).join('')}
+  const col=p=>`<div class="dg-c" data-pool="${p.id}" style="height:${H}px">${lines.map(m=>`<div class="hl" style="top:${Y(m)}px"></div>`).join('')}${segs.slice(0,-1).map((g,i)=>`<div class="brk" style="top:${g[2]+(g[1]-g[0])*PX}px;height:${BRK}px"></div>`).join('')}${list.filter(c=>c.pool===p.id).map(c=>block(c,`top:${Y(c.t)+2}px;height:${c.dur*PX-4}px`)).join('')}${ny!==null?`<div class="nowl" style="top:${ny}px"></div>`:''}</div>`;
+  return `<div class="dg ${TT.draft?"dr":""}" id="dg"><div class="dg-in" style="--n:${lanes.length}"><div class="dg-h corner"></div>${lanes.map(p=>`<div class="dg-h">${p.v}<small>${p.n} · ${list.filter(c=>c.pool===p.id).length} classes</small></div>`).join('')}
   <div class="dg-t" style="height:${H}px">${lines.filter(m=>m%60===0).map(m=>`<span style="top:${Y(m)}px">${hm(m)}</span>`).join('')}${segs.slice(0,-1).map(g=>`<span class="bk" style="top:${g[2]+(g[1]-g[0])*PX+BRK/2}px">break</span>`).join('')}</div>${lanes.map(col).join('')}</div></div>`;
 }
 const isM=()=>window.matchMedia('(max-width:900px)').matches;
@@ -101,13 +104,21 @@ function mc(c){const s=ST[c.st],n=c.sw.length,cls=['mc',n>=c.cap?'full':'',c.can
   return `<button class="${cls}" style="--c:${s.c}" data-a="ttOpen" data-id="${c.id}" aria-label="${s.name}, ${hm(c.t)}, ${c.v}, ${n} of ${c.cap} booked"><i>${c.v[0]}</i><span>${hm(c.t)}</span><em>${shortSt(c.st)}</em><b>${n}/${c.cap}</b></button>`}
 function weekGrid(){
   const base=classesFor(TT.w),list=visible(base),hrs=[...new Set(base.map(c=>Math.floor(c.t/60)))].sort((a,b)=>a-b);
-  return `<div class="wg"><div class="wg-in"><div class="wg-h"></div>${DAYF.map((D,d)=>{const t=TT.w===TODAY.w&&d===TODAY.d,k=list.filter(c=>c.d===d).length;return `<div class="wg-h ${t?'today':''}"><b>${DAYS[d]}</b> ${dateOf(TT.w,d).getDate()}<small>${k} classes</small></div>`}).join('')}
+  return `<div class="wg ${TT.draft?"dr":""}"><div class="wg-in"><div class="wg-h"></div>${DAYF.map((D,d)=>{const t=TT.w===TODAY.w&&d===TODAY.d,k=list.filter(c=>c.d===d).length;return `<div class="wg-h ${t?'today':''}"><b>${DAYS[d]}</b> ${dateOf(TT.w,d).getDate()}<small>${k} classes</small></div>`}).join('')}
   ${hrs.map(h=>`<div class="wg-t">${String(h).padStart(2,'0')}:00</div>${DAYS.map((D,d)=>{const cs=list.filter(c=>c.d===d&&Math.floor(c.t/60)===h).sort((a,b)=>a.t-b.t);return `<div class="wg-c ${TT.w===TODAY.w&&d===TODAY.d?'today':''}">${cs.map(mc).join('')}</div>`}).join('')}`).join('')}</div></div>`;
 }
-const rangeList=()=>TT.view==='day'?classesFor(TT.w).filter(c=>c.d===TT.d):classesFor(TT.w);
+function listView(){
+  const k=TT.sort.k,dir=TT.sort.d,key={day:c=>c.d*2000+c.t,time:c=>c.t*10+c.d,venue:c=>c.v+c.pn,stage:c=>STAGES.findIndex(x=>x[0]===c.st),teacher:c=>c.teacher,booked:c=>c.sw.length,spaces:c=>space(c)}[k]||(c=>c.d*2000+c.t);
+  const rows=visible(classesFor(TT.w)).slice().sort((a,b)=>{const x=key(a),y=key(b);return(x>y?1:x<y?-1:0)*dir});
+  const th=(l,kk)=>`<th><button data-a="ttSort" data-k="${kk}">${l}${TT.sort.k===kk?(TT.sort.d>0?' ▲':' ▼'):''}</button></th>`;
+  return `<div class="lv ${TT.draft?'dr':''}"><div class="lv-bar"><span>${rows.length} classes · week of ${fmt(dateOf(TT.w,0),{day:'numeric',month:'short'})}</span><button class="btn ghost sm" data-a="ttCsv">Download for Excel (CSV)</button></div><div class="lv-s"><table><thead><tr>${th('Day','day')}${th('Time','time')}${th('Venue','venue')}${th('Stage','stage')}${th('Teacher','teacher')}${th('Booked','booked')}${th('Spaces','spaces')}<th>Waiting</th><th>Status</th></tr></thead><tbody>
+  ${rows.map(c=>{const s=ST[c.st],n=c.sw.length;return `<tr class="${dirty(c)&&TT.draft?'draft':''}" data-a="ttOpen" data-id="${c.id}" tabindex="0"><td>${DAYS[c.d]} ${dateOf(c.w,c.d).getDate()}</td><td><b>${hm(c.t)}</b></td><td>${c.v}<small>${c.pn}</small></td><td><span class="sdot" style="background:${s.c}"></span>${s.name}</td><td>${esc2(c.teacher)}</td><td><span class="cnt2 ${n>=c.cap?'full':space(c)===1?'low':''}">${n}/${c.cap}</span></td><td>${space(c)}</td><td>${c.wl.length||''}</td><td>${c._del?pill('Removed','red'):c._new?pill('New','blue'):dirty(c)&&TT.draft?pill('Moved','amber'):c.cancelled?pill('Cancelled','red'):c.cover?pill('Cover needed','red'):c.done?pill('Done','green'):''}</td></tr>`}).join('')}</tbody></table></div></div>`;
+}
+const csvEsc=v=>'"'+String(v).replace(/"/g,'""')+'"';
+const rangeList=()=>TT.view==='day'||isM()?classesFor(TT.w).filter(c=>c.d===TT.d):classesFor(TT.w);
 function paint(){
   const k=document.getElementById('ttKpi'),g=document.getElementById('ttGrid');if(!k||!g)return;
-  k.innerHTML=kpis(visible(rangeList()));g.innerHTML=isM()?agenda():TT.view==='day'?dayGrid():weekGrid();
+  k.innerHTML=kpis(visible(rangeList()));g.innerHTML=isM()?agenda():TT.view==='list'?listView():TT.view==='day'?dayGrid():weekGrid();
   const hc=document.getElementById('ttHits');if(hc){const q=TT.q.trim();hc.textContent=q?`${visible(rangeList()).filter(hit).length} classes with “${q}”`:''}
 }
 const actF=()=>Object.values(TT.stages).filter(Boolean).length+(TT.teacher!=='All'?1:0)+(TT.spaces?1:0)+(TT.q.trim()?1:0);
@@ -116,25 +127,49 @@ function filterFields(){return `<div class="ff"><label>Stage<div class="chips">$
   <label>Teacher<select data-tt="teacher">${['All',...TEACH].map(t=>`<option ${t===TT.teacher?'selected':''}>${t}</option>`).join('')}</select></label>
   <label>Swimmer<input type="search" data-tt="q" placeholder="Find a swimmer" value="${esc2(TT.q)}"></label>
   <button class="chip ${TT.spaces?'on':''}" data-a="ttSpaces" aria-pressed="${TT.spaces}"><span class="bx">${TT.spaces?'✓':''}</span>Only classes with spaces</button></div>`}
+function banner(){const d=dirtyList(),mv=d.filter(c=>c._o&&!c._new&&!c._del).length,nw=d.filter(c=>c._new).length,rm=d.filter(c=>c._del).length,aff=affected(d);
+  return `<div class="dbar"><div class="dtx"><b>Sandbox</b> <span>Nothing here is live until you publish. ${d.length?`${d.length} change${d.length>1?'s':''}${mv?` · ${mv} moved`:''}${nw?` · ${nw} new`:''}${rm?` · ${rm} removed`:''}${aff?` · ${aff} swimmers affected`:''}`:(isM()?'Tap a class to move it.':'Drag classes to move them, or click one to edit it.')}</span></div>
+  <div class="dbt"><button class="btn ghost sm" data-a="ttAddClass">${ico('plus',16)} Add class</button>${d.length?`<button class="btn ghost sm" data-a="ttDiscard">Discard</button><button class="btn sm" data-a="ttReview">Review and publish</button>`:''}</div></div>`}
+function affected(d){return d.filter(c=>c._o&&(c._o.d!==c.d||c._o.t!==c.t||c._o.pool!==c.pool)||c._del).reduce((a,c)=>a+c.sw.length,0)}
+function tryMove(c,to,commit){
+  const p=POOLS.find(x=>x.id===(to.pool||c.pool)),d=to.d!=null?to.d:c.d,t=to.t!=null?to.t:c.t,teacher=to.teacher||c.teacher;
+  if(t<480||t+c.dur>1200)return{ok:false,msg:'Classes have to sit between 08:00 and 20:00.'};
+  const others=classesFor(c.w).filter(x=>x!==c&&!x._del&&!x.cancelled);
+  const pc=others.find(x=>x.d===d&&x.pool===p.id&&x.t<t+c.dur&&t<x.t+x.dur);
+  if(pc)return{ok:false,msg:`${p.v} ${p.n} is already in use at ${hm(pc.t)}.`};
+  const tcl=others.find(x=>x.d===d&&x.teacher===teacher&&x.t<t+c.dur&&t<x.t+x.dur);
+  if(commit){if(!c._o)c._o={d:c.d,t:c.t,pool:c.pool,v:c.v,pn:c.pn,teacher:c.teacher};Object.assign(c,{d,t,pool:p.id,v:p.v,pn:p.n,teacher});
+    if(c._o.d===c.d&&c._o.t===c.t&&c._o.pool===c.pool&&c._o.teacher===c.teacher&&!c._new)delete c._o}
+  return{ok:true,warn:tcl?`${teacher} is also teaching at ${hm(tcl.t)}.`:''};
+}
+function revert(c){if(c._o){Object.assign(c,c._o);delete c._o}c._del=false}
 function toolbar(){
   const wkS=dateOf(TT.w,0),wkE=dateOf(TT.w,6),n=actF();
   return `<div class="tt-bar">
-  <div class="tt-r1"><h2 class="tt-title">Venue timetable</h2>
+  <div class="tt-rows"><div class="tt-r1"><h2 class="tt-title">${S.view==='planner'?'Class planner':'Venue timetable'}</h2>
     <div class="tt-nav"><button class="ib2" data-a="ttWeek" data-n="-1" aria-label="Previous week">${ico('back',16)}</button>
     <span class="tt-date">${fmt(wkS,{day:'numeric',month:'short'})} – ${fmt(wkE,{day:'numeric',month:'short'})}</span>
     <button class="ib2" data-a="ttWeek" data-n="1" aria-label="Next week"><span style="display:grid;transform:scaleX(-1)">${ico('back',16)}</span></button></div>
     <button class="btn ghost sm" data-a="ttToday">Today</button><span class="grow"></span>
-    <div class="vchips">${['Killingworth','Shiremoor'].map(v=>`<button class="chip ${TT.venues[v]?'on':''}" data-a="ttVenue" data-v="${v}" aria-pressed="${!!TT.venues[v]}"><span class="bx">${TT.venues[v]?'✓':''}</span>${v}</button>`).join('')}</div>
-    <div class="seg dsk"><button class="${TT.view==='day'?'on':''}" data-a="ttView" data-v="day">Day</button><button class="${TT.view==='week'?'on':''}" data-a="ttView" data-v="week">Week</button></div>
-    <button class="chip fbtn" data-a="ttFilters">${ico('sliders',16)} Filters${n?`<span class="nb">${n}</span>`:''}</button>
-    <button class="btn navy sm dsk" data-a="ttBook">${ico("plus",16)} Book</button></div>
+    <div class="seg mode"><button class="${TT.draft?'':'on'}" data-a="ttMode" data-m="live">Live</button><button class="${TT.draft?'on sb':''}" data-a="ttMode" data-m="draft">Sandbox</button></div>
+    <button class="btn navy sm dsk" data-a="ttBook">${ico('plus',16)} Book a swimmer</button></div>
+  <div class="tt-r2"><div class="vchips">${['Killingworth','Shiremoor'].map(v=>`<button class="chip ${TT.venues[v]?'on':''}" data-a="ttVenue" data-v="${v}" aria-pressed="${!!TT.venues[v]}"><span class="bx">${TT.venues[v]?'✓':''}</span>${v}</button>`).join('')}</div><span class="grow"></span>
+    <div class="seg dsk"><button class="${TT.view==='day'?'on':''}" data-a="ttView" data-v="day">Day</button><button class="${TT.view==='week'?'on':''}" data-a="ttView" data-v="week">Week</button><button class="${TT.view==='list'?'on':''}" data-a="ttView" data-v="list">List</button></div>
+    <button class="chip fbtn" data-a="ttFilters">${ico('sliders',16)} Filters${n?`<span class="nb">${n}</span>`:''}</button></div></div>
+  ${TT.draft?banner():''}
   ${TT.view==='day'||isM()?`<div class="tt-days" id="ttDays">${DAYS.map((D,d)=>`<button class="dpill ${d===TT.d?'on':''} ${TT.w===TODAY.w&&d===TODAY.d?'today':''}" data-a="ttDay" data-d="${d}"><span>${D}</span><b>${dateOf(TT.w,d).getDate()}</b><span>${visible(classesFor(TT.w).filter(c=>c.d===d)).length}</span></button>`).join('')}</div>`:''}
   <div class="fpanel" ${TT.fo?'':'hidden'} id="fpanel">${TT.fo?filterFields():''}</div></div>`;
 }
-window.VIEWS_TT=function(){
+window.VIEWS_TT=function(){if(S.view==='planner'&&TT._v!=='planner')TT.draft=true;if(S.view==='timetable'&&TT._v==='planner'&&!dirtyList().length)TT.draft=false;TT._v=S.view;
   return {eb:'Admin · Killingworth and Shiremoor',h:'Venue timetable',sub:'Every class, swimmer and space across both venues. Hover a class to see who is booked, click it to manage it.',
   body:`${toolbar()}<div class="ks" id="ttKpi"></div><div id="ttGrid"></div><div class="tt-help">${ico('info',15)} Colour shows the stage. The number is swimmers booked out of places. Amber means one space left, dark means full.</div><button class="fab" data-a="ttBook" aria-label="Book a swimmer">${ico('plus',24)}</button><div id="ttDrawer">${drawer()}</div>`};
 };
+function editPanel(c){const slots=[];for(let m=480;m<=1170;m+=15)slots.push(m);
+  return `<div class="dpanel"><h4>Edit in sandbox ${dirty(c)?pill(c._new?'New':c._del?'Removed':'Changed','amber'):''}</h4>${c._o?`<p class="sub" style="margin:0 0 8px">Was ${DAYS[c._o.d]} ${hm(c._o.t)}, ${c._o.v} ${c._o.pn}${c._o.teacher!==c.teacher?', '+esc2(c._o.teacher):''}</p>`:''}
+  <div class="eg"><label>Day<select id="edDay">${DAYF.map((D,i)=>`<option value="${i}" ${i===c.d?'selected':''}>${D} ${dateOf(c.w,i).getDate()}</option>`).join('')}</select></label><label>Start<select id="edTime">${slots.map(m=>`<option value="${m}" ${m===c.t?'selected':''}>${hm(m)}</option>`).join('')}</select></label>
+  <label>Pool<select id="edPool">${POOLS.map(p=>`<option value="${p.id}" ${p.id===c.pool?'selected':''}>${p.v} · ${p.n}</option>`).join('')}</select></label><label>Teacher<select id="edTeacher">${TEACH.map(t=>`<option ${t===c.teacher?'selected':''}>${t}</option>`).join('')}</select></label></div>
+  ${c.sw.length?`<p class="sub" style="margin:8px 0 0">${c.sw.length} swimmers will be told if you publish a change to day, time or pool.</p>`:''}
+  <div class="hrow" style="margin-top:10px"><button class="btn sm navy" data-a="ttApply">Apply</button>${dirty(c)?`<button class="btn sm ghost" data-a="ttRevert">Undo</button>`:''}<button class="btn sm red" data-a="ttDel">${c._del?'Keep class':'Remove class'}</button></div></div>`}
 function drawer(){
   const c=TT.sel&&findC(TT.sel);if(!c)return '';
   const s=ST[c.st],n=c.sw.length,sp=space(c),pr=c.sw.filter(x=>x.att==='present').length;
@@ -143,6 +178,7 @@ function drawer(){
     <p>${hm(c.t)}–${hm(c.t+c.dur)} · ${c.v}, ${c.pn} · ${s.age}</p></div>
   <div class="db">
     <div class="big"><b>${n}/${c.cap}</b><div class="prog"><i style="width:${n/c.cap*100}%;background:${s.c}"></i></div>${sp<=0?pill('Full','navy'):pill(sp+(sp>1?' spaces':' space'),sp===1?'amber':'green')}</div>
+    ${TT.draft?editPanel(c):''}
     ${c.cancelled?`<div class="alert t-red" style="padding:10px 14px;border-radius:12px;background:var(--red-bg);color:var(--red)"><b>This class is cancelled.</b> Parents have been told.</div>`:''}
     <div><h4>Teacher ${c.cover?pill('Cover needed','red'):''}</h4><div class="hrow" style="flex-wrap:nowrap"><select data-tt="cover" data-id="${c.id}" style="flex:1" aria-label="Teacher">${TEACH.map(t=>`<option ${t===c.teacher?'selected':''}>${t}</option>`).join('')}</select>${c.cover?`<span class="sub">${esc2(c.teacher)} is off</span>`:''}</div></div>
     <div><h4>Swimmers <span style="text-transform:none;letter-spacing:0;font:500 12.5px var(--body)">${pr} of ${n} marked present</span></h4>
@@ -160,6 +196,31 @@ const refresh=(full)=>{if(full){render();if(TT.sheet&&(document.querySelector('#
 const cur=()=>findC(TT.sel);
 const logA=(t,w)=>{try{logIt(ME(),'Classes',w)}catch(e){}};
 Object.assign(ACT,{
+  ttMode(d){if(d.m==='draft'){TT.draft=true;refresh(1);return}
+    if(dirtyList().length){modal('Unpublished changes',`<p style="margin:0">You have ${dirtyList().length} changes that are not live yet.</p>`,`<button class="btn" data-a="ttReview">Review and publish</button><button class="btn ghost" data-a="ttDiscardGo" data-live="1">Discard and go live</button><button class="btn link" data-a="close">Keep editing</button>`);return}
+    TT.draft=false;refresh(1)},
+  ttSort(d){TT.sort=TT.sort.k===d.k?{k:d.k,d:-TT.sort.d}:{k:d.k,d:1};paint()},
+  ttCsv(){const rows=visible(classesFor(TT.w)).sort((a,b)=>a.d*2000+a.t-b.d*2000-b.t),h=['Day','Date','Start','End','Venue','Pool','Stage','Teacher','Booked','Capacity','Spaces','Waiting list','Status'];
+    const out=[h].concat(rows.map(c=>[DAYF[c.d],fmt(dateOf(c.w,c.d),{day:'numeric',month:'short',year:'numeric'}),hm(c.t),hm(c.t+c.dur),c.v,c.pn,ST[c.st].name,c.teacher,c.sw.length,c.cap,space(c),c.wl.length,c._del?'Removed':c.cancelled?'Cancelled':c.cover?'Cover needed':'Live']));
+    const blob=new Blob(['\ufeff'+out.map(r=>r.map(csvEsc).join(',')).join('\r\n')],{type:'text/csv'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`paddlepod-classes-${fmt(dateOf(TT.w,0),{day:'numeric',month:'short'}).replace(' ','-')}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast('Spreadsheet downloaded.')},
+  ttApply(){const c=cur(),r=tryMove(c,{d:+document.getElementById('edDay').value,t:+document.getElementById('edTime').value,pool:document.getElementById('edPool').value,teacher:document.getElementById('edTeacher').value},true);
+    if(!r.ok){toast(r.msg);return}toast(r.warn?'Moved. Heads up: '+r.warn:'Change saved in the sandbox.');refresh(1)},
+  ttRevert(){const c=cur();revert(c);toast('Change undone.');refresh(1)},
+  ttDel(){const c=cur();if(c._new){CACHE[c.w]=CACHE[c.w].filter(x=>x!==c);TT.sel=null;toast('New class removed.')}else{c._del=!c._del;toast(c._del?'Class removed in the sandbox. It stays live until you publish.':'Class kept.')}refresh(1)},
+  ttDiscard(){modal('Discard all sandbox changes?',`<p style="margin:0">${dirtyList().length} changes will be thrown away. The live timetable is not affected.</p>`,`<button class="btn red" data-a="ttDiscardGo">Discard changes</button><button class="btn ghost" data-a="close">Keep editing</button>`)},
+  ttDiscardGo(d){dirtyList().forEach(c=>{if(c._new)CACHE[c.w]=CACHE[c.w].filter(x=>x!==c);else revert(c)});TT.sel=null;close();if(d.live)TT.draft=false;toast('Sandbox cleared.');refresh(1)},
+  ttReview(){const dl=dirtyList(),aff=affected(dl);
+    const line=c=>{const s=ST[c.st].name;if(c._new)return `<b>New</b> · ${s} · ${DAYF[c.d]} ${hm(c.t)} · ${c.v}, ${c.pn} · ${esc2(c.teacher)}`;if(c._del)return `<b>Removed</b> · ${s} · ${DAYF[c._o?c._o.d:c.d]} ${hm(c._o?c._o.t:c.t)} · ${c.sw.length} swimmers to rebook`;
+      const o=c._o,parts=[];if(o.d!==c.d||o.t!==c.t||o.pool!==c.pool)parts.push(`${DAYS[o.d]} ${hm(o.t)} ${o.v} ${o.pn.replace(' pool','')} → ${DAYS[c.d]} ${hm(c.t)} ${c.v} ${c.pn.replace(' pool','')}`);if(o.teacher!==c.teacher)parts.push(`${esc2(o.teacher)} → ${esc2(c.teacher)}`);return `<b>${s}</b> · ${parts.join(' · ')}`};
+    modal('Review and publish',`<div class="rv">${dl.map(c=>`<div class="rv-r" style="--c:${ST[c.st].c}">${line(c)}</div>`).join('')}</div><p class="sub" style="margin:0">${aff} swimmers are in classes that change.</p><label class="opt"><input type="checkbox" id="pbMail" checked><span class="grow"><b style="color:var(--navy)">Email the parents affected</b><span class="sub" style="display:block">Each parent gets the new day, time and venue.</span></span></label>`,`<button class="btn navy" data-a="ttPublish">Publish ${dl.length} change${dl.length>1?'s':''}</button><button class="btn ghost" data-a="close">Back to sandbox</button>`)},
+  ttPublish(){const m=document.getElementById('pbMail'),mail=m&&m.checked,dl=dirtyList(),aff=affected(dl);
+    dl.forEach(c=>{if(c._del)CACHE[c.w]=CACHE[c.w].filter(x=>x!==c);else{delete c._o;delete c._new}});try{logIt(ME(),'Classes',`Published ${dl.length} timetable changes from the sandbox`)}catch(e){}
+    close();TT.draft=false;TT.sel=null;toast(`Published ${dl.length} changes. ${mail?aff+' parents emailed.':'No emails sent.'}`);refresh(1)},
+  ttAddClass(){modal('Add a class to the sandbox',`<div class="form"><label class="f">Stage<select id="acS">${STAGES.map(s=>`<option value="${s[0]}">${s[1]}</option>`).join('')}</select></label><div class="two"><label class="f">Day<select id="acD">${DAYF.map((D,i)=>`<option value="${i}" ${i===TT.d?'selected':''}>${D}</option>`).join('')}</select></label><label class="f">Start<select id="acT">${(()=>{let o='';for(let m=480;m<=1170;m+=15)o+=`<option value="${m}" ${m===1005?'selected':''}>${hm(m)}</option>`;return o})()}</select></label></div><div class="two"><label class="f">Pool<select id="acP">${POOLS.map(p=>`<option value="${p.id}">${p.v} · ${p.n}</option>`).join('')}</select></label><label class="f">Teacher<select id="acH">${TEACH.map(t=>`<option>${t}</option>`).join('')}</select></label></div></div>`,`<button class="btn navy" data-a="ttAddGo">Add to sandbox</button><button class="btn ghost" data-a="close">Cancel</button>`)},
+  ttAddGo(){const st=ST[document.getElementById('acS').value],p=POOLS.find(x=>x.id===document.getElementById('acP').value),c={id:'new'+Date.now(),w:TT.w,d:+document.getElementById('acD').value,pool:p.id,v:p.v,pn:p.n,t:+document.getElementById('acT').value,dur:30,st:st.k,cap:st.cap,teacher:document.getElementById('acH').value,sw:[],wl:[],cover:false,cancelled:false,done:false,_new:true};
+    const r=tryMove(Object.assign({},c,{id:'tmp'}),{},false);const clash=classesFor(TT.w).find(x=>!x._del&&x.d===c.d&&x.pool===c.pool&&x.t<c.t+30&&c.t<x.t+x.dur);
+    if(clash){toast(`${p.v} ${p.n} is already in use at ${hm(clash.t)}.`);return}
+    classesFor(TT.w).push(c);close();TT.d=c.d;TT.sel=c.id;toast('Class added to the sandbox.');refresh(1)},
   ttVenue(d){TT.venues[d.v]=!TT.venues[d.v];refresh(1)},
   ttView(d){TT.view=d.v;refresh(1)},
   ttDay(d){TT.d=+d.d;refresh(1)},
@@ -196,9 +257,36 @@ document.addEventListener('change',e=>{const el=e.target;if(!el.dataset||!el.dat
   if(el.dataset.tt==='cover'){const c=findC(el.dataset.id);c.teacher=el.value;c.cover=false;logA('',`${el.value} assigned to cover ${ST[c.st].name}`);toast(`${el.value} assigned. Cover sorted.`);refresh(1)}});
 document.addEventListener('input',e=>{const el=e.target;if(el.dataset&&el.dataset.tt==='q'){TT.q=el.value;paint()}
   if(el.id==='gq'){}});
-document.addEventListener('keydown',e=>{if(e.target.id==='gq'&&e.key==='Enter'){TT.q=e.target.value;S.view='timetable';render()}if(e.key==='Escape'&&TT.sel){TT.sel=null;if(S.view==='timetable')refresh(1)}});
+document.addEventListener('keydown',e=>{if(e.target.id==='gq'&&e.key==='Enter'){TT.q=e.target.value;S.view='timetable';render()}if(e.key==='Escape'&&TT.sel){TT.sel=null;if(isTT())refresh(1)}});
 
-let _m=isM();matchMedia('(max-width:900px)').addEventListener('change',()=>{if(_m!==isM()){_m=isM();if(S.view==='timetable')render()}});
+let _m=isM();matchMedia('(max-width:900px)').addEventListener('change',()=>{if(_m!==isM()){_m=isM();if(isTT())render()}});
+/* drag and drop in the sandbox */
+let drag=null,ghost=null,ind=null,justDragged=false;
+const invY=(y)=>{if(!GRID)return null;for(const g of GRID.segs){const top=g[2],h=(g[1]-g[0])*GRID.PX;if(y>=top-8&&y<=top+h+8)return g[0]+Math.max(0,Math.min(h,y-top))/GRID.PX}return null};
+const snap=m=>Math.round(m/15)*15;
+function dropTarget(e){
+  const els=document.elementsFromPoint(e.clientX,e.clientY);
+  const pill=els.find(x=>x.classList&&x.classList.contains('dpill'));if(pill)return{d:+pill.dataset.d,el:pill};
+  const col=els.find(x=>x.classList&&x.classList.contains('dg-c'));if(!col)return null;
+  const r=col.getBoundingClientRect(),m=invY(e.clientY-drag.off-r.top);if(m==null)return null;return{pool:col.dataset.pool,t:snap(m),el:col,r};
+}
+document.addEventListener('pointerdown',e=>{if(!TT.draft||isM()||e.button!==0||!isTT())return;const b=e.target.closest&&e.target.closest('.cb');if(!b||!b.closest('#dg'))return;const r=b.getBoundingClientRect();drag={id:b.dataset.id,x:e.clientX,y:e.clientY,on:false,b,off:e.clientY-r.top,w:r.width,h:r.height}});
+document.addEventListener('pointermove',e=>{if(!drag)return;
+  if(!drag.on){if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<6)return;drag.on=true;hidePop();ghost=drag.b.cloneNode(true);ghost.className+=' ghost';ghost.style.cssText=`position:fixed;left:0;top:0;width:${drag.w}px;height:${drag.h}px;z-index:97;pointer-events:none;opacity:.9;transform:none`;document.body.appendChild(ghost);drag.b.classList.add('lift')}
+  ghost.style.left=(e.clientX-drag.w/2)+'px';ghost.style.top=(e.clientY-drag.off)+'px';
+  const c=findC(drag.id),t=dropTarget(e);document.querySelectorAll('.dpill.drop').forEach(x=>x.classList.remove('drop'));if(ind){ind.remove();ind=null}
+  if(!t)return;
+  if(t.el.classList.contains('dpill')){const r=tryMove(c,{d:t.d},false);t.el.classList.add('drop');t.el.dataset.ok=r.ok?'1':'0';return}
+  const r=tryMove(c,{pool:t.pool,t:t.t},false);ind=document.createElement('div');ind.className='dind '+(r.ok?(r.warn?'warn':'ok'):'bad');
+  const y0=GRID.segs.find(g=>t.t>=g[0]&&t.t<=g[1]);ind.style.top=((y0?y0[2]+(t.t-y0[0])*GRID.PX:0)+2)+'px';ind.style.height=(c.dur*GRID.PX-4)+'px';ind.innerHTML=`<span>${hm(t.t)}–${hm(t.t+c.dur)}${r.ok?'':' · '+r.msg}</span>`;t.el.appendChild(ind)});
+document.addEventListener('pointerup',e=>{if(!drag)return;const d=drag;drag=null;if(!d.on)return;justDragged=true;setTimeout(()=>justDragged=false,60);
+  if(ghost){ghost.remove();ghost=null}if(ind){ind.remove();ind=null}document.querySelectorAll('.dpill.drop').forEach(x=>x.classList.remove('drop'));d.b.classList.remove('lift');
+  drag=d;const c=findC(d.id),t=dropTarget(e);drag=null;if(!t)return;
+  const to=t.el.classList.contains('dpill')?{d:t.d}:{pool:t.pool,t:t.t};const r=tryMove(c,to,true);
+  if(!r.ok){toast(r.msg);return}if(t.d!=null)TT.d=t.d;toast(r.warn?'Moved in the sandbox. Heads up: '+r.warn:'Moved in the sandbox. It is not live yet.');refresh(1)});
+document.addEventListener('click',e=>{if(justDragged){e.stopPropagation();e.preventDefault()}},true);
+document.addEventListener('pointercancel',()=>{if(drag&&drag.on){if(ghost){ghost.remove();ghost=null}if(ind){ind.remove();ind=null}drag.b.classList.remove('lift')}drag=null});
+
 /* hover pop-up */
 const pop=document.createElement('div');pop.className='ttpop';pop.hidden=true;document.body.appendChild(pop);
 function hidePop(){pop.hidden=true}
@@ -216,9 +304,43 @@ window.addEventListener('scroll',hidePop,{passive:true});document.addEventListen
 
 /* shell: nav, dashboard card, staff layout */
 I.grid='M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z';
-A.timetable=window.VIEWS_TT;
-[NAV.admin,NAV.super].forEach(nv=>{if(!nv.some(n=>n[0]==='timetable'))nv.splice(1,0,['timetable','Venue timetable','grid',()=>classesFor(0).filter(c=>c.cover).length])});
+A.timetable=window.VIEWS_TT;A.planner=window.VIEWS_TT;SHORT.planner='Planner';
+[NAV.admin,NAV.super].forEach(nv=>{if(!nv.some(n=>n[0]==='timetable')){nv.splice(1,0,['timetable','Venue timetable','grid',()=>classesFor(0).filter(c=>c.cover).length]);nv.splice(2,0,['planner','Class planner','sliders'])}});
 TABS.admin=['dash','timetable','inbox','cust'];SHORT.timetable='Timetable';
+
+/* ---- team board (Trello-style) ---- */
+S.taskV=S.taskV||'board';
+const COLS=['To do','In progress','Done'],PEOPLE=['Phil','Emma Clarke','Becky Hall','Sam Patel'];
+const tTog=()=>`<div class="tv"><div class="seg"><button class="${S.taskV==='board'?'on':''}" data-a="taskV" data-v="board">Board</button><button class="${S.taskV==='list'?'on':''}" data-a="taskV" data-v="list">List</button></div></div>`;
+const _tasks=A.tasks;
+A.tasks=function(){
+  if(S.taskV==='list'){const v=_tasks();v.body=tTog()+v.body;return v}
+  const mine=S.taskF==='mine',list=S.tasks.filter(t=>!mine||t.who===ME());
+  const card=t=>`<article class="bc ${t.due==='Overdue'?'od':''}" draggable="true" data-id="${t.id}" data-a="bcOpen" tabindex="0"><div class="bc-t">${t.pri?`<span class="pill t-${t.pri==='High'?'red':t.pri==='Medium'?'amber':'grey'}">${t.pri}</span>`:''}</div><b>${esc2(t.t)}</b>
+    <div class="bc-m"><span class="av" title="${esc2(t.who)}">${ini(t.who)}</span><span class="${t.due==='Overdue'||t.due==='Today'?'due':''}">${esc2(t.due)}</span>${t.c.length?`<span>💬 ${t.c.length}</span>`:''}<span class="bc-mv"><button data-a="bcMove" data-id="${t.id}" data-n="-1" aria-label="Move left">‹</button><button data-a="bcMove" data-id="${t.id}" data-n="1" aria-label="Move right">›</button></span></div></article>`;
+  const notes=(S.team||[]).slice(-4).reverse();
+  return {eb:'Tasks',h:'Team board',sub:'Live tasks and notes for the whole team.',body:`<div class="btop"><div class="bfil"><div class="seg"><button class="${mine?'':'on'}" data-a="taskF" data-f="all">Everyone</button><button class="${mine?'on':''}" data-a="taskF" data-f="mine">My cards</button></div></div>${tTog()}</div>
+  <div class="board">${COLS.map(c=>{const cs=list.filter(t=>(t.st||'To do')===c);return `<section class="bcol" data-col="${c}"><header><h3>${c}</h3><span class="pill t-grey">${cs.length}</span></header><div class="bcs">${cs.map(card).join('')||'<div class="empty2">Nothing here</div>'}</div>
+    <input class="badd" data-col="${c}" type="text" placeholder="+ Add a card" aria-label="Add a card to ${c}"></section>`}).join('')}</div>
+  <div class="card nts"><div class="ch"><h3>Team notes</h3><span class="sub">Pass a quick note to everyone</span></div>${notes.map(n=>`<div class="row"><span class="av">${ini(n.who)}</span><div class="grow"><b>${esc2(n.who)}</b> <span class="sub">${esc2(n.d)}</span><div>${esc2(n.t)}</div></div></div>`).join('')}
+    <div class="hrow" style="flex-wrap:nowrap;margin-top:8px"><input type="text" id="tnT" placeholder="Write a note for the team" aria-label="Team note"><button class="btn sm navy" data-a="tnPost">Post</button></div></div>`};
+};
+Object.assign(ACT,{
+  taskV(d){S.taskV=d.v;render()},
+  tnPost(){const el=document.getElementById('tnT'),v=(el.value||'').trim();if(!v)return;S.team.push({who:ME(),t:v,d:'Just now'});render();toast('Note shared with the team.')},
+  bcMove(d,el,e){e.stopPropagation();const t=S.tasks.find(x=>x.id==d.id),i=Math.max(0,Math.min(2,COLS.indexOf(t.st||'To do')+ +d.n));t.st=COLS[i];render()},
+  bcOpen(d,el,e){if(e&&e.target.closest('.bc-mv'))return;const t=S.tasks.find(x=>x.id==d.id);
+    modal(esc2(t.t),`<div class="form"><div class="two"><label class="f">Assigned to<select id="bcW">${PEOPLE.map(p=>`<option ${p===t.who?'selected':''}>${p}</option>`).join('')}</select></label><label class="f">Status<select id="bcS">${COLS.map(c=>`<option ${c===t.st?'selected':''}>${c}</option>`).join('')}</select></label></div>
+      <div class="two"><label class="f">Priority<select id="bcP">${['High','Medium','Low'].map(p=>`<option ${p===t.pri?'selected':''}>${p}</option>`).join('')}</select></label><label class="f">Due<input type="text" id="bcD" value="${esc2(t.due)}"></label></div>
+      <div><span class="f" style="font:600 14px var(--display);color:var(--navy)">Comments</span>${t.c.map(c=>`<div style="margin-top:8px"><b>${esc2(c[0])}</b> <span class="sub">${esc2(c[2])}</span><div>${esc2(c[1])}</div></div>`).join('')||'<div class="sub" style="margin-top:6px">No comments yet.</div>'}</div>
+      <div class="hrow" style="flex-wrap:nowrap"><input type="text" id="bcC" placeholder="Add a comment" aria-label="Add a comment"></div></div>`,`<button class="btn navy" data-a="bcSave" data-id="${t.id}">Save</button><button class="btn ghost" data-a="close">Close</button>`)},
+  bcSave(d){const t=S.tasks.find(x=>x.id==d.id),c=(document.getElementById('bcC').value||'').trim();t.who=document.getElementById('bcW').value;t.st=document.getElementById('bcS').value;t.pri=document.getElementById('bcP').value;t.due=document.getElementById('bcD').value||'No date';if(c)t.c.push([ME(),c,'Just now']);close();render();toast('Card updated.')}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('badd')){const v=e.target.value.trim();if(!v)return;S.tasks.unshift({id:Date.now(),t:v,who:ME(),pri:'Medium',due:'No date',st:e.target.dataset.col,c:[]});render();toast('Card added.')}});
+document.addEventListener('dragstart',e=>{const c=e.target.closest&&e.target.closest('.bc');if(c){e.dataTransfer.setData('text/plain',c.dataset.id);e.dataTransfer.effectAllowed='move';c.classList.add('lift')}});
+document.addEventListener('dragend',e=>{document.querySelectorAll('.bc.lift,.bcol.over').forEach(x=>x.classList.remove('lift','over'))});
+document.addEventListener('dragover',e=>{const c=e.target.closest&&e.target.closest('.bcol');if(c){e.preventDefault();document.querySelectorAll('.bcol.over').forEach(x=>x!==c&&x.classList.remove('over'));c.classList.add('over')}});
+document.addEventListener('drop',e=>{const c=e.target.closest&&e.target.closest('.bcol');if(!c)return;e.preventDefault();const id=e.dataTransfer.getData('text/plain'),t=S.tasks.find(x=>x.id==id);if(t&&t.st!==c.dataset.col){t.st=c.dataset.col;render();toast(`Moved to ${c.dataset.col}.`)}});
 const _dash=A.dash;
 A.dash=function(){const v=_dash(),now=classesFor(0).filter(c=>c.d===TODAY.d&&c.t+c.dur>=TODAY.m&&!c.cancelled).sort((a,b)=>a.t-b.t).slice(0,4);
   const td=classesFor(0).filter(c=>c.d===TODAY.d&&!c.cancelled),tb=td.reduce((a,c)=>a+c.sw.length,0),tc=td.reduce((a,c)=>a+c.cap,0),wk=classesFor(0).filter(c=>!c.cancelled),wsp=wk.reduce((a,c)=>a+space(c),0),cv=wk.filter(c=>c.cover).length;
@@ -232,7 +354,7 @@ render=function(sc){_r(sc);
   if(staff){const m=document.getElementById('main'),b=document.getElementById('band');
     if(m&&b&&!m.querySelector('.ph'))m.insertAdjacentHTML('afterbegin',`<div class="ph"><div>${b.innerHTML.replace(/<svg[\s\S]*?<\/svg>/g,'')}</div></div>`);
     const sd=document.getElementById('side');if(sd&&!sd.querySelector('.sb-logo')){sd.insertAdjacentHTML('afterbegin','<div class="sb-logo">PaddleP<i>o</i>d<small>Staff workspace</small></div>');sd.insertAdjacentHTML('beforeend',`<div class="sb-foot"><b>${ME()}</b><span>${{super:'Super admin',admin:'Admin',teacher:'Teacher'}[S.role]}</span><span>Killingworth · Shiremoor</span></div>`)}
-    if(S.view==='timetable')paint();}
+    if(isTT())paint();}
   if(staff){const sd=document.getElementById('side');if(sd&&!sd.querySelector('.sb-g')){const grp={dash:'Today',inbox:'People',tasks:'Run the business',today:'Today'};[...sd.querySelectorAll('button[data-v]')].forEach(bt=>{const g=grp[bt.dataset.v];if(g)bt.insertAdjacentHTML('beforebegin',`<div class="sb-g">${g}</div>`)})}}
 };
 const _fh=window.__h0||'';
