@@ -2,10 +2,14 @@
 (function(){
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],DAYF=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 const MON0=new Date(2026,10,2),TODAY={w:0,d:2,m:16*60+40};
-const STAGES=[['babies','Nemo Babies','#5BC0EB',8,'9 to 18 months'],['toddlers','Nemo Toddlers','#1FA8A0',8,'2 years'],['pre','Nemo Pre-school','#8CC63F',8,'3 to 4 years'],
- ['s1','Stage 1','#F7C531',6,'5 years'],['s2','Stage 2','#F59E2B',6,'6 years'],['s3','Stage 3','#EE6C3A',6,'6 years'],['s4','Stage 4','#E04B5A',6,'7 years'],
- ['s5','Stage 5','#C74FA0',8,'8 years'],['s6','Stage 6','#8A5BD6',8,'9 years'],['s7','Stage 7','#4F6BDB',8,'10 years'],['s8','Stage 8','#25306B',8,'11 years']];
-const ST=Object.fromEntries(STAGES.map(s=>[s[0],{k:s[0],name:s[1],c:s[2],cap:s[3],age:s[4]}]));
+const STAGES=[['b1','Baby 0-9 months','#8FD0F0',6,'0 to 9 months','baby'],['b2','Baby 9-18 months','#5BB5E6',6,'9 to 18 months','baby'],['t1','Toddler 18-30 months','#5CCBB5',6,'18 to 30 months','tod'],['t2','Toddler 30-36 months','#2FA896',6,'30 to 36 months','tod'],
+ ['nr','Nemo 3+ Red','#EF6B6B',6,'3+ years','nemo'],['no','Nemo 3+ Orange','#F5A04A',6,'3+ years','nemo'],['ny','Nemo 3+ Yellow','#F2CB4D',6,'3+ years','nemo'],['ng','Nemo 3+ Green','#7BC06A',6,'3+ years','nemo'],['nb','Nemo 3+ Blue','#5F8FE0',6,'3+ years','nemo'],
+ ['s1','Stage 1','#F7D26B',6,'5 years','s14'],['s2','Stage 2','#F6B45A',6,'6 years','s14'],['s3','Stage 3','#F39A6B',6,'6 years','s14'],['s4','Stage 4','#EC7F8E',6,'7 years','s14'],
+ ['s5','Stage 5','#D880B8',8,'8 years','s57'],['s6','Stage 6','#B58AE0',8,'9 years','s57'],['s7','Stage 7','#8C93E8',8,'10 years','s57'],
+ ['s8','Stage 8','#6C86C9',8,'11 years','s810'],['s9','Stage 9','#4F6BA8',8,'11 years','s810'],['s10','Stage 10','#3A4F86',8,'12 years','s810'],
+ ['pc','Pre-Comp (Stages 9 and 10)','#2D3E6E',10,'12+ years','adv'],['sf','Junior SwimFit','#6B7F95',8,'11+ years','adv'],['pv','Private','#A7B3BF',1,'1 to 1','pv']];
+const FAM=[['baby','Baby'],['tod','Toddler'],['nemo','Nemo 3+'],['s14','Stages 1-4'],['s57','Stages 5-7'],['s810','Stages 8-10'],['adv','Pre-Comp & SwimFit'],['pv','Private']];
+const ST=Object.fromEntries(STAGES.map(s=>[s[0],{k:s[0],name:s[1],c:s[2],cap:s[3],age:s[4],fam:s[5]}]));
 const POOLS=[{id:'kw1',v:'Killingworth',n:'Main pool'},{id:'kw2',v:'Killingworth',n:'Teaching pool'},{id:'sm1',v:'Shiremoor',n:'Main pool'}];
 const TEACH=['Jake Robson','Hannah Reid','Owen Scott','Priya Nair','Ellie Marsh'];
 const FN='Olivia Alfie Mia Isla Ben Zara Leo Jack Ruby Freddie Harry Grace Oscar Lily Noah Ava Theo Ella Arthur Freya Ivy Max Poppy Finn Evie Sonny Maya Rory Willow Archie Daisy Elsie Jacob Millie Harvey Amelie Reggie Rosie Teddy Hallie Kai Nina Eli Ada Joel Cleo Sam Tilly'.split(' ');
@@ -22,20 +26,21 @@ function classesFor(w){
   const out=[];
   for(let d=0;d<7;d++)POOLS.forEach((p,pi)=>{
     let slots=[];
-    if(d<5){if(p.id!=='kw1')['09:30','10:15'].forEach(t=>slots.push([t,1]));['16:00','16:45','17:30','18:15'].forEach(t=>slots.push([t,0]))}
-    else if(d===5)['08:30','09:15','10:00','10:45','11:30','12:15'].forEach((t,i)=>slots.push([t,(i<2&&p.id!=='kw1')?1:0]));
-    else if(p.id!=='sm1')['09:00','09:45','10:30','11:15'].forEach((t,i)=>slots.push([t,i<1?1:0]));
-    slots.forEach(([t,early],si)=>{
+    if(d<5){if(p.id!=='kw1')['09:15','09:45','10:15','10:45'].forEach(t=>slots.push([t,1]));['15:45','16:15','16:45','17:15','17:45','18:15'].forEach(t=>slots.push([t,0]));if(p.id==='kw1'&&[2,3].includes(d))slots.push(['19:00',2])}
+    else if(d===5)['08:45','09:15','09:45','10:15','10:45','11:15','11:45','12:15'].forEach((t,i)=>slots.push([t,(i<3&&p.id!=='kw1')?1:0]));
+    else if(p.id!=='sm1')['09:00','09:30','10:00','10:30','11:00','11:30','12:00'].forEach((t,i)=>slots.push([t,i<2&&p.id==='kw2'?1:0]));
+    slots.forEach(([t,kind],si)=>{
       const id=`w${w}-${d}-${p.id}-${si}`,r=rngF(id);
-      const keys=early?['babies','toddlers','pre']:['s1','s2','s3','s4','s5','s6','s7','s8'];
+      const keys=kind===1?['b1','b2','t1','t2','nr','no','ny','ng','nb']:kind===2?['sf','pc']:['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','pv','s3','s4','s5','s6','s7'];
       const st=ST[keys[Math.floor(r()*keys.length)]];
-      let n,x=r();n=x<.24?st.cap:x<.36?1+Math.floor(r()*2):Math.max(2,st.cap-1-Math.floor(r()*3));
+      let n,x=r();n=st.cap===1?(r()<.7?1:0):x<.24?st.cap:x<.36?1+Math.floor(r()*2):Math.max(2,st.cap-1-Math.floor(r()*3));
       const teacher=TEACH[Math.floor(r()*TEACH.length)];
-      const past=w<0||(w===0&&(d<TODAY.d||(d===TODAY.d&&tm(t)+45<TODAY.m)));
+      const past=w<0||(w===0&&(d<TODAY.d||(d===TODAY.d&&tm(t)+30<TODAY.m)));
       const used=new Set(),mk=()=>{let nm;do{nm=FN[Math.floor(r()*FN.length)]+' '+LN[Math.floor(r()*LN.length)]}while(used.has(nm));used.add(nm);return nm};
-      const sw=[];for(let i=0;i<n;i++){const a=r();sw.push({n:mk(),age:st.k==='babies'?(9+Math.floor(r()*9))+' months':st.k==='toddlers'?'2 years':st.k==='pre'?(3+Math.floor(r()*2))+' years':(parseInt(st.name.slice(-1))+4)+' years',tag:a<.08?'Trial':a<.14?'New':'',att:past?(r()<.1?'absent':'present'):null})}
-      const wait=n===st.cap?Math.floor(r()*3):0,wl=[];for(let i=0;i<wait;i++)wl.push(mk());
-      out.push({id,w,d,pool:p.id,v:p.v,pn:p.n,t:tm(t),dur:45,st:st.k,cap:st.cap,teacher,sw,wl,cover:false,cancelled:false,done:past});
+      const ageOf=()=>st.fam==='baby'?(st.k==='b1'?(3+Math.floor(r()*6))+' months':(9+Math.floor(r()*9))+' months'):st.fam==='tod'?(2+Math.floor(r()*2))+' years':st.fam==='nemo'?(3+Math.floor(r()*2))+' years':st.k==='pv'?'':(parseInt(st.k.slice(1))||9)+4+' years';
+      const sw=[];for(let i=0;i<n;i++){const a=r();sw.push({n:mk(),age:ageOf(),tag:a<.08?'Trial':a<.14?'New':'',att:past?(r()<.1?'absent':'present'):null})}
+      const wait=n===st.cap&&st.cap>1?Math.floor(r()*3):0,wl=[];for(let i=0;i<wait;i++)wl.push(mk());
+      out.push({id,w,d,pool:p.id,v:p.v,pn:p.n,t:tm(t),dur:30,st:st.k,cap:st.cap,teacher,sw,wl,cover:false,cancelled:false,done:past});
     });
   });
   if(w===0){out.forEach(c=>{if(c.d===3&&c.pool==='sm1'&&c.t<12*60){c.teacher='Hannah Reid';c.cover=true}});}
@@ -43,13 +48,13 @@ function classesFor(w){
 }
 const all=()=>{const a=[];for(let w=-1;w<=3;w++)a.push(...classesFor(w));return a};
 const findC=id=>all().find(c=>c.id===id);
-const TT=window.TT={w:0,view:'day',d:TODAY.d,venues:{Killingworth:true,Shiremoor:true},stages:{},teacher:'All',spaces:false,q:'',sel:null};
+const TT=window.TT={fo:false,sheet:false,exp:null,w:0,view:'day',d:TODAY.d,venues:{Killingworth:true,Shiremoor:true},stages:{},teacher:'All',spaces:false,q:'',sel:null};
 const esc2=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const ini=n=>n.split(' ').map(x=>x[0]).join('').slice(0,2);
 const space=c=>c.cap-c.sw.length;
 function visible(arr){
-  const q=TT.q.trim().toLowerCase(),sg=Object.keys(TT.stages).filter(k=>TT.stages[k]);
-  return arr.filter(c=>TT.venues[c.v]&&(!sg.length||sg.includes(c.st))&&(TT.teacher==='All'||c.teacher===TT.teacher)&&(!TT.spaces||(space(c)>0&&!c.cancelled)));
+  const sg=Object.keys(TT.stages).filter(k=>TT.stages[k]);
+  return arr.filter(c=>TT.venues[c.v]&&(!sg.length||sg.includes(ST[c.st].fam))&&(TT.teacher==='All'||c.teacher===TT.teacher)&&(!TT.spaces||(space(c)>0&&!c.cancelled)));
 }
 const hit=c=>{const q=TT.q.trim().toLowerCase();return q&&c.sw.some(s=>s.n.toLowerCase().includes(q))};
 let inN=false;function block(c,style=''){
@@ -62,14 +67,10 @@ let inN=false;function block(c,style=''){
 function kpis(list){
   const cl=list.filter(c=>!c.cancelled),b=cl.reduce((a,c)=>a+c.sw.length,0),cap=cl.reduce((a,c)=>a+c.cap,0),fill=cap?Math.round(b/cap*100):0;
   const full=cl.filter(c=>space(c)<=0).length,cov=cl.filter(c=>c.cover).length;
-  return `<div class="kpi"><span>Classes</span><b>${cl.length}</b><em>${full} full</em></div>
-  <div class="kpi"><span>Swimmers booked</span><b>${b}<small style="font-size:16px;color:var(--muted)"> / ${cap}</small></b><div class="bar"><i style="width:${fill}%"></i></div></div>
-  <div class="kpi"><span>Spaces left</span><b>${cap-b}</b><em>${fill}% full</em></div>
-  <div class="kpi"><span>Waiting list</span><b>${cl.reduce((a,c)=>a+c.wl.length,0)}</b><span>swimmers</span></div>
-  <div class="kpi"><span>Need cover</span><b style="color:${cov?'var(--red)':'var(--navy)'}">${cov}</b><span>${cov?'assign a teacher':'all covered'}</span></div>`;
+  return `<div class="ks"><div><b>${cl.length}</b><span>classes${full?` · ${full} full`:''}</span></div><div><b>${b}<small>/${cap}</small></b><span>swimmers booked</span></div><div><b>${cap-b}</b><span>spaces left</span></div><div class="fillk"><b>${fill}%</b><span>full</span><i><u style="width:${fill}%"></u></i></div><div class="${cov?'warn':''}"><b>${cov}</b><span>${cov?'need cover':'cover sorted'}</span></div></div>`;
 }
 function dayGrid(){
-  const lanes=POOLS.filter(p=>TT.venues[p.v]),all1=classesFor(TT.w).filter(c=>c.d===TT.d),list=visible(all1),PX=1.75,BRK=38;
+  const lanes=POOLS.filter(p=>TT.venues[p.v]),all1=classesFor(TT.w).filter(c=>c.d===TT.d),list=visible(all1),PX=2.5,BRK=38;
   if(!lanes.length)return '<div class="card empty2">Choose at least one venue to see classes.</div>';
   const ts=all1.map(c=>[c.t,c.t+c.dur]).sort((x,y)=>x[0]-y[0]),segs=[];
   ts.forEach(([a,b])=>{a=Math.floor((a-20)/30)*30;b=Math.ceil((b+20)/30)*30;const l=segs[segs.length-1];if(l&&a-l[1]<=90)l[1]=Math.max(l[1],b);else segs.push([a,b])});
@@ -81,6 +82,19 @@ function dayGrid(){
   return `<div class="dg" id="dg"><div class="dg-in" style="--n:${lanes.length}"><div class="dg-h corner"></div>${lanes.map(p=>`<div class="dg-h">${p.v}<small>${p.n} · ${list.filter(c=>c.pool===p.id).length} classes</small></div>`).join('')}
   <div class="dg-t" style="height:${H}px">${lines.filter(m=>m%60===0).map(m=>`<span style="top:${Y(m)}px">${hm(m)}</span>`).join('')}${segs.slice(0,-1).map(g=>`<span class="bk" style="top:${g[2]+(g[1]-g[0])*PX+BRK/2}px">break</span>`).join('')}</div>${lanes.map(col).join('')}</div></div>`;
 }
+const isM=()=>window.matchMedia('(max-width:900px)').matches;
+function agenda(){
+  const list=visible(classesFor(TT.w).filter(c=>c.d===TT.d)).sort((x,y)=>x.t-y.t||x.pool.localeCompare(y.pool));
+  if(!list.length)return '<div class="card empty2">No classes match your filters on this day.<br><button class="btn link" data-a="ttStage" data-k="">Clear filters</button></div>';
+  let h='',last=-1;
+  list.forEach(c=>{const s=ST[c.st],n=c.sw.length,pc=Math.round(n/c.cap*100),open=TT.exp===c.id,hr=Math.floor(c.t/60);
+    if(hr!==last){h+=`<div class="ag-h">${String(hr).padStart(2,'0')}:00</div>`;last=hr}
+    h+=`<article class="ag ${open?'open':''} ${c.cancelled?'cancelled':''}" style="--c:${s.c}"><button class="ag-m" data-a="ttExp" data-id="${c.id}" aria-expanded="${open}"><span class="ag-t"><b>${hm(c.t)}</b><small>${c.dur} min</small></span>
+      <span class="ag-b"><b>${s.name}</b><small>${c.v} · ${c.pn}</small><small>${esc2(c.teacher)}${c.cover?' · <em>cover needed</em>':''}</small></span>
+      <span class="ring" style="--p:${pc}"><b>${n}/${c.cap}</b></span></button>
+      ${open?`<div class="ag-x">${c.sw.map(w=>`<span class="sc"><i>${ini(w.n)}</i>${esc2(w.n.split(' ')[0])}${w.att==='absent'?' <u>absent</u>':''}</span>`).join('')||'<span class="sub">No swimmers yet</span>'}${c.wl.length?`<span class="sc wl">+${c.wl.length} waiting</span>`:''}<button class="btn navy sm" data-a="ttOpen" data-id="${c.id}">Manage class</button></div>`:''}</article>`});
+  return h;
+}
 function weekGrid(){
   const list=visible(classesFor(TT.w));
   return `<div class="wk">${DAYS.map((D,d)=>{const cs=list.filter(c=>c.d===d).sort((a,b)=>a.t-b.t||a.pool.localeCompare(b.pool)),t=TT.w===TODAY.w&&d===TODAY.d;
@@ -89,33 +103,32 @@ function weekGrid(){
 const rangeList=()=>TT.view==='day'?classesFor(TT.w).filter(c=>c.d===TT.d):classesFor(TT.w);
 function paint(){
   const k=document.getElementById('ttKpi'),g=document.getElementById('ttGrid');if(!k||!g)return;
-  k.innerHTML=kpis(visible(rangeList()));g.innerHTML=TT.view==='day'?dayGrid():weekGrid();
+  k.innerHTML=kpis(visible(rangeList()));g.innerHTML=isM()?agenda():TT.view==='day'?dayGrid():weekGrid();
   const hc=document.getElementById('ttHits');if(hc){const q=TT.q.trim();hc.textContent=q?`${visible(rangeList()).filter(hit).length} classes with “${q}”`:''}
 }
+const actF=()=>Object.values(TT.stages).filter(Boolean).length+(TT.teacher!=='All'?1:0)+(TT.spaces?1:0)+(TT.q.trim()?1:0);
+function stageChips(){const any=Object.values(TT.stages).some(Boolean);return FAM.map(f=>{const on=TT.stages[f[0]];return `<button class="sg ${on?'on':''} ${any&&!on?'off':''}" data-a="ttStage" data-k="${f[0]}" aria-pressed="${!!on}"><span class="dots">${STAGES.filter(x=>x[5]===f[0]).slice(0,5).map(x=>`<i style="background:${x[2]}"></i>`).join('')}</span>${f[1]}</button>`}).join('')}
+function filterFields(){return `<div class="ff"><label>Stage<div class="chips">${stageChips()}</div></label>
+  <label>Teacher<select data-tt="teacher">${['All',...TEACH].map(t=>`<option ${t===TT.teacher?'selected':''}>${t}</option>`).join('')}</select></label>
+  <label>Swimmer<input type="search" data-tt="q" placeholder="Find a swimmer" value="${esc2(TT.q)}"></label>
+  <button class="chip ${TT.spaces?'on':''}" data-a="ttSpaces" aria-pressed="${TT.spaces}"><span class="bx">${TT.spaces?'✓':''}</span>Only classes with spaces</button></div>`}
 function toolbar(){
-  const cnt=v=>visible(classesFor(TT.w)).filter(c=>c.v===v).length;
-  const wkS=dateOf(TT.w,0),wkE=dateOf(TT.w,6);
-  const teachers=['All',...TEACH];
+  const wkS=dateOf(TT.w,0),wkE=dateOf(TT.w,6),n=actF();
   return `<div class="tt-bar">
-  <div class="tt-row"><span class="lbl2">Venues</span>
-    ${['Killingworth','Shiremoor'].map(v=>`<button class="chip ${TT.venues[v]?'on':''}" data-a="ttVenue" data-v="${v}" aria-pressed="${!!TT.venues[v]}"><span class="bx">${TT.venues[v]?'✓':''}</span>${v}<span class="n">${classesFor(TT.w).filter(c=>c.v===v).length}</span></button>`).join('')}
-    <span class="grow"></span>
-    <div class="seg"><button class="${TT.view==='day'?'on':''}" data-a="ttView" data-v="day">Day</button><button class="${TT.view==='week'?'on':''}" data-a="ttView" data-v="week">Week</button></div>
-    <button class="btn navy sm" data-a="ttBook">${ico('plus',16)} Book a swimmer</button></div>
-  <div class="tt-row"><div class="tt-nav"><button class="ib2" data-a="ttWeek" data-n="-1" aria-label="Previous week">${ico('back',16)}</button>
-    <span class="tt-date">${fmt(wkS,{day:'numeric',month:'short'})} – ${fmt(wkE,{day:'numeric',month:'short',year:'numeric'})}</span>
+  <div class="tt-top"><div class="tt-nav"><button class="ib2" data-a="ttWeek" data-n="-1" aria-label="Previous week">${ico('back',16)}</button>
+    <span class="tt-date">${fmt(wkS,{day:'numeric',month:'short'})} – ${fmt(wkE,{day:'numeric',month:'short'})}</span>
     <button class="ib2" data-a="ttWeek" data-n="1" aria-label="Next week"><span style="display:grid;transform:scaleX(-1)">${ico('back',16)}</span></button></div>
     <button class="btn ghost sm" data-a="ttToday">Today</button><span class="grow"></span>
-    <select data-tt="teacher" aria-label="Teacher">${teachers.map(t=>`<option ${t===TT.teacher?'selected':''}>${t}</option>`).join('')}</select>
-    <button class="chip ${TT.spaces?'on':''}" data-a="ttSpaces" aria-pressed="${TT.spaces}"><span class="bx">${TT.spaces?'✓':''}</span>Spaces only</button>
-    <input type="search" data-tt="q" placeholder="Find a swimmer" value="${esc2(TT.q)}" aria-label="Find a swimmer"></div>
-  ${TT.view==='day'?`<div class="tt-days">${DAYS.map((D,d)=>`<button class="dpill ${d===TT.d?'on':''} ${TT.w===TODAY.w&&d===TODAY.d?'today':''}" data-a="ttDay" data-d="${d}"><span>${D}</span><b>${dateOf(TT.w,d).getDate()}</b><span>${visible(classesFor(TT.w).filter(c=>c.d===d)).length} classes</span></button>`).join('')}</div>`:''}
-  <div class="tt-row"><span class="lbl2">Stage</span>${STAGES.map(s=>{const on=TT.stages[s[0]],any=Object.values(TT.stages).some(Boolean);return `<button class="sg ${on?'on':''} ${any&&!on?'off':''}" style="--c:${s[2]}" data-a="ttStage" data-k="${s[0]}" aria-pressed="${!!on}"><i></i>${s[1].replace('Nemo ','')}</button>`}).join('')}
-    ${Object.values(TT.stages).some(Boolean)?'<button class="btn link" data-a="ttStage" data-k="">Clear</button>':''}<span class="tt-help" id="ttHits"></span></div></div>`;
+    <div class="seg dsk"><button class="${TT.view==='day'?'on':''}" data-a="ttView" data-v="day">Day</button><button class="${TT.view==='week'?'on':''}" data-a="ttView" data-v="week">Week</button></div>
+    <button class="btn navy sm dsk" data-a="ttBook">${ico('plus',16)} Book a swimmer</button></div>
+  <div class="tt-row vn"><div class="vchips">${['Killingworth','Shiremoor'].map(v=>`<button class="chip ${TT.venues[v]?'on':''}" data-a="ttVenue" data-v="${v}" aria-pressed="${!!TT.venues[v]}"><span class="bx">${TT.venues[v]?'✓':''}</span>${v}</button>`).join('')}</div>
+    <button class="chip fbtn" data-a="ttFilters">${ico('sliders',16)} Filters${n?`<span class="nb">${n}</span>`:''}</button></div>
+  ${TT.view==='day'||isM()?`<div class="tt-days" id="ttDays">${DAYS.map((D,d)=>`<button class="dpill ${d===TT.d?'on':''} ${TT.w===TODAY.w&&d===TODAY.d?'today':''}" data-a="ttDay" data-d="${d}"><span>${D}</span><b>${dateOf(TT.w,d).getDate()}</b><span>${visible(classesFor(TT.w).filter(c=>c.d===d)).length}</span></button>`).join('')}</div>`:''}
+  <div class="fpanel" ${TT.fo?'':'hidden'} id="fpanel">${TT.fo?filterFields():''}</div></div>`;
 }
 window.VIEWS_TT=function(){
   return {eb:'Admin · Killingworth and Shiremoor',h:'Venue timetable',sub:'Every class, swimmer and space across both venues. Hover a class to see who is booked, click it to manage it.',
-  body:`${toolbar()}<div class="kpis tt" id="ttKpi"></div><div id="ttGrid"></div><div class="tt-help">${ico('info',15)} Colour shows the stage. The number is swimmers booked out of places. Amber means one space left, dark means full.</div><div id="ttDrawer">${drawer()}</div>`};
+  body:`${toolbar()}<div id="ttKpi"></div><div id="ttGrid"></div><div class="tt-help">${ico('info',15)} Colour shows the stage. The number is swimmers booked out of places. Amber means one space left, dark means full.</div><button class="fab" data-a="ttBook" aria-label="Book a swimmer">${ico('plus',24)}</button><div id="ttDrawer">${drawer()}</div>`};
 };
 function drawer(){
   const c=TT.sel&&findC(TT.sel);if(!c)return '';
@@ -137,7 +150,8 @@ function drawer(){
   </div>
   <div class="df"><button class="btn red sm" data-a="ttCancel">${c.cancelled?'Reinstate class':'Cancel class'}</button><span style="flex:1"></span><button class="btn navy sm" data-a="ttClose">Done</button></div></aside>`;
 }
-const refresh=(full)=>{if(full){render()}else{paint()}const d=document.getElementById('ttDrawer');if(d)d.innerHTML=drawer()};
+function openSheet(){modal('Filters',filterFields(),`<button class="btn navy" data-a="ttSheetDone">Show classes</button><button class="btn ghost" data-a="ttStage" data-k="">Clear all</button>`)}
+const refresh=(full)=>{if(full){render();if(TT.sheet&&(document.querySelector('#modal .modal')||{getAttribute(){}}).getAttribute('aria-label')==='Filters')openSheet()}else{paint()}const d=document.getElementById('ttDrawer');if(d)d.innerHTML=drawer()};
 const cur=()=>findC(TT.sel);
 const logA=(t,w)=>{try{logIt(ME(),'Classes',w)}catch(e){}};
 Object.assign(ACT,{
@@ -147,9 +161,12 @@ Object.assign(ACT,{
   ttWeek(d){TT.w=Math.max(-1,Math.min(3,TT.w+ +d.n));refresh(1)},
   ttToday(){TT.w=TODAY.w;TT.d=TODAY.d;refresh(1)},
   ttSpaces(){TT.spaces=!TT.spaces;refresh(1)},
-  ttStage(d){if(!d.k)TT.stages={};else TT.stages[d.k]=!TT.stages[d.k];refresh(1)},
+  ttStage(d){if(!d.k){TT.stages={};TT.teacher='All';TT.spaces=false;TT.q=''}else TT.stages[d.k]=!TT.stages[d.k];refresh(1)},
+  ttFilters(){if(isM()){TT.sheet=true;openSheet()}else{TT.fo=!TT.fo;refresh(1)}},
+  ttExp(d){TT.exp=TT.exp===d.id?null:d.id;paint()},
   ttOpen(d){TT.sel=d.id;hidePop();refresh(1)},
   ttClose(){TT.sel=null;refresh(1)},
+  ttSheetDone(){TT.sheet=false;close();refresh(1)},
   ttAtt(d){const c=cur(),s=c.sw[+d.i];s.att=s.att===d.s?null:d.s;logA('',`${s.n} marked ${s.att||'not recorded'} in ${ST[c.st].name}`);refresh(1)},
   ttRemove(d){const c=cur(),s=c.sw.splice(+d.i,1)[0];logA('',`Removed ${s.n} from ${ST[c.st].name}, ${DAYS[c.d]} ${hm(c.t)}`);toast(`${s.n} removed. ${c.wl.length?'The next swimmer on the waiting list can be offered the space.':'The space is open to book.'}`);refresh(1)},
   ttOffer(){const c=cur(),n=c.wl.shift();c.sw.push({n,age:'',tag:'New',att:null});toast(`Space offered to ${n}. They are now booked in.`);refresh(1)},
@@ -176,6 +193,7 @@ document.addEventListener('input',e=>{const el=e.target;if(el.dataset&&el.datase
   if(el.id==='gq'){}});
 document.addEventListener('keydown',e=>{if(e.target.id==='gq'&&e.key==='Enter'){TT.q=e.target.value;S.view='timetable';render()}if(e.key==='Escape'&&TT.sel){TT.sel=null;if(S.view==='timetable')refresh(1)}});
 
+let _m=isM();matchMedia('(max-width:900px)').addEventListener('change',()=>{if(_m!==isM()){_m=isM();if(S.view==='timetable')render()}});
 /* hover pop-up */
 const pop=document.createElement('div');pop.className='ttpop';pop.hidden=true;document.body.appendChild(pop);
 function hidePop(){pop.hidden=true}
