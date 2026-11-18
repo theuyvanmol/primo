@@ -65,11 +65,13 @@ Object.assign(ACT,{bkTab(d){O.bkTab=d.t;render()},
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv'}));a.download='paddlepod-xero-invoices-nov-2026.csv';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast('Xero invoice file downloaded.')}});
 /* ---------- texts ---------- */
 const segs=n=>Math.max(1,Math.ceil(n/160));
+const sb=()=>{const b=document.querySelector('.st-b');if(b)b.scrollTop=b.scrollHeight};
 A.sms=function(){
+  setTimeout(sb,30);
   const T=O.smsTab,th=S.sms.t,cur=th.find(x=>x.id===O.smsSel)||th[0];
   const tabs=[['inbox','Inbox'],['send','Send a text'],['sent','Sent']],un=th.filter(t=>t.unread).length;
-  const list=`<div class="sl">${th.map(t=>`<button class="sli ${t.id===cur.id?'on':''}" data-a="smsOpen" data-id="${t.id}"><span class="av">${ini(t.who)}</span><span class="grow"><b>${E(t.who)}</b><small>${E(t.m[t.m.length-1][1])}</small></span>${t.unread?'<i class="ud"></i>':''}</button>`).join('')}</div>`;
-  const thread=`<div class="smt"><div class="st-h"><button class="mbk" data-a="smsBack" aria-label="Back to messages">${ico('back',18)}</button><div><b>${E(cur.who)}</b><small>${E(cur.sw)}</small></div></div><div class="st-b">${cur.m.map(m=>`<div class="bub ${m[0]}">${E(m[1])}<small>${m[2]}</small></div>`).join('')}</div>
+  const list=`<div class="sl">${th.map(t=>`<button class="sli ${t.id===cur.id?'on':''}" data-a="smsOpen" data-id="${t.id}"><span class="av">${ini(t.who)}</span><span class="grow"><b>${E(t.who)}</b><small>${E(t.m[t.m.length-1][1])}</small></span><span class="smm"><em>${E(t.m[t.m.length-1][2])}</em>${t.unread?'<i class="ud"></i>':''}</span></button>`).join('')}</div>`;
+  const thread=`<div class="smt"><div class="st-h"><button class="mbk" data-a="smsBack" aria-label="Back to messages">${ico('back',18)}</button><span class="av">${ini(cur.who)}</span><div class="grow"><b>${E(cur.who)}</b><small>${E(cur.sw)}</small></div></div><div class="st-b">${cur.m.map(m=>`<div class="bub ${m[0]}">${E(m[1])}<small>${m[2]}</small></div>`).join('')}</div>
    <div class="st-q">${['Thanks, see you then!','Yes, we can make that up. I will send options.','Please call us on 0191 000 0000'].map(q=>`<button class="chip" data-a="smsQuick" data-q="${E(q)}">${E(q)}</button>`).join('')}</div>
    <div class="st-f"><input type="text" id="smsR" placeholder="Reply by text" aria-label="Reply"><button class="btn navy sm" data-a="smsSend">Send</button></div></div>`;
   return {eb:'Texts',h:'Texts',sub:'Two-way texts with parents. Replies land here.',body:`<div class="utabs">${tabs.map(x=>`<button class="${T===x[0]?'on':''}" data-a="smsTab" data-t="${x[0]}">${x[1]}${x[0]==='inbox'&&un?` <span class="nb">${un}</span>`:''}</button>`).join('')}</div>
@@ -80,7 +82,7 @@ A.sms=function(){
 };
 Object.assign(ACT,{smsTab(d){O.smsTab=d.t;render()},smsOpen(d){O.smsSel=d.id;O.smsMob=true;const t=S.sms.t.find(x=>x.id===d.id);t.unread=0;render()},smsBack(){O.smsMob=false;render()},
  smsQuick(d){const i=document.getElementById('smsR');i.value=d.q;i.focus()},
- smsSend(){const i=document.getElementById('smsR'),v=i.value.trim();if(!v)return;S.sms.t.find(x=>x.id===O.smsSel).m.push(['out',v,'Just now']);render();toast('Text sent.')},
+ smsSend(){const i=document.getElementById('smsR'),v=i.value.trim();if(!v)return;S.sms.t.find(x=>x.id===O.smsSel).m.push(['out',v,'Just now']);render();toast('Text sent.');setTimeout(()=>{const n=document.getElementById('smsR');if(n&&matchMedia('(min-width:801px)').matches)n.focus()},40)},
  smsTag(d){const m=document.getElementById('sdM');m.value+=d.t;m.dispatchEvent(new Event('input',{bubbles:true}));m.focus()},
  smsGo(){const m=document.getElementById('sdM'),v=m.value.trim();if(!v){toast('Write a message first.');return}const a=document.getElementById('sdA').value;S.sms.sent.unshift([a.replace(/ \(.*/,''),v,(a.match(/\((\d+)/)||[0,'?'])[1]+' parents','Just now']);O.smsTab='sent';render();toast('Text sent.')}});
 document.addEventListener('input',e=>{if(e.target.id==='sdM'){const n=e.target.value.length;document.getElementById('sdC').textContent=`${n} characters · ${segs(n)} text${segs(n)>1?'s':''} per parent`}

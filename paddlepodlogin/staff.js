@@ -48,7 +48,7 @@ function classesFor(w){
 }
 const all=()=>{const a=[];for(let w=-1;w<=3;w++)a.push(...classesFor(w));return a};
 const findC=id=>all().find(c=>c.id===id);
-const TT=window.TT={draft:false,sort:{k:'day',d:1},fo:false,sheet:false,exp:null,w:0,view:'day',d:TODAY.d,venues:{Killingworth:true,Shiremoor:true},stages:{},teacher:'All',spaces:false,q:'',sel:null};
+const TT=window.TT={draft:false,sort:{k:'day',d:1},fo:false,sheet:false,exp:null,w:0,view:'day',d:TODAY.d,venues:{Killingworth:true,Shiremoor:true},mv:'cal',stages:{},teacher:'All',spaces:false,q:'',sel:null};
 const isTT=()=>S.view==='timetable'||S.view==='planner';
 const esc2=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const ini=n=>n.split(' ').map(x=>x[0]).join('').slice(0,2);
@@ -64,7 +64,7 @@ let GRID=null,inN=false;function block(c,style=''){
   const s=ST[c.st],sp=space(c),n=c.sw.length,cls=['cb',c.cover&&!c.cancelled?'cover':'',c.cancelled||c._del?'cancelled':'',dirty(c)&&TT.draft?'draft':'',TT.sel===c.id?'sel':'',c.done?'done':'',TT.q.trim()?(hit(c)?'hit':'dim'):''].join(' ');
   const cc=n>=c.cap?'full':(sp<=1&&n>0?'low':'');
   return `<button class="${cls}" style="--c:${s.c};${style}" data-a="ttOpen" data-id="${c.id}" aria-label="${s.name}, ${hm(c.t)}, ${c.v}, ${n} of ${c.cap} booked">
-    <span class="t1"><span>${TT.view==="week"&&!inN?hm(c.t):hm(c.t)+"–"+hm(c.t+c.dur)}</span><span class="cnt2 ${cc}">${n}/${c.cap}</span></span>${dirty(c)&&TT.draft?`<span class="dtag">${c._new?"New":c._del?"Removed":"Moved"}</span>`:""}
+    <span class="t1"><span>${(TT.view==="week"&&!inN)||isM()?hm(c.t):hm(c.t)+"–"+hm(c.t+c.dur)}</span><span class="cnt2 ${cc}">${n}/${c.cap}</span></span>${dirty(c)&&TT.draft?`<span class="dtag">${c._new?"New":c._del?"Removed":"Moved"}</span>`:""}
     <span class="nm">${s.name}</span><span class="tc">${c.v==='Killingworth'?'KW':'SM'} · ${c.pn} · ${esc2(c.teacher)}</span><span class="mp"><i style="width:${Math.round(n/c.cap*100)}%"></i></span></button>`;
 }
 function kpis(list){
@@ -76,7 +76,7 @@ function dayGrid(){
   const lanes=POOLS.filter(p=>TT.venues[p.v]),all1=classesFor(TT.w).filter(c=>c.d===TT.d),list=visible(all1),PX=2.5,BRK=38;
   if(!lanes.length)return '<div class="card empty2">Choose at least one venue to see classes.</div>';
   const ts=all1.map(c=>[c.t,c.t+c.dur]).sort((x,y)=>x[0]-y[0]),segs=[];
-  ts.forEach(([a,b])=>{a=Math.floor((a-20)/30)*30;b=Math.ceil((b+20)/30)*30;const l=segs[segs.length-1];if(l&&a-l[1]<=90)l[1]=Math.max(l[1],b);else segs.push([a,b])});
+  ts.forEach(([a,b])=>{a=Math.floor((a-(isM()?8:20))/30)*30;b=Math.ceil((b+(isM()?8:20))/30)*30;const l=segs[segs.length-1];if(l&&a-l[1]<=90)l[1]=Math.max(l[1],b);else segs.push([a,b])});
   let off=0;segs.forEach((g,i)=>{g.push(off);off+=(g[1]-g[0])*PX+(i<segs.length-1?BRK:0)});
   GRID={segs,PX};const H=off,Y=m=>{for(const g of segs)if(m>=g[0]&&m<=g[1])return g[2]+(m-g[0])*PX;return null};
   const isT=TT.w===TODAY.w&&TT.d===TODAY.d,ny=isT?Y(TODAY.m):null;
@@ -132,7 +132,7 @@ const csvEsc=v=>'"'+String(v).replace(/"/g,'""')+'"';
 const rangeList=()=>TT.view==='day'||isM()?classesFor(TT.w).filter(c=>c.d===TT.d):classesFor(TT.w);
 function paint(){
   const k=document.getElementById('ttKpi'),g=document.getElementById('ttGrid');if(!k||!g)return;
-  k.innerHTML=kpis(visible(rangeList()));g.innerHTML=isM()?agenda():TT.view==='list'?listView():TT.view==='day'?dayGrid():weekGrid();
+  k.innerHTML=kpis(visible(rangeList()));g.innerHTML=isM()?(TT.mv==='cal'?dayGrid():agenda()):TT.view==='list'?listView():TT.view==='day'?dayGrid():weekGrid();
   const hc=document.getElementById('ttHits');if(hc){const q=TT.q.trim();hc.textContent=q?`${visible(rangeList()).filter(hit).length} classes with “${q}”`:''}
 }
 const actF=()=>Object.values(TT.stages).filter(Boolean).length+(TT.teacher!=='All'?1:0)+(TT.spaces?1:0)+(TT.q.trim()?1:0);
@@ -142,7 +142,7 @@ function filterFields(){return `<div class="ff"><label>Stage<div class="chips">$
   <label>Swimmer<input type="search" data-tt="q" placeholder="Find a swimmer" value="${esc2(TT.q)}"></label>
   <button class="chip ${TT.spaces?'on':''}" data-a="ttSpaces" aria-pressed="${TT.spaces}"><span class="bx">${TT.spaces?'✓':''}</span>Only classes with spaces</button></div>`}
 function banner(){const d=dirtyList(),mv=d.filter(c=>c._o&&!c._new&&!c._del).length,nw=d.filter(c=>c._new).length,rm=d.filter(c=>c._del).length,aff=affected(d);
-  return `<div class="dbar"><div class="dtx"><b>Sandbox</b> <span>Nothing here is live until you publish. ${d.length?`${d.length} change${d.length>1?'s':''}${mv?` · ${mv} moved`:''}${nw?` · ${nw} new`:''}${rm?` · ${rm} removed`:''}${aff?` · ${aff} swimmers affected`:''}`:(isM()?'Tap a class to move it.':'Drag classes to move them, or click one to edit it.')}</span></div>
+  return `<div class="dbar"><div class="dtx"><b>Sandbox</b> <span>Nothing here is live until you publish. ${d.length?`${d.length} change${d.length>1?'s':''}${mv?` · ${mv} moved`:''}${nw?` · ${nw} new`:''}${rm?` · ${rm} removed`:''}${aff?` · ${aff} swimmers affected`:''}`:(isM()?(TT.mv==='cal'?'Press and hold a class, then drag it to a new time, pool or day.':'Tap a class to move it.'):'Drag classes to move them, or click one to edit it.')}</span></div>
   <div class="dbt"><button class="btn ghost sm" data-a="ttAddClass">${ico('plus',16)} Add class</button>${d.length?`<button class="btn ghost sm" data-a="ttDiscard">Discard</button><button class="btn sm" data-a="ttReview">Review and publish</button>`:''}</div></div>`}
 function affected(d){return d.filter(c=>c._o&&(c._o.d!==c.d||c._o.t!==c.t||c._o.pool!==c.pool)||c._del).reduce((a,c)=>a+c.sw.length,0)}
 function tryMove(c,to,commit){
@@ -168,6 +168,7 @@ function toolbar(){
     <div class="seg mode"><button class="${TT.draft?'':'on'}" data-a="ttMode" data-m="live">Live</button><button class="${TT.draft?'on sb':''}" data-a="ttMode" data-m="draft">Sandbox</button></div>
     <button class="btn navy sm dsk" data-a="ttBook">${ico('plus',16)} Book a swimmer</button></div>
   <div class="tt-r2"><div class="vchips">${['Killingworth','Shiremoor'].map(v=>`<button class="chip ${TT.venues[v]?'on':''}" data-a="ttVenue" data-v="${v}" aria-pressed="${!!TT.venues[v]}"><span class="bx">${TT.venues[v]?'✓':''}</span>${v}</button>`).join('')}</div><span class="grow"></span>
+    <div class="seg vm"><button class="${TT.mv==='cal'?'on':''}" data-a="ttMv" data-v="cal">Calendar</button><button class="${TT.mv==='list'?'on':''}" data-a="ttMv" data-v="list">List</button></div>
     <div class="seg dsk"><button class="${TT.view==='day'?'on':''}" data-a="ttView" data-v="day">Day</button><button class="${TT.view==='week'?'on':''}" data-a="ttView" data-v="week">Week</button><button class="${TT.view==='list'?'on':''}" data-a="ttView" data-v="list">List</button></div>
     <button class="chip fbtn" data-a="ttFilters">${ico('sliders',16)} Filters${n?`<span class="nb">${n}</span>`:''}</button></div></div>
   ${TT.draft?banner():''}
@@ -211,6 +212,7 @@ const refresh=(full)=>{if(full){render();if(TT.sheet&&(document.querySelector('#
 const cur=()=>findC(TT.sel);
 const logA=(t,w)=>{try{logIt(ME(),'Classes',w)}catch(e){}};
 Object.assign(ACT,{
+  ttMv(d){TT.mv=d.v;refresh(1)},
   ttMode(d){if(d.m==='draft'){TT.draft=true;refresh(1);return}
     if(dirtyList().length){modal('Unpublished changes',`<p style="margin:0">You have ${dirtyList().length} changes that are not live yet.</p>`,`<button class="btn" data-a="ttReview">Review and publish</button><button class="btn ghost" data-a="ttDiscardGo" data-live="1">Discard and go live</button><button class="btn link" data-a="close">Keep editing</button>`);return}
     TT.draft=false;refresh(1)},
@@ -285,22 +287,33 @@ function dropTarget(e){
   const col=els.find(x=>x.classList&&x.classList.contains('dg-c'));if(!col)return null;
   const r=col.getBoundingClientRect(),m=invY(e.clientY-drag.off-r.top);if(m==null)return null;return{pool:col.dataset.pool,t:snap(m),el:col,r};
 }
-document.addEventListener('pointerdown',e=>{if(!TT.draft||isM()||e.button!==0||!isTT())return;const b=e.target.closest&&e.target.closest('.cb');if(!b||!b.closest('#dg'))return;const r=b.getBoundingClientRect();drag={id:b.dataset.id,x:e.clientX,y:e.clientY,on:false,b,off:e.clientY-r.top,w:r.width,h:r.height}});
-document.addEventListener('pointermove',e=>{if(!drag)return;
-  if(!drag.on){if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<6)return;drag.on=true;hidePop();ghost=drag.b.cloneNode(true);ghost.className+=' ghost';ghost.style.cssText=`position:fixed;left:0;top:0;width:${drag.w}px;height:${drag.h}px;z-index:97;pointer-events:none;opacity:.9;transform:none`;document.body.appendChild(ghost);drag.b.classList.add('lift')}
-  ghost.style.left=(e.clientX-drag.w/2)+'px';ghost.style.top=(e.clientY-drag.off)+'px';
-  const c=findC(drag.id),t=dropTarget(e);document.querySelectorAll('.dpill.drop').forEach(x=>x.classList.remove('drop'));if(ind){ind.remove();ind=null}
+function dragLift(){hidePop();ghost=drag.b.cloneNode(true);ghost.className+=' ghost';ghost.style.cssText=`position:fixed;left:0;top:0;width:${drag.w}px;height:${drag.h}px;z-index:97;pointer-events:none;opacity:.92;transform:none`;document.body.appendChild(ghost);drag.b.classList.add('lift')}
+function dragUpdate(x,y){ghost.style.left=(x-drag.w/2)+'px';ghost.style.top=(y-drag.off)+'px';
+  const c=findC(drag.id),t=dropTarget({clientX:x,clientY:y});document.querySelectorAll('.dpill.drop').forEach(q=>q.classList.remove('drop'));if(ind){ind.remove();ind=null}
   if(!t)return;
   if(t.el.classList.contains('dpill')){const r=tryMove(c,{d:t.d},false);t.el.classList.add('drop');t.el.dataset.ok=r.ok?'1':'0';return}
   const r=tryMove(c,{pool:t.pool,t:t.t},false);ind=document.createElement('div');ind.className='dind '+(r.ok?(r.warn?'warn':'ok'):'bad');
-  const y0=GRID.segs.find(g=>t.t>=g[0]&&t.t<=g[1]);ind.style.top=((y0?y0[2]+(t.t-y0[0])*GRID.PX:0)+2)+'px';ind.style.height=(c.dur*GRID.PX-4)+'px';ind.innerHTML=`<span>${hm(t.t)}–${hm(t.t+c.dur)}${r.ok?'':' · '+r.msg}</span>`;t.el.appendChild(ind)});
-document.addEventListener('pointerup',e=>{if(!drag)return;const d=drag;drag=null;if(!d.on)return;justDragged=true;setTimeout(()=>justDragged=false,60);
-  if(ghost){ghost.remove();ghost=null}if(ind){ind.remove();ind=null}document.querySelectorAll('.dpill.drop').forEach(x=>x.classList.remove('drop'));d.b.classList.remove('lift');
-  drag=d;const c=findC(d.id),t=dropTarget(e);drag=null;if(!t)return;
+  const y0=GRID.segs.find(g=>t.t>=g[0]&&t.t<=g[1]);ind.style.top=((y0?y0[2]+(t.t-y0[0])*GRID.PX:0)+2)+'px';ind.style.height=(c.dur*GRID.PX-4)+'px';ind.innerHTML=`<span>${hm(t.t)}–${hm(t.t+c.dur)}${r.ok?'':' · '+r.msg}</span>`;t.el.appendChild(ind)}
+function dragEnd(x,y,cancel){const d=drag;drag=null;if(!d||!d.on)return;justDragged=true;setTimeout(()=>justDragged=false,350);
+  if(ghost){ghost.remove();ghost=null}if(ind){ind.remove();ind=null}document.querySelectorAll('.dpill.drop').forEach(q=>q.classList.remove('drop'));d.b.classList.remove('lift');document.body.classList.remove('dragging');
+  if(cancel)return;drag=d;const c=findC(d.id),t=dropTarget({clientX:x,clientY:y});drag=null;if(!t)return;
   const to=t.el.classList.contains('dpill')?{d:t.d}:{pool:t.pool,t:t.t};const r=tryMove(c,to,true);
-  if(!r.ok){toast(r.msg);return}if(t.d!=null)TT.d=t.d;toast(r.warn?'Moved in the sandbox. Heads up: '+r.warn:'Moved in the sandbox. It is not live yet.');refresh(1)});
+  if(!r.ok){toast(r.msg);return}if(t.d!=null)TT.d=t.d;toast(r.warn?'Moved in the sandbox. Heads up: '+r.warn:'Moved in the sandbox. It is not live yet.');refresh(1)}
+document.addEventListener('pointerdown',e=>{if(!TT.draft||isM()||e.button!==0||!isTT())return;const b=e.target.closest&&e.target.closest('.cb');if(!b||!b.closest('#dg'))return;const r=b.getBoundingClientRect();drag={id:b.dataset.id,x:e.clientX,y:e.clientY,on:false,b,off:e.clientY-r.top,w:r.width,h:r.height}});
+document.addEventListener('pointermove',e=>{if(!drag||drag.touch)return;if(!drag.on){if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<6)return;drag.on=true;dragLift()}dragUpdate(e.clientX,e.clientY)});
+document.addEventListener('pointerup',e=>{if(!drag||drag.touch)return;dragEnd(e.clientX,e.clientY)});
 document.addEventListener('click',e=>{if(justDragged){e.stopPropagation();e.preventDefault()}},true);
-document.addEventListener('pointercancel',()=>{if(drag&&drag.on){if(ghost){ghost.remove();ghost=null}if(ind){ind.remove();ind=null}drag.b.classList.remove('lift')}drag=null});
+document.addEventListener('pointercancel',()=>{if(drag&&!drag.touch)dragEnd(0,0,true)});
+/* touch: press and hold a class, then drag it. Scrolling still works when you just swipe. */
+let tmr=0,raf=0,lx=0,ly=0;
+function auto(){if(!drag||!drag.on){raf=0;return}const H=innerHeight;let v=0;if(ly>76&&ly<150)v=-Math.min(16,(150-ly)/5);else if(ly>H-190)v=Math.min(16,(ly-(H-190))/5);if(v){scrollBy(0,v);dragUpdate(lx,ly)}raf=requestAnimationFrame(auto)}
+document.addEventListener('touchstart',e=>{if(!isM()||!isTT()||TT.mv!=='cal'||e.touches.length!==1||drag)return;const b=e.target.closest&&e.target.closest('.cb');if(!b||!b.closest('#dg'))return;
+  const t=e.touches[0],r=b.getBoundingClientRect();drag={id:b.dataset.id,x:t.clientX,y:t.clientY,on:false,touch:true,b,off:t.clientY-r.top,w:r.width,h:r.height};lx=t.clientX;ly=t.clientY;clearTimeout(tmr);
+  tmr=setTimeout(()=>{if(!drag||!drag.touch||drag.on)return;if(!TT.draft){drag=null;toast('Switch to Sandbox to move classes around.');return}drag.on=true;document.body.classList.add('dragging');dragLift();try{navigator.vibrate&&navigator.vibrate(14)}catch(_){}dragUpdate(lx,ly);if(!raf)raf=requestAnimationFrame(auto)},340)},{passive:true});
+document.addEventListener('touchmove',e=>{if(!drag||!drag.touch)return;const t=e.touches[0];lx=t.clientX;ly=t.clientY;if(!drag.on){if(Math.hypot(lx-drag.x,ly-drag.y)>9){clearTimeout(tmr);drag=null}return}e.preventDefault();dragUpdate(lx,ly)},{passive:false});
+document.addEventListener('touchend',e=>{clearTimeout(tmr);if(!drag||!drag.touch)return;if(!drag.on){drag=null;return}e.preventDefault();const t=e.changedTouches[0];dragEnd(t.clientX,t.clientY)},{passive:false});
+document.addEventListener('touchcancel',()=>{clearTimeout(tmr);if(drag&&drag.touch)dragEnd(0,0,true)});
+document.addEventListener('contextmenu',e=>{if(isM()&&e.target.closest&&e.target.closest('#dg .cb'))e.preventDefault()});
 
 /* hover pop-up */
 const pop=document.createElement('div');pop.className='ttpop';pop.hidden=true;document.body.appendChild(pop);

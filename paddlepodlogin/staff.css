@@ -447,3 +447,29 @@ body.cp-open{overflow:hidden}
 .w2 .cb.cover::after{content:"!";right:5px;bottom:4px;padding:0 6px;font-size:11px}
 @media (min-width:901px) and (max-width:1240px){.tt-r1{flex-wrap:wrap;row-gap:8px}.tt-r1 .grow{flex:1 1 20px}.tt-rows,.tt-r1,.tt-r2{min-width:0;max-width:100%}.tt-r2{flex-wrap:wrap}}
 @media (max-width:900px){body.staff:not(:has(.tt-title)) .ph{display:flex;padding:2px 2px 0}body.staff .ph h1{font-size:24px}}
+
+/* ---- mobile calendar ---- */
+.seg.vm{display:none}
+@media (max-width:900px){
+ .seg.vm{display:flex;order:6;flex:1 1 46%}.seg.vm button{flex:1}.seg.mode{order:5!important;flex:1 1 46%!important}
+ .dg{border-radius:16px;max-height:none;overflow:visible;margin:0 -4px}
+ .dg-in{grid-template-columns:38px repeat(var(--n),minmax(0,1fr));min-width:0}
+ .dg-h{padding:8px 4px 7px;font-size:12px;text-align:center;align-items:center;top:76px;z-index:9}.dg-h small{font-size:10.5px;line-height:1.2}
+ .dg-t span{right:4px;font-size:10px}.dg-t .bk{font-size:8.5px}
+ .dg-c .cb{left:2px;right:2px;padding:4px 5px 4px 6px;border-radius:9px;border-left-width:4px;gap:0;touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+ .dg-c .cb .t1{font-size:11px}.dg-c .cb .nm{font-size:12px;line-height:1.2;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+ .dg-c .cb .tc,.dg-c .cb .mp{display:none}.dg-c .cb .cnt2{font-size:11px;padding:0 5px}
+ .dg-c .cb.cover::after{content:"!";right:4px;bottom:3px;padding:0 5px}
+ .dind{left:2px;right:2px}.dind span{font-size:10.5px}
+ body.dragging{overflow-x:hidden;-webkit-user-select:none;user-select:none}
+ body.dragging .cb.lift{opacity:.25}
+ .ghost{box-shadow:0 14px 30px rgba(0,34,58,.35);transform:scale(1.04)!important;border-radius:11px;z-index:97}
+ .dpill.drop{outline:3px solid var(--navy);outline-offset:-3px;transform:scale(1.06)}
+ .tt-help{display:block}
+}
+@media (max-width:900px){
+ .tt-bar{display:contents}.tt-bar>.tt-rows{margin-bottom:10px}.tt-bar>.dbar,.tt-bar>.fpanel{margin-bottom:10px}
+ .tt-days{top:0!important;margin-bottom:8px;box-shadow:0 6px 10px -8px rgba(0,34,58,.3)}
+ .dg-h{top:78px}
+}
+@media (max-width:900px){.ghost .tc,.ghost .mp{display:none!important}.ghost .nm{white-space:normal;line-height:1.2}}
