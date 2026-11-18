@@ -30,7 +30,7 @@
 .sli{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:12px;padding:12px 16px;width:100%;cursor:pointer;border-bottom:1px solid #EEF2F6;position:relative}
 .sli:hover,.sli.on{background:#F3F8FB}.sli .grow{min-width:0}.sli b{display:block;font:600 15px var(--display);color:var(--navy)}.sli small{display:block;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ud{width:10px;height:10px;border-radius:50%;background:var(--teal);flex:none}
-.st{display:flex;flex-direction:column;min-width:0}.st-h{padding:12px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}.st-h b{display:block;font:600 16px var(--display);color:var(--navy)}.st-h small{color:var(--muted)}
+.smt{display:flex;flex-direction:column;min-width:0}.st-h{padding:12px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}.st-h b{display:block;font:600 16px var(--display);color:var(--navy)}.st-h small{color:var(--muted)}
 .mbk{display:none;all:unset;cursor:pointer;width:40px;height:40px;border-radius:50%;background:var(--bg);place-items:center;color:var(--navy)}
 .st-b{flex:1;padding:16px 18px;display:flex;flex-direction:column;gap:8px;overflow:auto;background:#F7FAFC;min-height:260px}
 .bub{max-width:78%;padding:9px 13px;border-radius:16px;font-size:15px;line-height:1.4;color:var(--navy)}.bub small{display:block;font-size:11px;color:var(--muted);margin-top:3px}
@@ -38,5 +38,5 @@
 .st-q{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px 0}.st-q .chip{font-weight:500;font-size:13px;min-height:34px;padding:4px 12px}
 .st-f{display:flex;gap:8px;padding:12px 14px}.st-f input{flex:1;min-width:0}
 .nb{background:var(--yellow);color:var(--navy);border-radius:99px;font:700 11px var(--display);padding:1px 7px}
-@media (max-width:800px){.smsw{grid-template-columns:1fr}.smsw .st{display:none}.smsw.thr .sl{display:none}.smsw.thr .st{display:flex}.mbk{display:grid}.sl{max-height:none;border:0}}
+@media (max-width:800px){.smsw{grid-template-columns:1fr}.smsw .smt{display:none}.smsw.thr .sl{display:none}.smsw.thr .smt{display:flex}.mbk{display:grid}.sl{max-height:none;border:0}}
 .cr>.grow{flex:1 1 240px}.cr .cin{flex:0 0 auto}.cr .num{flex:0 0 96px}

@@ -445,3 +445,5 @@ body.cp-open{overflow:hidden}
 .w2 .cb .cnt2{font-size:11px;padding:0 5px}
 @media (max-width:900px){.w2{display:none}}
 .w2 .cb.cover::after{content:"!";right:5px;bottom:4px;padding:0 6px;font-size:11px}
+@media (min-width:901px) and (max-width:1240px){.tt-r1{flex-wrap:wrap;row-gap:8px}.tt-r1 .grow{flex:1 1 20px}.tt-rows,.tt-r1,.tt-r2{min-width:0;max-width:100%}.tt-r2{flex-wrap:wrap}}
+@media (max-width:900px){body.staff:not(:has(.tt-title)) .ph{display:flex;padding:2px 2px 0}body.staff .ph h1{font-size:24px}}
