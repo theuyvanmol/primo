@@ -425,3 +425,23 @@ body.cp-open{overflow:hidden}
 @media (max-width:900px){.cp-in{padding:12px 14px 90px}.cp-g{grid-template-columns:1fr}.cp-h .btn{min-height:44px}.cp-f .two{grid-template-columns:1fr 1fr}.att-t th.nm{min-width:120px;padding-left:12px}.ck{width:34px;height:34px}}
 .cp-in>*,.cp-g>*{min-width:0}.cpage{overflow-x:hidden}
 @media (max-width:900px){.cp-in{display:block}.cp-in>*{margin-bottom:14px}.cp-g{display:grid}.cp-h{overflow:hidden}}
+
+/* ---- week time-grid ---- */
+.w2{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);overflow:auto;max-height:78vh;position:relative}
+.w2-in{display:grid;grid-template-columns:52px repeat(calc(7*var(--n)),minmax(96px,1fr));min-width:max-content;width:100%}
+.w2-h{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line);border-left:1px solid var(--line);display:flex;flex-direction:column}
+.w2-h.corner{left:0;z-index:6;border-left:0}
+.w2-h>button{all:unset;cursor:pointer;padding:9px 12px 4px;display:flex;flex-direction:column;font:600 14px var(--display);color:var(--navy)}.w2-h>button:hover b{text-decoration:underline}
+.w2-h small{font:500 11.5px var(--body);color:var(--muted)}
+.w2-h.today{background:color-mix(in srgb,var(--yellow) 22%,#fff);box-shadow:inset 0 -3px 0 var(--navy)}
+.w2-l{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;font:600 10.5px var(--display);color:var(--muted);letter-spacing:.5px;text-align:center;padding-bottom:5px}
+.w2-t{position:sticky;left:0;z-index:3;background:#fff}.w2-t span{position:absolute;right:6px;transform:translateY(-50%);font:500 11px var(--display);color:var(--muted)}
+.w2-t .bk{font-size:9.5px;opacity:.6}
+.w2-c{position:relative;border-left:1px dashed #E8EEF3}.w2-c.first{border-left:1px solid var(--line)}.w2-c.today{background:color-mix(in srgb,var(--yellow) 7%,#fff)}
+.w2-c .hl{position:absolute;left:0;right:0;border-top:1px dashed #EEF2F6}
+.w2-c .brk{position:absolute;left:0;right:0;background:repeating-linear-gradient(135deg,#F4F7FA 0 6px,#fff 6px 12px)}
+.w2 .cb{left:3px;right:3px;padding:4px 6px 4px 7px;border-radius:9px;border-left-width:4px;gap:1px}
+.w2 .cb .t1{font-size:11px}.w2 .cb .nm{font-size:12px}.w2 .cb .tc,.w2 .cb .mp{display:none}
+.w2 .cb .cnt2{font-size:11px;padding:0 5px}
+@media (max-width:900px){.w2{display:none}}
+.w2 .cb.cover::after{content:"!";right:5px;bottom:4px;padding:0 6px;font-size:11px}

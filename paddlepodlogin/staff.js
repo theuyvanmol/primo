@@ -102,10 +102,24 @@ const SHORT_ST={b1:'Baby',b2:'Baby',t1:'Tod',t2:'Tod',nr:'Red',no:'Orange',ny:'Y
 const shortSt=k=>SHORT_ST[k]||k.toUpperCase();
 function mc(c){const s=ST[c.st],n=c.sw.length,cls=['mc',n>=c.cap?'full':'',c.cancelled?'cancelled':'',c.cover?'cov':'',TT.sel===c.id?'sel':'',TT.q.trim()?(hit(c)?'hit':'dim'):''].join(' ');
   return `<button class="${cls}" style="--c:${s.c}" data-a="ttOpen" data-id="${c.id}" aria-label="${s.name}, ${hm(c.t)}, ${c.v}, ${n} of ${c.cap} booked"><i>${c.v[0]}</i><span>${hm(c.t)}</span><em>${shortSt(c.st)}</em><b>${n}/${c.cap}</b></button>`}
-function weekGrid(){
+function weekTiles(){
   const base=classesFor(TT.w),list=visible(base),hrs=[...new Set(base.map(c=>Math.floor(c.t/60)))].sort((a,b)=>a-b);
   return `<div class="wg ${TT.draft?"dr":""}"><div class="wg-in"><div class="wg-h"></div>${DAYF.map((D,d)=>{const t=TT.w===TODAY.w&&d===TODAY.d,k=list.filter(c=>c.d===d).length;return `<div class="wg-h ${t?'today':''}"><b>${DAYS[d]}</b> ${dateOf(TT.w,d).getDate()}<small>${k} classes</small></div>`}).join('')}
   ${hrs.map(h=>`<div class="wg-t">${String(h).padStart(2,'0')}:00</div>${DAYS.map((D,d)=>{const cs=list.filter(c=>c.d===d&&Math.floor(c.t/60)===h).sort((a,b)=>a.t-b.t);return `<div class="wg-c ${TT.w===TODAY.w&&d===TODAY.d?'today':''}">${cs.map(mc).join('')}</div>`}).join('')}`).join('')}</div></div>`;
+}
+function weekGrid(){
+  const lanes=POOLS.filter(p=>TT.venues[p.v]);if(!lanes.length)return '<div class="card empty2">Choose at least one venue to see classes.</div>';
+  const base=classesFor(TT.w),list=visible(base),PX=2.3,BRK=34;
+  const ts=base.map(c=>[c.t,c.t+c.dur]).sort((x,y)=>x[0]-y[0]),segs=[];
+  ts.forEach(([a,b])=>{a=Math.floor((a-20)/30)*30;b=Math.ceil((b+20)/30)*30;const l=segs[segs.length-1];if(l&&a-l[1]<=90)l[1]=Math.max(l[1],b);else segs.push([a,b])});
+  let off=0;segs.forEach((g,i)=>{g.push(off);off+=(g[1]-g[0])*PX+(i<segs.length-1?BRK:0)});
+  const H=off,Y=m=>{for(const g of segs)if(m>=g[0]&&m<=g[1])return g[2]+(m-g[0])*PX;return null};
+  const lines=[];segs.forEach(g=>{for(let m=g[0];m<=g[1];m+=30)lines.push(m)});
+  const hl=lines.map(m=>`<div class="hl" style="top:${Y(m)}px"></div>`).join('')+segs.slice(0,-1).map(g=>`<div class="brk" style="top:${g[2]+(g[1]-g[0])*PX}px;height:${BRK}px"></div>`).join('');
+  const n=lanes.length;
+  const heads=DAYF.map((D,d)=>{const t=TT.w===TODAY.w&&d===TODAY.d,k=list.filter(c=>c.d===d&&!c.cancelled).length;return `<div class="w2-h ${t?'today':''}" style="grid-column:span ${n}"><button data-a="ttDay" data-d="${d}"><b>${DAYS[d]} ${dateOf(TT.w,d).getDate()}</b><small>${k} classes${t?' · today':''}</small></button><div class="w2-l">${lanes.map(p=>`<span>${p.v[0]} ${p.n.split(' ')[0]}</span>`).join('')}</div></div>`}).join('');
+  const cols=DAYF.map((D,d)=>lanes.map((p,i)=>`<div class="w2-c ${i===0?'first':''} ${TT.w===TODAY.w&&d===TODAY.d?'today':''}" style="height:${H}px">${hl}${list.filter(c=>c.d===d&&c.pool===p.id).map(c=>block(c,`top:${Y(c.t)+2}px;height:${c.dur*PX-4}px`).replace(/<span class="nm">[^<]*<\/span>/,`<span class="nm">${shortSt(c.st)}</span>`)).join('')}</div>`).join('')).join('');
+  return `<div class="w2 ${TT.draft?'dr':''}"><div class="w2-in" style="--n:${n}"><div class="w2-h corner"></div>${heads}<div class="w2-t" style="height:${H}px">${lines.filter(m=>m%60===0).map(m=>`<span style="top:${Y(m)}px">${hm(m)}</span>`).join('')}${segs.slice(0,-1).map(g=>`<span class="bk" style="top:${g[2]+(g[1]-g[0])*PX+BRK/2}px">break</span>`).join('')}</div>${cols}</div></div>`;
 }
 function listView(){
   const k=TT.sort.k,dir=TT.sort.d,key={day:c=>c.d*2000+c.t,time:c=>c.t*10+c.d,venue:c=>c.v+c.pn,stage:c=>STAGES.findIndex(x=>x[0]===c.st),teacher:c=>c.teacher,booked:c=>c.sw.length,spaces:c=>space(c)}[k]||(c=>c.d*2000+c.t);
@@ -399,6 +413,7 @@ function cpMount(){let el=document.getElementById('cpage');if(!el){el=document.c
 function cpRender(){const c=findC(TT.cp);if(!c)return;const el=cpMount(),top=el.scrollTop;el.innerHTML=cpHTML(c);el.scrollTop=top}
 function cpPic(){const c=findC(TT.cp),x=xOf(c),im=document.querySelector('.cp-img img');if(im)im.src=x.img||('/paddlepodlogin/assets/'+defImg(c));document.querySelectorAll('.lib button').forEach(b=>b.classList.toggle('on',!!x.img&&x.img.endsWith(b.dataset.f)));const ib=document.querySelector('.cp-ib');if(ib){const r=ib.querySelector('[data-a=cpImgRm]');if(x.img&&!r){ib.insertAdjacentHTML('beforeend','<button class="btn sm ghost" data-a="cpImgRm">Use default</button>')}else if(!x.img&&r)r.remove()}}
 Object.assign(ACT,{
+  ttDay(d){TT.d=+d.d;TT.view='day';refresh()},
   cpOpen(){TT.cp=TT.sel;TT.sel=null;cpEdit=false;refresh(1);cpRender();document.getElementById('cpage').scrollTop=0},
   cpClose(){TT.cp=null;cpEdit=false;const el=document.getElementById('cpage');if(el)el.remove();document.body.classList.remove('cp-open');refresh(1)},
   cpEdit(d){cpEdit=d.m==='1';cpRender()},
