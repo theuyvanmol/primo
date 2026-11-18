@@ -177,6 +177,7 @@ function drawer(){
   <div class="dh"><button class="x" data-a="ttClose" aria-label="Close">${ico('x',18)}</button><div class="eb" style="font:600 12px var(--display);letter-spacing:1px;text-transform:uppercase;color:var(--ink)">${DAYF[c.d]} ${fmt(dateOf(c.w,c.d),{day:'numeric',month:'long'})}</div><h2>${s.name}</h2>
     <p>${hm(c.t)}–${hm(c.t+c.dur)} · ${c.v}, ${c.pn} · ${s.age}</p></div>
   <div class="db">
+    <button class="btn navy cpbtn" data-a="cpOpen">Open class page and edit details</button>
     <div class="big"><b>${n}/${c.cap}</b><div class="prog"><i style="width:${n/c.cap*100}%;background:${s.c}"></i></div>${sp<=0?pill('Full','navy'):pill(sp+(sp>1?' spaces':' space'),sp===1?'amber':'green')}</div>
     ${TT.draft?editPanel(c):''}
     ${c.cancelled?`<div class="alert t-red" style="padding:10px 14px;border-radius:12px;background:var(--red-bg);color:var(--red)"><b>This class is cancelled.</b> Parents have been told.</div>`:''}
@@ -357,6 +358,67 @@ render=function(sc){_r(sc);
     if(isTT())paint();}
   if(staff){const sd=document.getElementById('side');if(sd&&!sd.querySelector('.sb-g')){const grp={dash:'Today',inbox:'People',tasks:'Run the business',today:'Today'};[...sd.querySelectorAll('button[data-v]')].forEach(bt=>{const g=grp[bt.dataset.v];if(g)bt.insertAdjacentHTML('beforebegin',`<div class="sb-g">${g}</div>`)})}}
 };
+
+/* ---- full class page: edit details, image, description, term attendance ---- */
+const LIB=[['cls2.jpg','Parent and baby'],['cls5.jpg','Toddler and parent'],['cls4.jpg','Junior with goggles'],['cls7.jpg','Junior lessons']];
+const DESC={baby:'A gentle first splash. Parent and baby lessons in warm water with songs, gentle movement and lots of cuddles. Builds water confidence and a lovely bond.',tod:'Fun, play-based lessons for toddlers with a grown-up in the water. We build confidence, kicking and floating through songs and games.',nemo:'Our Nemo programme for the 3 and over group. Short, friendly lessons that build water confidence, kicking and the first strokes.',s14:'Small groups working on the core skills: floating, kicking, breathing and your first strokes, with a teacher in the water or on the side.',s57:'Stroke development. Front crawl, back crawl and breaststroke technique, with swimming for longer distances.',s810:'Confident swimmers refine their technique, build stamina and work toward the top badges.',adv:'Stronger swimmers building speed, stamina and technique in a coached session.',pv:'A one to one lesson with a teacher, built around the swimmer.'};
+const defImg=c=>({baby:'cls2.jpg',tod:'cls5.jpg',nemo:'cls5.jpg',s14:'cls4.jpg'}[ST[c.st].fam]||'cls7.jpg');
+const NAMES_PRICE=c=>ST[c.st].fam==='pv'?30:['baby','tod','nemo'].includes(ST[c.st].fam)?13.2:12.5;
+function xOf(c){if(c.x)return c.x;const r=rngF('x'+c.id);c.x={title:`${c.v} PaddlePod ${DAYF[c.d]} ${hm(c.t)}`,desc:DESC[ST[c.st].fam],img:null,price:NAMES_PRICE(c),status:'In progress',term:'September to December 2026',start:'2026-08-31',end:'2026-12-14',att:{},mk:{},extra:[],r:Math.round(r()*1000)};return c.x}
+const sessDates=c=>{const base=new Date(2026,7,31),out=[];for(let k=0;k<15;k++){const d=new Date(base);d.setDate(d.getDate()+k*7+c.d);out.push(d)}(xOf(c).extra||[]).forEach(e=>out.push(new Date(e+'T12:00:00')));return out};
+const attOf=(c,sw,k,d)=>{const x=xOf(c),key=sw.n+'|'+k;if(key in x.att)return x.att[key];const past=d<new Date(2026,10,4,12);return past?hs(key+c.id)%9!==0:false};
+let cpEdit=false;
+function cpHTML(c){
+  const x=xOf(c),s=ST[c.st],img=x.img||('/paddlepodlogin/assets/'+defImg(c)),ds=sessDates(c),n=c.sw.length,sess=ds.length;
+  const T=(v)=>esc2(v);const slots=[];for(let m=480;m<=1170;m+=15)slots.push(m);
+  const row=(ic,v)=>`<div class="cp-r">${ico(ic,18)}<span>${v}</span></div>`;
+  const view=`<h3>${T(x.term)}</h3>${pill(x.status,x.status==='In progress'?'green':x.status==='Draft'?'grey':x.status==='Cancelled'?'red':'amber')}
+    ${row('clock',`${DAYF[c.d]}, ${hm(c.t)} to ${hm(c.t+c.dur)}`)}${row('cal',`${fmt(new Date(x.start+'T12:00:00'),{day:'numeric',month:'short',year:'numeric'})} to ${fmt(new Date(x.end+'T12:00:00'),{day:'numeric',month:'short',year:'numeric'})}`)}${row('user',T(c.teacher))}${row('swim',T(s.name))}${row('users',`${n} / ${c.cap}`)}${row('pound',`£${(+x.price).toFixed(2)} / £${(x.price*sess).toFixed(2)}`)}${row('info',`${T(c.v)}, ${T(c.pn)}`)}
+    <div class="cp-r">${ico('arrow',18)}<a class="cp-l" href="#" data-a="cpCopy">paddlepod.co.uk/book/class/${c.id.replace(/[^a-z0-9]/gi,'')}</a><button class="btn sm ghost" data-a="cpCopy">Copy link</button></div>`;
+  const edit=`<div class="cp-f"><label>Class name<input type="text" id="cpT" value="${T(x.title)}"></label>
+    <div class="two"><label>Stage<select id="cpS">${STAGES.map(t=>`<option value="${t[0]}" ${t[0]===c.st?'selected':''}>${t[1]}</option>`).join('')}</select></label><label>Status<select id="cpSt">${['In progress','Draft','Full','Cancelled'].map(t=>`<option ${t===x.status?'selected':''}>${t}</option>`).join('')}</select></label></div>
+    <div class="two"><label>Day<select id="cpD">${DAYF.map((D,i)=>`<option value="${i}" ${i===c.d?'selected':''}>${D}</option>`).join('')}</select></label><label>Start<select id="cpTm">${slots.map(m=>`<option value="${m}" ${m===c.t?'selected':''}>${hm(m)}</option>`).join('')}</select></label></div>
+    <div class="two"><label>Pool<select id="cpP">${POOLS.map(p=>`<option value="${p.id}" ${p.id===c.pool?'selected':''}>${p.v} · ${p.n}</option>`).join('')}</select></label><label>Teacher<select id="cpH">${TEACH.map(t=>`<option ${t===c.teacher?'selected':''}>${t}</option>`).join('')}</select></label></div>
+    <div class="two"><label>Places<input type="number" id="cpC" min="${Math.max(1,n)}" value="${c.cap}"></label><label>Price per lesson (£)<input type="number" id="cpPr" step="0.10" min="0" value="${(+x.price).toFixed(2)}"></label></div>
+    <label>Term<input type="text" id="cpTerm" value="${T(x.term)}"></label>
+    <div class="two"><label>First lesson<input type="date" id="cpDs" value="${x.start}"></label><label>Last lesson<input type="date" id="cpDe" value="${x.end}"></label></div></div>`;
+  const attHead=ds.map((d,k)=>`<th class="${d<new Date(2026,10,4,12)?'':'fut'}">${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}${k>=15?' <small>extra</small>':''}</th>`).join('');
+  const attRows=c.sw.map((w,i)=>`<tr><th class="nm"><b>${T(w.n)}</b><small>${T(w.age)}${w.tag?' · '+w.tag:''}</small></th>${ds.map((d,k)=>{const on=attOf(c,w,k,d),mk=x.mk[w.n+'|'+k];return `<td><label class="ck"><input type="checkbox" data-a="cpAtt" data-i="${i}" data-k="${k}" ${on?'checked':''} aria-label="${T(w.n)} ${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}"><span></span></label>${on?'':`<button class="mkb ${mk?'on':''}" data-a="cpMk" data-i="${i}" data-k="${k}" title="Make-up lesson" aria-label="Make-up lesson">⇄</button>`}</td>`}).join('')}</tr>`).join('');
+  const tot=ds.map((d,k)=>`<td>${c.sw.filter(w=>attOf(c,w,k,d)).length}/${n}</td>`).join('');
+  return `<div class="cp-in"><header class="cp-h"><button class="btn ghost sm" data-a="cpClose">${ico('back',16)} Back to timetable</button><div class="grow"></div>${cpEdit?`<button class="btn ghost sm" data-a="cpEdit" data-m="0">Cancel</button><button class="btn navy sm" data-a="cpSave">Save changes</button>`:`<button class="btn ghost sm" data-a="cpEdit" data-m="1">${ico('brush',16)} Edit class</button>`}</header>
+   <h1 class="cp-t" style="--c:${s.c}">${T(x.title)}</h1>
+   <div class="cp-g"><section class="card cp-d">${cpEdit?edit:view}</section>
+    <section class="card cp-i"><div class="cp-img" style="--c:${s.c}"><img src="${img}" alt="${T(s.name)}">${cpEdit?`<div class="cp-ib"><label class="btn sm navy">Upload a photo<input type="file" accept="image/*" data-cp="img" hidden></label>${x.img?`<button class="btn sm ghost" data-a="cpImgRm">Use default</button>`:''}</div>`:''}</div>
+     ${cpEdit?`<div class="lib">${LIB.map(l=>`<button class="${x.img&&x.img.endsWith(l[0])?'on':''}" data-a="cpImg" data-f="${l[0]}" title="${l[1]}"><img src="/paddlepodlogin/assets/${l[0]}" alt="${l[1]}"></button>`).join('')}</div>`:''}
+     <div class="cp-v"><a class="cp-l" href="#">${T(c.v==='Killingworth'?'PaddlePod Killingworth':'PaddlePod Shiremoor')}</a></div>${row('info',c.v==='Killingworth'?'Silverbirch Drive, Newcastle upon Tyne, NE12 5AB':'Shiremoor, Newcastle upon Tyne')}
+     <h4>Lesson description</h4>${cpEdit?`<textarea id="cpDsc" rows="5">${T(x.desc)}</textarea><p class="sub">Parents see this on the booking page.</p>`:`<p class="cp-p">${T(x.desc)}</p>`}</section></div>
+   <section class="cp-a"><div class="ch"><h2>Attendance</h2><button class="btn ghost sm" data-a="cpAddSess">${ico('plus',16)} Add session to schedule</button></div>
+    <div class="att-w"><table class="att-t"><thead><tr><th class="nm"></th>${attHead}</tr></thead><tbody>${attRows||`<tr><td class="empty2">No swimmers booked yet.</td></tr>`}</tbody><tfoot><tr><th class="nm">Present</th>${tot}</tr></tfoot></table></div></section></div>`;
+}
+function cpMount(){let el=document.getElementById('cpage');if(!el){el=document.createElement('div');el.id='cpage';el.className='cpage';document.body.appendChild(el);document.body.classList.add('cp-open')}return el}
+function cpRender(){const c=findC(TT.cp);if(!c)return;const el=cpMount(),top=el.scrollTop;el.innerHTML=cpHTML(c);el.scrollTop=top}
+function cpPic(){const c=findC(TT.cp),x=xOf(c),im=document.querySelector('.cp-img img');if(im)im.src=x.img||('/paddlepodlogin/assets/'+defImg(c));document.querySelectorAll('.lib button').forEach(b=>b.classList.toggle('on',!!x.img&&x.img.endsWith(b.dataset.f)));const ib=document.querySelector('.cp-ib');if(ib){const r=ib.querySelector('[data-a=cpImgRm]');if(x.img&&!r){ib.insertAdjacentHTML('beforeend','<button class="btn sm ghost" data-a="cpImgRm">Use default</button>')}else if(!x.img&&r)r.remove()}}
+Object.assign(ACT,{
+  cpOpen(){TT.cp=TT.sel;TT.sel=null;cpEdit=false;refresh(1);cpRender();document.getElementById('cpage').scrollTop=0},
+  cpClose(){TT.cp=null;cpEdit=false;const el=document.getElementById('cpage');if(el)el.remove();document.body.classList.remove('cp-open');refresh(1)},
+  cpEdit(d){cpEdit=d.m==='1';cpRender()},
+  cpAtt(d,el){const c=findC(TT.cp),w=c.sw[+d.i];xOf(c).att[w.n+'|'+d.k]=el.checked;const ds=sessDates(c);cpRender()},
+  cpMk(d){const c=findC(TT.cp),w=c.sw[+d.i],x=xOf(c),k=w.n+'|'+d.k;x.mk[k]=!x.mk[k];toast(x.mk[k]?'Make-up lesson marked. The parent will be offered a new slot.':'Make-up removed.');cpRender()},
+  cpCopy(d,el,e){const c=findC(TT.cp),url='https://www.paddlepod.co.uk/book/class/'+c.id.replace(/[^a-z0-9]/gi,'');try{navigator.clipboard.writeText(url)}catch(_){}toast('Booking link copied.')},
+  cpImg(d){const c=findC(TT.cp);xOf(c).img='/paddlepodlogin/assets/'+d.f;cpPic()},
+  cpImgRm(){xOf(findC(TT.cp)).img=null;cpPic()},
+  cpAddSess(){const c=findC(TT.cp);modal('Add a session',`<div class="form"><label class="f">Date<input type="date" id="cpNs" value="2026-12-21"></label><p class="sub" style="margin:0">Swimmers in this class are booked in automatically and their parents are told.</p></div>`,`<button class="btn navy" data-a="cpAddGo">Add session</button><button class="btn ghost" data-a="close">Cancel</button>`)},
+  cpAddGo(){const v=document.getElementById('cpNs').value;if(!v){toast('Pick a date.');return}const c=findC(TT.cp);xOf(c).extra.push(v);close();toast('Session added to the schedule.');cpRender()},
+  cpSave(){const c=findC(TT.cp),x=xOf(c),g=i=>document.getElementById(i).value;
+    const cap=parseInt(g('cpC'))||c.cap;if(cap<c.sw.length){toast(`This class already has ${c.sw.length} swimmers booked, so it needs at least ${c.sw.length} places.`);return}
+    const r=tryMove(c,{d:+g('cpD'),t:+g('cpTm'),pool:g('cpP'),teacher:g('cpH')},true);if(!r.ok){toast(r.msg);return}
+    if(!TT.draft)delete c._o;
+    c.cap=cap;c.st=g('cpS');x.title=g('cpT')||x.title;x.status=g('cpSt');x.price=parseFloat(g('cpPr'))||0;x.term=g('cpTerm');x.start=g('cpDs');x.end=g('cpDe');x.desc=g('cpDsc');c.cover=false;
+    try{logIt(ME(),'Classes',`Edited details of ${x.title}`)}catch(e){}cpEdit=false;toast(r.warn?'Saved. Heads up: '+r.warn:'Class saved.');cpRender()}
+});
+document.addEventListener('change',e=>{const el=e.target;if(!el.dataset||el.dataset.cp!=='img'||!el.files||!el.files[0])return;const rd=new FileReader();rd.onload=()=>{const im=new Image();im.onload=()=>{const sc=Math.min(1,1000/im.width),cv=document.createElement('canvas');cv.width=im.width*sc;cv.height=im.height*sc;cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);xOf(findC(TT.cp)).img=cv.toDataURL('image/jpeg',.82);cpPic();toast('Photo updated.')};im.src=rd.result};rd.readAsDataURL(el.files[0])});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&TT.cp&&!document.querySelector('#modal .modal'))ACT.cpClose()});
+
 const _fh=window.__h0||'';
 try{if(!_fh||_fh==='#'){S.role='admin';S.view='timetable'}else{const h=_fh.slice(1).split('-');if(VIEWS[h[0]]&&VIEWS[h[0]][h[1]]){S.role=h[0];S.view=h[1]}}}catch(e){}
 render();

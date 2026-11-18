@@ -389,3 +389,39 @@ body:has(.drw) .tabbar,body:has(.drw) .fab{display:none}
 .hidden-d{display:none}
 .btop{display:flex;align-items:center;justify-content:space-between;gap:10px}
 body.staff:has(.board) .ph{display:flex}
+
+/* ---- class page ---- */
+body.cp-open{overflow:hidden}
+.cpage{position:fixed;inset:0;z-index:55;background:var(--bg);overflow:auto}
+.cp-in{max-width:1180px;margin:0 auto;padding:18px 20px 80px;display:grid;gap:18px}
+.cp-h{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:4;background:var(--bg);padding:6px 0}
+.cp-t{font-size:clamp(24px,3.4vw,34px);padding-left:16px;border-left:6px solid var(--c)}
+.cp-g{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:16px;align-items:start}
+.cp-d{display:grid;gap:10px}.cp-d h3{font-size:20px}
+.cp-r{display:flex;align-items:center;gap:12px;color:var(--navy);font-size:15px}.cp-r svg{flex:none;color:var(--muted)}.cp-r .btn{margin-left:auto}
+.cp-l{color:var(--navy);text-decoration:underline;word-break:break-all}
+.cp-i{display:grid;gap:12px}.cp-img{position:relative;border-radius:14px;overflow:hidden;background:var(--c);aspect-ratio:16/9}.cp-img img{width:100%;height:100%;object-fit:cover;display:block}
+.cp-ib{position:absolute;left:10px;bottom:10px;display:flex;gap:8px}
+.lib{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.lib button{all:unset;cursor:pointer;border-radius:10px;overflow:hidden;aspect-ratio:4/3;outline:2.5px solid transparent;outline-offset:-2.5px}.lib button.on{outline-color:var(--navy)}.lib img{width:100%;height:100%;object-fit:cover;display:block}
+.cp-i h4{font-size:12.5px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}.cp-p{margin:0;line-height:1.6;color:var(--ink)}
+.cp-f{display:grid;gap:12px}.cp-f label,.cp-i label:not(.btn){display:grid;gap:5px;font:600 12px var(--display);letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.cp-f input,.cp-f select,.cp-i textarea{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;font:500 15px var(--body);background:#fff;color:var(--navy);min-height:44px;width:100%;text-transform:none;letter-spacing:0}
+.cp-i textarea{min-height:120px;resize:vertical}
+.cp-f .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cp-a{background:#fff;border-radius:18px;box-shadow:0 1px 2px rgba(0,34,58,.05),0 8px 24px rgba(0,34,58,.05);padding:18px 0 4px}
+.cp-a .ch{padding:0 20px 12px}
+.att-w{overflow:auto;max-width:100%}
+.att-t{border-collapse:collapse;min-width:100%;font-size:13px}
+.att-t th,.att-t td{padding:8px 6px;text-align:center;border-top:1px solid #EEF2F6;white-space:nowrap}
+.att-t thead th{border-top:0;font:600 12px var(--display);color:var(--muted);position:sticky;top:0;background:#fff}
+.att-t th.nm{position:sticky;left:0;background:#fff;text-align:left;padding-left:20px;min-width:150px;z-index:2}.att-t th.nm b{display:block;font:600 14px var(--display);color:var(--navy)}.att-t th.nm small{color:var(--muted);font-weight:400;font-size:12px}
+.att-t th.fut{color:#9AA9B6}.att-t tfoot th,.att-t tfoot td{font:600 12px var(--display);color:var(--muted);background:#F8FAFC}
+.ck{position:relative;display:inline-block;width:28px;height:28px}.ck input{position:absolute;inset:0;opacity:0;margin:0;width:100%;height:100%;cursor:pointer;z-index:1}
+.ck span{position:absolute;inset:0;border:2px solid #CBD5DE;border-radius:8px;background:#fff;display:grid;place-items:center}
+.ck input:checked+span{background:var(--navy);border-color:var(--navy)}.ck input:checked+span::after{content:"✓";color:#fff;font-size:15px;font-weight:700}
+.ck input:focus-visible+span{outline:3px solid var(--yellow)}
+.mkb{display:block;margin:3px auto 0;border:0;background:none;color:#9AA9B6;cursor:pointer;font-size:15px;min-width:28px;min-height:26px;border-radius:8px}.mkb.on{background:var(--amber-bg);color:var(--amber-ink)}.mkb:hover{background:var(--bg)}
+.cpbtn{width:100%}
+@media (max-width:900px){.cp-in{padding:12px 14px 90px}.cp-g{grid-template-columns:1fr}.cp-h .btn{min-height:44px}.cp-f .two{grid-template-columns:1fr 1fr}.att-t th.nm{min-width:120px;padding-left:12px}.ck{width:34px;height:34px}}
+.cp-in>*,.cp-g>*{min-width:0}.cpage{overflow-x:hidden}
+@media (max-width:900px){.cp-in{display:block}.cp-in>*{margin-bottom:14px}.cp-g{display:grid}.cp-h{overflow:hidden}}
