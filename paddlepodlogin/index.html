@@ -504,7 +504,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--teal);outline:none;bo
 .foot .wrap{padding-block:28px;display:flex;gap:16px 32px;flex-wrap:wrap;align-items:center}
 .foot a{color:var(--white);text-decoration:none;font-weight:600;cursor:pointer}
 @media (prefers-reduced-motion:no-preference){.toast{animation:up .25s ease}@keyframes up{from{transform:translateY(12px);opacity:0}}}
-</style></head><body><div class="demo"><div class="wrap">
+</style></head><body><script>window.__h0=location.hash</script><div class="demo"><div class="wrap">
   <b>Prototype · sample data</b>
   <span class="addr"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M6 11h12v10H6zM8 11V8a4 4 0 0 1 8 0v3"/></svg><span id="path">paddlepod.co.uk/account</span></span>
   <button class="dbtn" data-a="go" data-v="features">Brief checklist</button>
@@ -2410,4 +2410,6 @@ render=function(sc){if(S.role==='admin'&&BLOCK_ADMIN.includes(S.view))S.view='da
 function fromHash(){const h=location.hash.slice(1).split('-');if(VIEWS[h[0]]&&VIEWS[h[0]][h[1]]){S.role=h[0];S.view=h[1];}}
 window.addEventListener('hashchange',()=>{const before=S.role+'-'+S.view;fromHash();if(S.role+'-'+S.view!==before)render();});
 fromHash(); render();
-</script></body></html>
+</script>
+<link rel="stylesheet" href="/paddlepodlogin/staff.css">
+<script src="/paddlepodlogin/staff.js"></script></body></html>

@@ -246,6 +246,15 @@
           "value": "none"
         }
       ]
+    },
+    {
+      "source": "/paddlepodlogin(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow, noarchive"
+        }
+      ]
     }
   ]
 }
